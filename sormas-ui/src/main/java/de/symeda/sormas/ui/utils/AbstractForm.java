@@ -229,8 +229,8 @@ public abstract class AbstractForm<T> extends CustomField<T> {
 		T field = getFieldGroup().buildAndBind(propertyId, (Object) propertyId, fieldType);
 		formatField(field, propertyId);
 		field.setId(propertyId);
-		layout.addComponent(fieldWrapper.wrap(field), propertyId);
 		addDefaultAdditionalValidators(field);
+		layout.addComponent(fieldWrapper.wrap(field), propertyId);
 		return field;
 	}
 
