@@ -44,6 +44,7 @@ public class EventDto extends EntityDto {
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
+	public static final String SRC_ORIGIN = "srcOrigin";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
@@ -66,6 +67,7 @@ public class EventDto extends EntityDto {
 	private String srcLastName;
 	private String srcTelNo;
 	private String srcEmail;
+	private String srcOrigin;
 	private Disease disease;
 	private String diseaseDetails;
 	private UserReferenceDto surveillanceOfficer;
@@ -163,6 +165,14 @@ public class EventDto extends EntityDto {
 
 	public void setSrcEmail(String srcEmail) {
 		this.srcEmail = srcEmail;
+	}
+
+	public String getSrcOrigin() {
+		return srcOrigin;
+	}
+
+	public void setSrcOrigin(String srcOrigin) {
+		this.srcOrigin = srcOrigin;
 	}
 
 	public LocationDto getEventLocation() {

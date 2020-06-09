@@ -679,6 +679,7 @@ public interface Captions {
 	String Event_srcEmail = "Event.srcEmail";
 	String Event_srcFirstName = "Event.srcFirstName";
 	String Event_srcLastName = "Event.srcLastName";
+	String Event_srcOrigin = "Event.srcOrigin";
 	String Event_srcTelNo = "Event.srcTelNo";
 	String Event_surveillanceOfficer = "Event.surveillanceOfficer";
 	String Event_typeOfPlace = "Event.typeOfPlace";

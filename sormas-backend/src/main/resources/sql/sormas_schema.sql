@@ -4622,4 +4622,11 @@ UPDATE cases SET surveillanceofficer_id = null FROM users WHERE cases.surveillan
 
 INSERT INTO schema_version (version_number, comment) VALUES (215, 'Remove wrongly assigned surveillance officers from cases #2284');
 
+-- 2020-06-09 Add origin of the source of an event
+
+ALTER TABLE events ADD COLUMN srcorigin character varying(512);
+ALTER TABLE events_history ADD COLUMN srcorigin character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (216, 'Adds the field origin of the source of an event');
+
 -- *** Insert new sql commands BEFORE this line ***
