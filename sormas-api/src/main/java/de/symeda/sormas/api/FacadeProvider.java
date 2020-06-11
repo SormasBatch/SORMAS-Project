@@ -20,6 +20,7 @@ package de.symeda.sormas.api;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
@@ -117,6 +118,10 @@ public class FacadeProvider {
 
 	public static TaskFacade getTaskFacade() {
 		return get().lookupEjbRemote(TaskFacade.class);
+	}
+
+	public static ActionFacade getActionFacade() {
+		return get().lookupEjbRemote(ActionFacade.class);
 	}
 
 	public static SampleFacade getSampleFacade() {

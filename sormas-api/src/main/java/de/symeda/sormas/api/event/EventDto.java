@@ -34,6 +34,7 @@ public class EventDto extends EntityDto {
 
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
+	public static final String EVENT_ACTIONS = "eventActions";
 	public static final String EVENT_DESC = "eventDesc";
 	public static final String EVENT_DATE = "eventDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
