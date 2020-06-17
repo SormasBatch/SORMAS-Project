@@ -32,6 +32,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.action.ActionContext;
+import de.symeda.sormas.api.action.ActionCriteria;
+import de.symeda.sormas.api.action.ActionStatEntry;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.event.Event;
@@ -133,6 +135,86 @@ public class ActionService extends AbstractAdoService<Action> {
 				cb.equal(from.get(Action.ACTION_CONTEXT), ActionContext.EVENT),
 				cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED))));
 
+		return filter;
+	}
+
+	/**
+	 * Computes stats for action matching an actionCriteria.
+	 */
+	public List<ActionStatEntry> statsByEvent(ActionCriteria actionCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ActionStatEntry> cq = cb.createQuery(ActionStatEntry.class);
+		Root<Action> action = cq.from(getElementClass());
+		cq.multiselect(cb.countDistinct(action.get(Action.ID)).alias("count"), action.get(Action.ACTION_STATUS));
+
+		Predicate filter = null;
+		if (actionCriteria == null || !actionCriteria.hasContextCriteria()) {
+			filter = createUserFilter(cb, cq, action);
+		}
+
+		if (actionCriteria != null) {
+			Predicate criteriaFilter = buildCriteriaFilter(actionCriteria, cb, action);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.groupBy(action.get(Action.ACTION_STATUS));
+		cq.orderBy(cb.desc(action.get(Action.ACTION_STATUS)));
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Action> getList(ActionCriteria actionCriteria, Integer first, Integer max) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Action> cq = cb.createQuery(getElementClass());
+		Root<Action> action = cq.from(getElementClass());
+
+		// Add filters
+		Predicate filter = null;
+		if (actionCriteria == null || !actionCriteria.hasContextCriteria()) {
+			filter = createUserFilter(cb, cq, action);
+		}
+
+		if (actionCriteria != null) {
+			Predicate criteriaFilter = buildCriteriaFilter(actionCriteria, cb, action);
+			filter = AbstractAdoService.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.orderBy(cb.desc(action.get(Action.DATE)));
+		List<Action> actions;
+		if (first != null && max != null) {
+			actions = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+		} else {
+			actions = em.createQuery(cq).getResultList();
+		}
+
+		return actions;
+	}
+
+	/**
+	 * Build a predicate corresponding to an actionCriteria
+	 *
+	 * @param actionCriteria
+	 * @param cb
+	 * @param from
+	 * @return predicate corresponding to the actionCriteria
+	 */
+	public Predicate buildCriteriaFilter(ActionCriteria actionCriteria, CriteriaBuilder cb, Root<Action> from) {
+
+		Predicate filter = null;
+
+		if (actionCriteria.getActionStatus() != null) {
+			filter = and(cb, filter, cb.equal(from.get(Action.ACTION_STATUS), actionCriteria.getActionStatus()));
+		}
+		if (actionCriteria.getEvent() != null) {
+			filter = and(cb, filter, cb.equal(from.join(Action.EVENT, JoinType.LEFT).get(Event.UUID), actionCriteria.getEvent().getUuid()));
+		}
 		return filter;
 	}
 }

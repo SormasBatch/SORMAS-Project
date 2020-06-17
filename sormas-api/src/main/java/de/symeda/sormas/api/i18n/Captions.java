@@ -52,7 +52,9 @@ public interface Captions {
 	String actionLeaveBulkEditMode = "actionLeaveBulkEditMode";
 	String actionLogout = "actionLogout";
 	String actionMerge = "actionMerge";
+	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
+	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
 	String actionPick = "actionPick";
 	String actionResetFilters = "actionResetFilters";

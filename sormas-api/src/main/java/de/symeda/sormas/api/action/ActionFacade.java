@@ -36,4 +36,8 @@ public interface ActionFacade {
 	List<ActionDto> getByUuids(List<String> uuids);
 
 	List<String> getAllActiveUuids();
+
+	List<ActionStatEntry> statsByEvent(ActionCriteria actionCriteria);
+
+	List<ActionDto> getList(ActionCriteria criteria, Integer first, Integer max);
 }
