@@ -18,7 +18,10 @@
 package de.symeda.sormas.backend.action;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -31,6 +34,7 @@ import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -142,6 +146,33 @@ public class ActionFacadeEjb implements ActionFacade {
 
 		Action action = actionService.getByUuid(actionDto.getUuid());
 		actionService.delete(action);
+	}
+
+	@Override
+	public List<String> getAllActiveUuids() {
+
+		User user = userService.getCurrentUser();
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return actionService.getAllActiveUuids(user);
+	}
+
+	@Override
+	public List<ActionDto> getAllActiveActionsAfter(Date date) {
+
+		User user = userService.getCurrentUser();
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return actionService.getAllActiveActionsAfter(date, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<ActionDto> getByUuids(List<String> uuids) {
+		return actionService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@LocalBean

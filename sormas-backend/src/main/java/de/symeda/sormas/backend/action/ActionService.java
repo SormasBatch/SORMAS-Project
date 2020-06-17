@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.action;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -25,10 +26,12 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.event.Event;
@@ -45,6 +48,44 @@ public class ActionService extends AbstractAdoService<Action> {
 
 	public ActionService() {
 		super(Action.class);
+	}
+
+	public List<Action> getAllActiveActionsAfter(Date date, User user) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Action> cq = cb.createQuery(getElementClass());
+		Root<Action> from = cq.from(getElementClass());
+		Predicate filter = buildActiveActionsFilter(cb, from);
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
+		}
+		if (date != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			filter = AbstractAdoService.and(cb, filter, dateFilter);
+		}
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(Action.CHANGE_DATE)));
+		cq.distinct(true);
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getAllActiveUuids(User user) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Action> from = cq.from(getElementClass());
+
+		Predicate filter = buildActiveActionsFilter(cb, from);
+
+		if (user != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = AbstractAdoService.and(cb, filter, userFilter);
+		}
+
+		cq.where(filter);
+		cq.select(from.get(Action.UUID));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	public List<Action> getAllByEvent(Event event) {
@@ -84,4 +125,14 @@ public class ActionService extends AbstractAdoService<Action> {
 		return filter;
 	}
 
+	private Predicate buildActiveActionsFilter(CriteriaBuilder cb, Root<Action> from) {
+
+		Join<Action, Event> event = from.join(Action.EVENT, JoinType.LEFT);
+
+		Predicate filter = cb.and(
+				cb.equal(from.get(Action.ACTION_CONTEXT), ActionContext.EVENT),
+				cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED))));
+
+		return filter;
+	}
 }
