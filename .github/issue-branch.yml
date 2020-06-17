@@ -1,0 +1,18 @@
+# "Create Issue Branch" App cs_configuration
+# https://github.com/marketplace/actions/create-issue-branch
+
+mode: auto
+silent: true
+branchName: full
+autoCloseIssue: true
+
+branches:
+  - label: feature
+    name: grades_developement
+    prefix: feature/
+#   - label: bug
+#     name: staging
+#     prefix: bugfix/
+  - label: '*'
+    name: grades_developement
+    prefix: issues/
