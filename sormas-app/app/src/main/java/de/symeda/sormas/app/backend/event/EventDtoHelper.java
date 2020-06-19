@@ -80,6 +80,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcOrigin(source.getSrcOrigin());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 
@@ -115,6 +116,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcOrigin(source.getSrcOrigin());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 

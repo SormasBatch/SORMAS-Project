@@ -58,6 +58,7 @@ public class Event extends AbstractDomainObject {
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
+	public static final String SRC_ORIGIN = "srcOrigin";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
@@ -99,6 +100,9 @@ public class Event extends AbstractDomainObject {
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String srcEmail;
+
+	@Column(length = 512)
+	private String srcOrigin;
 
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
@@ -205,6 +209,14 @@ public class Event extends AbstractDomainObject {
 
 	public void setSrcEmail(String srcEmail) {
 		this.srcEmail = srcEmail;
+	}
+
+	public String getSrcOrigin() {
+		return srcOrigin;
+	}
+
+	public void setSrcOrigin(String srcOrigin) {
+		this.srcOrigin = srcOrigin;
 	}
 
 	public Disease getDisease() {

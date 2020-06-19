@@ -1632,6 +1632,7 @@ class EventGenerator extends BaseDataGenerator {
 			data1.setSrcFirstName(getRandomName());
 			data1.setSrcLastName(getRandomName());
 			data1.setSrcTelNo(getRandomPhoneNumber());
+			data1.setSrcOrigin(getRandomString());
 			data1.setSrcEmail(getRandomEmail());
 			data1.setDisease(CaseGenerator.getRandomDisease());
 			data1.setDiseaseDetails(getRandomString());

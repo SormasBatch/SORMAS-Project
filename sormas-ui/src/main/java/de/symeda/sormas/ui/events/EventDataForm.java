@@ -71,6 +71,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.EVENT_DESC) +
 					
 			loc(INFORMATION_SOURCE_HEADING_LOC) +
+			fluidRowLocs(EventDto.SRC_ORIGIN) +
 			fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
 			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
 
@@ -137,6 +138,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
+		TextField srcOrigin = addField(EventDto.SRC_ORIGIN, TextField.class);
 		TextField srcFirstName = addField(EventDto.SRC_FIRST_NAME, TextField.class);
 		TextField srcLastName = addField(EventDto.SRC_LAST_NAME, TextField.class);
 		TextField srcTelNo = addField(EventDto.SRC_TEL_NO, TextField.class);
@@ -159,7 +161,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});
 
-		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo);
+		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo, srcOrigin);
 	}
 
 	@Override
