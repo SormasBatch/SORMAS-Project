@@ -40,6 +40,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.event.TypeOfRisk;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.task.Task;
@@ -74,6 +75,7 @@ public class Event extends CoreAdo {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String ARCHIVED = "archived";
+	public static final String TYPE_OF_RISK = "typeOfRisk";
 
 	private EventStatus eventStatus;
 	private List<EventParticipant> eventPersons;
@@ -95,6 +97,7 @@ public class Event extends CoreAdo {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private TypeOfRisk typeOfRisk;
 
 	private boolean archived;
 
@@ -291,6 +294,15 @@ public class Event extends CoreAdo {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public TypeOfRisk getTypeOfRisk() {
+		return typeOfRisk;
+	}
+
+	public void setTypeOfRisk(TypeOfRisk typeOfRisk) {
+		this.typeOfRisk = typeOfRisk;
 	}
 
 	@Override

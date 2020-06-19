@@ -83,6 +83,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSrcOrigin(source.getSrcOrigin());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setTypeOfRisk(source.getTypeOfRisk());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -119,6 +120,7 @@ public class EventDtoHelper extends AdoDtoHelper<Event, EventDto> {
 		target.setSrcOrigin(source.getSrcOrigin());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setTypeOfRisk(source.getTypeOfRisk());
 
 		if (source.getSurveillanceOfficer() != null) {
 			User user = DatabaseHelper.getUserDao().queryForId(source.getSurveillanceOfficer().getId());

@@ -4663,4 +4663,9 @@ ALTER TABLE action_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (217, 'Adds actions to events');
 
+-- 2020-06-18 Add type of risk of an event
+ALTER TABLE events ADD COLUMN typeofrisk character varying(255);
+ALTER TABLE events_history ADD COLUMN typeofrisk character varying(255);
+INSERT INTO schema_version (version_number, comment) VALUES (218, 'Add field type of risk of an event');
+
 -- *** Insert new sql commands BEFORE this line ***
