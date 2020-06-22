@@ -4629,4 +4629,38 @@ ALTER TABLE events_history ADD COLUMN srcorigin character varying(512);
 
 INSERT INTO schema_version (version_number, comment) VALUES (216, 'Adds the field origin of the source of an event');
 
+-- 2020-06-10 Add actions
+
+CREATE TABLE action (
+id bigint not null,
+reply varchar(4096),
+changedate timestamp not null,
+creationdate timestamp not null,
+description varchar(4096),
+date timestamp,
+statuschangedate timestamp,
+actioncontext varchar(512),
+actionstatus varchar(512),
+uuid varchar(36) not null unique,
+event_id bigint,
+creatoruser_id bigint,
+priority varchar(512),
+sys_period tstzrange not null,
+PRIMARY KEY (id));
+
+ALTER TABLE action OWNER TO sormas_user;
+
+ALTER TABLE action ADD CONSTRAINT fk_action_event_id FOREIGN KEY (event_id) REFERENCES events (id);
+ALTER TABLE action ADD CONSTRAINT fk_action_creatoruser_id FOREIGN KEY (creatoruser_id) REFERENCES users (id);
+
+UPDATE action SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE action ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE action_history (LIKE action);
+CREATE TRIGGER versioning_trigger
+BEFORE INSERT OR UPDATE OR DELETE ON action
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'action_history', true);
+ALTER TABLE action_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (217, 'Adds actions to events');
+
 -- *** Insert new sql commands BEFORE this line ***
