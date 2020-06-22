@@ -491,6 +491,7 @@ public class CaseController {
 		CaseDataForm caseEditForm = new CaseDataForm(
 			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
 			caze.getDisease(),
+			caze.getSymptoms(),
 			viewMode,
 			isInJurisdiction);
 		caseEditForm.setValue(caze);
