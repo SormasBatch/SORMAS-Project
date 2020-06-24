@@ -1640,6 +1640,7 @@ class EventGenerator extends BaseDataGenerator {
 			data1.setTypeOfPlaceText(getRandomString());
 			data1.setReportLat(getRandomDouble());
 			data1.setReportLon(getRandomDouble());
+			data1.setTypeOfRisk(getRandomString());
 
 			pool.add(data1);
 		}

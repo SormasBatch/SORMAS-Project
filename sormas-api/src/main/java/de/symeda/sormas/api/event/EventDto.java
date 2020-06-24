@@ -52,6 +52,7 @@ public class EventDto extends EntityDto {
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String TYPE_OF_RISK = "typeOfRisk";
 
 	@Required
 	private EventStatus eventStatus;
@@ -76,6 +77,7 @@ public class EventDto extends EntityDto {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private TypeOfRisk typeOfRisk;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -238,6 +240,14 @@ public class EventDto extends EntityDto {
 
 	public void setReportLatLonAccuracy(Float reportLatLonAccuracy) {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
+	}
+
+	public TypeOfRisk getTypeOfRisk() {
+		return typeOfRisk;
+	}
+
+	public void setTypeOfRisk(TypeOfRisk typeOfRisk) {
+		this.typeOfRisk = typeOfRisk;
 	}
 
 	public EventReferenceDto toReference() {
