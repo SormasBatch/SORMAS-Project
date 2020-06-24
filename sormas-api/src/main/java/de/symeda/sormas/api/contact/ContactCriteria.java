@@ -24,7 +24,9 @@ import de.symeda.sormas.api.BaseCriteria;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -33,7 +35,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 
-public class ContactCriteria extends BaseCriteria implements Serializable {
+public class ContactCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	public static final String NAME_UUID_CASE_LIKE = "nameUuidCaseLike";
 	public static final String REGION = "region";
@@ -47,6 +49,11 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String QUARANTINE_NOT_ORDERED = "quarantineNotOrdered";
 	public static final String ONLY_QUARANTINE_HELP_NEEDED = "onlyQuarantineHelpNeeded";
 	public static final String ONLY_HIGH_PRIORITY_CONTACTS = "onlyHighPriorityContacts";
+	public static final String CREATION_DATE_FROM = "creationDateFrom";
+	public static final String CREATION_DATE_TO = "creationDateTo";
+	public static final String NEW_CASE_DATE_FROM = "newCaseDateFrom";
+	public static final String NEW_CASE_DATE_TO = "newCaseDateTo";
+	public static final String NEW_CASE_DATE_TYPE = "newCaseDateType";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -65,6 +72,12 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 	private Date followUpUntilFrom;
 	private Date followUpUntilTo;
+	// used to construct the new filter in merge contact
+	private Date newCaseDateFrom;
+	private Date newCaseDateTo;
+	private Date creationDateFrom;
+	private Date creationDateTo;
+	private NewCaseDateType newCaseDateType;
 	/**
 	 * If yes, the followUpUntilTo filter will search for strict matches instead of a period,
 	 * even if a followUpUntilFrom is specified
@@ -377,5 +390,64 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public ContactCriteria person(PersonReferenceDto person) {
 		this.person = person;
 		return this;
+	}
+
+	public Date getNewCaseDateFrom() {
+		return newCaseDateFrom;
+	}
+
+	public void setNewCaseDateFrom(Date newCaseDateFrom) {
+		this.newCaseDateFrom = newCaseDateFrom;
+	}
+
+	public Date getNewCaseDateTo() {
+		return newCaseDateTo;
+	}
+
+	public void setNewCaseDateTo(Date newCaseDateTo) {
+		this.newCaseDateTo = newCaseDateTo;
+	}
+
+	public NewCaseDateType getNewCaseDateType() {
+		return newCaseDateType;
+	}
+
+	public void setNewCaseDateType(NewCaseDateType newContactDateType) {
+		this.newCaseDateType = newCaseDateType;
+	}
+
+	public Date getCreationDateFrom() {
+		return creationDateFrom;
+	}
+
+	public void setCreationDateFrom(Date creationDateFrom) {
+		this.creationDateFrom = creationDateFrom;
+	}
+
+	public ContactCriteria creationDateFrom(Date creationDateFrom) {
+		setCreationDateFrom(creationDateFrom);
+		return this;
+	}
+
+	public Date getCreationDateTo() {
+		return creationDateTo;
+	}
+
+	public void setCreationDateTo(Date creationDateTo) {
+		this.creationDateTo = creationDateTo;
+	}
+
+	public ContactCriteria creationDateTo(Date creationDateTo) {
+		setCreationDateTo(creationDateTo);
+		return this;
+	}
+
+	@Override
+	public ContactCriteria clone() {
+		try {
+			return (ContactCriteria) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

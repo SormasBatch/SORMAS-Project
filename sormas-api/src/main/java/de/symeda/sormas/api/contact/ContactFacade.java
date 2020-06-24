@@ -25,6 +25,8 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -118,4 +120,13 @@ public interface ContactFacade {
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
 
 	boolean isContactEditAllowed(String contactUuid);
+
+	List<ContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+
+	void updateCompleteness(String caseUuid);
+
+	public void mergeCase(String leadUuid, String otherUuid);
+
+	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
+
 }

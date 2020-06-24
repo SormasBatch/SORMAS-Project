@@ -165,6 +165,18 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 		return em.createQuery(cq).getSingleResult().intValue();
 	}
 
+	public int getSampleCountByContact(Contact contact) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Sample> from = cq.from(getElementClass());
+
+		cq.select(cb.count(from));
+		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Sample.ASSOCIATED_CONTACT), contact)));
+
+		return em.createQuery(cq).getSingleResult().intValue();
+	}
+
 	/**
 	 * Returns the sample that refers to the sample identified by the sampleUuid.
 	 *
