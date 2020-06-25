@@ -45,7 +45,7 @@ public class MergeContactsFilterComponent extends VerticalLayout {
     private CheckBox cbIgnoreRegion;
     private ComboBox<RegionReferenceDto> cbRegion;
     private ComboBox<DistrictReferenceDto> cbDistrict;
-    private ComboBox<NewContactDateType> cbNewCaseDateType;
+    private ComboBox<NewContactDateType> cbNewContactDateType;
     private DateField dfNewContactDateFrom;
     private DateField dfNewContactDateTo;
     private Button btnConfirmFilters;
@@ -112,11 +112,11 @@ public class MergeContactsFilterComponent extends VerticalLayout {
         firstRowLayout.addComponent(tfSearch);
 
         tfReportingUser = new TextField();
-        tfReportingUser.setId(ContactCriteria.REPORTING_USER_ROLE);
+        tfReportingUser.setId(ContactCriteria.REPORTING_USER_LIKE);
         tfReportingUser.setWidth(200, Unit.PIXELS);
         CssStyles.style(tfReportingUser, CssStyles.FORCE_CAPTION);
         tfReportingUser.setPlaceholder(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.REPORTING_USER));
-        binder.bind(tfReportingUser, ContactCriteria.REPORTING_USER_ROLE);
+        binder.bind(tfReportingUser, ContactCriteria.REPORTING_USER_LIKE);
         firstRowLayout.addComponent(tfReportingUser);
 
         cbIgnoreRegion = new CheckBox();
@@ -170,35 +170,35 @@ public class MergeContactsFilterComponent extends VerticalLayout {
         binder.bind(cbDistrict, ContactDto.DISTRICT);
         secondRowLayout.addComponent(cbDistrict);
 
-        cbNewCaseDateType = new ComboBox<>();
+        cbNewContactDateType = new ComboBox<>();
         dfNewContactDateFrom = new DateField();
         dfNewContactDateTo = new DateField();
 
-        cbNewCaseDateType.setId(ContactCriteria.NEW_CASE_DATE_TYPE);
-        cbNewCaseDateType.setWidth(200, Unit.PIXELS);
-        cbNewCaseDateType.setPlaceholder(I18nProperties.getString(Strings.promptNewCaseDateType));
-        cbNewCaseDateType.setCaption(I18nProperties.getCaption(Captions.caseNewCaseDate));
-        cbNewCaseDateType.setItems(NewContactDateType.values());
-        binder.bind(cbNewCaseDateType, ContactCriteria.NEW_CASE_DATE_TYPE);
-        cbNewCaseDateType.addValueChangeListener(event -> {
+        cbNewContactDateType.setId(ContactCriteria.NEW_CONTACT_DATE_TYPE);
+        cbNewContactDateType.setWidth(200, Unit.PIXELS);
+        cbNewContactDateType.setPlaceholder(I18nProperties.getString(Strings.promptNewCaseDateType));
+        cbNewContactDateType.setCaption(I18nProperties.getCaption(Captions.caseNewCaseDate));
+        cbNewContactDateType.setItems(NewContactDateType.values());
+        binder.bind(cbNewContactDateType, ContactCriteria.NEW_CONTACT_DATE_TYPE);
+        cbNewContactDateType.addValueChangeListener(event -> {
             dfNewContactDateFrom.setEnabled(event.getValue() != null);
             dfNewContactDateTo.setEnabled(event.getValue() != null);
         });
-        secondRowLayout.addComponent(cbNewCaseDateType);
+        secondRowLayout.addComponent(cbNewContactDateType);
 
-        dfNewContactDateFrom.setId(ContactCriteria.NEW_CASE_DATE_FROM);
+        dfNewContactDateFrom.setId(ContactCriteria.NEW_CONTACT_DATE_FROM);
         dfNewContactDateFrom.setWidth(200, Unit.PIXELS);
         CssStyles.style(dfNewContactDateFrom, CssStyles.FORCE_CAPTION);
         dfNewContactDateFrom.setPlaceholder(I18nProperties.getString(Strings.promptCasesDateFrom));
-        binder.forField(dfNewContactDateFrom).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(ContactCriteria.NEW_CASE_DATE_FROM);
+        binder.forField(dfNewContactDateFrom).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(ContactCriteria.NEW_CONTACT_DATE_FROM);
         dfNewContactDateFrom.setEnabled(false);
         secondRowLayout.addComponent(dfNewContactDateFrom);
 
-        dfNewContactDateTo.setId(ContactCriteria.NEW_CASE_DATE_TO);
+        dfNewContactDateTo.setId(ContactCriteria.NEW_CONTACT_DATE_TO);
         dfNewContactDateTo.setWidth(200, Unit.PIXELS);
         CssStyles.style(dfNewContactDateTo, CssStyles.FORCE_CAPTION);
         dfNewContactDateTo.setPlaceholder(I18nProperties.getString(Strings.promptDateTo));
-        binder.forField(dfNewContactDateTo).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(ContactCriteria.NEW_CASE_DATE_TO);
+        binder.forField(dfNewContactDateTo).withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind(ContactCriteria.NEW_CONTACT_DATE_TO);
         dfNewContactDateTo.setEnabled(false);
         secondRowLayout.addComponent(dfNewContactDateTo);
 

@@ -4625,4 +4625,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (215, 'Remove wrongl
 ALTER TABLE contact ADD completeness real;
 ALTER TABLE contact_history ADD completeness real;
 
+ALTER TABLE contact ADD duplicateof_id BIGINT;
+ALTER TABLE contact_history ADD duplicateof_id BIGINT;
+
 -- *** Insert new sql commands BEFORE this line ***

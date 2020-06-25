@@ -1427,7 +1427,7 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		float completeness = 0f;
 
-		if (ContactStatus.DROPPED.equals(contact.getContactStatus())) {
+		if (ContactStatus.DROPPED.equals(contact.getContactStatus())) { // annuler le suivi abandon
 			completeness += 0.25f;
 		}
 		if (FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())) {
@@ -1436,11 +1436,11 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (sampleService.getSampleCountByContact(contact) > 0) {
 			completeness += 0.15f;
 		}
-		if (!ContactClassification.UNCONFIRMED.equals(contact.getContactClassification())) {
+		/*if (!ContactClassification.UNCONFIRMED.equals(contact.getContactClassification())) {
 			completeness += 0.2f;
-		}
+		}*/
 		if (contactService.getContactCountByCase(contact.getCaze()) > 0) {
-			completeness += 0.10f;
+			completeness += 0.30f;
 		}
 		if (contact.getPerson().getBirthdateYYYY() != null || contact.getPerson().getApproximateAge() != null) {
 			completeness += 0.05f;

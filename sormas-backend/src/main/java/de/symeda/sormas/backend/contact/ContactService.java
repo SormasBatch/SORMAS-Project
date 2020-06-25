@@ -850,6 +850,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter = null;
 		Join<Contact, Case> caze = from.join(Contact.CAZE, JoinType.LEFT);
+		Join<Contact, User> reportingUser = from.join(Contact.REPORTING_USER, JoinType.LEFT);
 
 		if (contactCriteria.getReportingUserRole() != null) {
 			filter = and(
@@ -990,6 +991,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						cb.like(cb.lower(caze.get(Case.UUID)), textFilter),
 						cb.like(cb.lower(casePerson.get(Person.FIRST_NAME)), textFilter),
 						cb.like(cb.lower(casePerson.get(Person.LAST_NAME)), textFilter));
+					filter = and(cb, filter, likeFilters);
+				}
+			}
+		}
+		if (contactCriteria.getReportingUserLike() != null) {
+			String[] textFilters = contactCriteria.getReportingUserLike().split("\\s+");
+			for (int i = 0; i < textFilters.length; i++) {
+				String textFilter = "%" + textFilters[i].toLowerCase() + "%";
+				if (!DataHelper.isNullOrEmpty(textFilter)) {
+					Predicate likeFilters = cb.or(
+							cb.like(cb.lower(reportingUser.get(User.FIRST_NAME)), textFilter),
+							cb.like(cb.lower(reportingUser.get(User.LAST_NAME)), textFilter),
+							cb.like(cb.lower(reportingUser.get(User.USER_NAME)), textFilter));
 					filter = and(cb, filter, likeFilters);
 				}
 			}
