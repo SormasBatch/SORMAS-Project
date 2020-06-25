@@ -20,6 +20,7 @@ package de.symeda.sormas.api.caze;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -82,5 +83,19 @@ public final class CaseLogic {
 		caze.getHospitalization().setAdmissionDate(new Date());
 		caze.getHospitalization().setDischargeDate(null);
 		caze.getHospitalization().setIsolated(null);
+	}
+
+	public static int getNumberOfRequiredVisitsSoFar(Date reportDate, Date followUpUntil) {
+
+		if (followUpUntil == null) {
+			return 0;
+		}
+
+		Date now = new Date();
+		if (now.before(followUpUntil)) {
+			return DateHelper.getDaysBetween(DateHelper.addDays(reportDate, 1), now);
+		} else {
+			return DateHelper.getDaysBetween(DateHelper.addDays(reportDate, 1), followUpUntil);
+		}
 	}
 }
