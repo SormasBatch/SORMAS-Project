@@ -57,6 +57,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.contact.ContactExportDto;
 import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -66,6 +67,7 @@ import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitService;
+import de.symeda.sormas.backend.visit.VisitSummaryExportDetails;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -452,6 +454,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getFacility().get(Facility.NAME), joins.getFacility().get(Facility.UUID), caseRoot.get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
+				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
 				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY),
@@ -502,6 +505,43 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
 
 		if (!resultList.isEmpty()) {
+
+			List<Long> exportCaseIds = resultList.stream().map(e -> e.getId()).collect(Collectors.toList());
+
+			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
+			Root<Case> visitsCqRoot = visitsCq.from(Case.class);
+			Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
+			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
+
+			visitsCq.where(
+					ContactService.and(cb, caseRoot.get(AbstractDomainObject.ID).in(exportCaseIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+			visitsCq.multiselect(
+					visitsCqRoot.get(AbstractDomainObject.ID),
+					visitsJoin.get(Visit.VISIT_DATE_TIME),
+					visitsJoin.get(Visit.VISIT_STATUS),
+					visitSymptomsJoin);
+
+			List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
+
+			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
+			// doesn't seem to be possible and using a native query is not an option because of user filters
+			for (CaseExportDto exportCase : resultList) {
+				List<VisitSummaryExportDetails> visits =
+						visitSummaries.stream().filter(v -> v.getContactId() == exportCase.getId()).collect(Collectors.toList());
+
+				VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
+						.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
+						.max(Comparator.comparing(VisitSummaryExportDetails::getVisitDateTime))
+						.orElse(null);
+
+				exportCase.setNumberOfVisits(visits.size());
+				if (lastCooperativeVisit != null) {
+					exportCase.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
+					exportCase.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
+					exportCase
+							.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+				}
+			}
 
 			Map<Long, Symptoms> symptoms = null;
 			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseDataDto.SYMPTOMS)) {

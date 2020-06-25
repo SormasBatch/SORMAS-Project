@@ -24,6 +24,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.facility.FacilityHelper;
@@ -180,6 +181,13 @@ public class CaseExportDto implements Serializable {
 	private YesNoUnknown postpartum;
 	private Trimester trimester;
 
+	private FollowUpStatus followUpStatus;
+	private Date followUpUntil;
+	private int numberOfVisits;
+	private YesNoUnknown lastCooperativeVisitSymptomatic;
+	private Date lastCooperativeVisitDate;
+	private String lastCooperativeVisitSymptoms;
+
 	private CaseJurisdictionDto jurisdiction;
 
 	//@formatter:off
@@ -192,6 +200,7 @@ public class CaseExportDto implements Serializable {
 						 String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
 						 String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
 						 InvestigationStatus investigationStatus, CaseOutcome outcome,
+						 FollowUpStatus followUpStatus, Date followUpUntil,
 						 // Quarantine
 						 QuarantineType quarantine, Date quarantineFrom, Date quarantineTo,
 						 boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate, Date quarantineOrderedOfficialDocumentDate,
@@ -272,6 +281,8 @@ public class CaseExportDto implements Serializable {
 		this.vaccinationInfoSource = vaccinationInfoSource;
 		this.postpartum = postpartum;
 		this.trimester = trimester;
+		this.followUpStatus = followUpStatus;
+		this.followUpUntil = followUpUntil;
 
 		jurisdiction = new CaseJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, healthFacilityUuid, pointOfEntryUuid);
 	}
@@ -1068,6 +1079,60 @@ public class CaseExportDto implements Serializable {
 		return otherSamples;
 	}
 
+	@Order(131)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseDataDto.FOLLOW_UP_STATUS)
+	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	public FollowUpStatus getFollowUpStatus() {
+		return followUpStatus;
+	}
+
+	@Order(132)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+	@ExportProperty(CaseDataDto.FOLLOW_UP_UNTIL)
+	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	public Date getFollowUpUntil() {
+		return followUpUntil;
+	}
+
+	@Order(133)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+//	@ExportProperty(CaseDataDto.FOLLOW_UP_STATUS)
+	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	public int getNumberOfVisits() {
+		return numberOfVisits;
+	}
+
+	@Order(134)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+//	@ExportProperty(CaseDataDto.FOLLOW_UP_STATUS)
+	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	public YesNoUnknown getLastCooperativeVisitSymptomatic() {
+		return lastCooperativeVisitSymptomatic;
+	}
+
+	@Order(135)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+//	@ExportProperty(CaseDataDto.FOLLOW_UP_STATUS)
+	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	public Date getLastCooperativeVisitDate() {
+		return lastCooperativeVisitDate;
+	}
+
+	@Order(136)
+	@ExportTarget(caseExportTypes = {
+			CaseExportType.CASE_SURVEILLANCE })
+//	@ExportProperty(CaseDataDto.FOLLOW_UP_STATUS)
+	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	public String getLastCooperativeVisitSymptoms() {
+		return lastCooperativeVisitSymptoms;
+	}
+
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -1322,5 +1387,29 @@ public class CaseExportDto implements Serializable {
 
 	public CaseJurisdictionDto getJurisdiction() {
 		return jurisdiction;
+	}
+
+	public void setFollowUpStatus(FollowUpStatus followUpStatus) {
+		this.followUpStatus = followUpStatus;
+	}
+
+	public void setFollowUpUntil(Date followUpUntil) {
+		this.followUpUntil = followUpUntil;
+	}
+
+	public void setNumberOfVisits(int numberOfVisits) {
+		this.numberOfVisits = numberOfVisits;
+	}
+
+	public void setLastCooperativeVisitSymptomatic(YesNoUnknown lastCooperativeVisitSymptomatic) {
+		this.lastCooperativeVisitSymptomatic = lastCooperativeVisitSymptomatic;
+	}
+
+	public void setLastCooperativeVisitDate(Date lastCooperativeVisitDate) {
+		this.lastCooperativeVisitDate = lastCooperativeVisitDate;
+	}
+
+	public void setLastCooperativeVisitSymptoms(String lastCooperativeVisitSymptoms) {
+		this.lastCooperativeVisitSymptoms = lastCooperativeVisitSymptoms;
 	}
 }
