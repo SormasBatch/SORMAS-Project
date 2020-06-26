@@ -3,16 +3,16 @@
 
 mode: auto
 silent: true
-branchName: full
-autoCloseIssue: true
+branchName: 'grades_${issue.number}-${issue.title}'
+# autoCloseIssue: true
 
 branches:
   - label: feature
     name: grades_developement
-    prefix: feature/
+    # prefix: grades/
 #   - label: bug
 #     name: staging
 #     prefix: bugfix/
   - label: '*'
     name: grades_developement
-    prefix: issues/
+    # prefix: grades/
