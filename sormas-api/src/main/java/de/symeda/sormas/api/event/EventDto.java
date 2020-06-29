@@ -48,6 +48,7 @@ public class EventDto extends EntityDto {
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
+	public static final String NOM_TYPE_OF_PLACE = "nomTypeOfPlace";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 
@@ -73,6 +74,7 @@ public class EventDto extends EntityDto {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private String nomTypeOfPlace;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -231,5 +233,13 @@ public class EventDto extends EntityDto {
 
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid());
+	}
+
+	public String getNomTypeOfPlace() {
+		return nomTypeOfPlace;
+	}
+
+	public void setNomTypeOfPlace(String nomTypeOfPlace) {
+		this.nomTypeOfPlace = nomTypeOfPlace;
 	}
 }

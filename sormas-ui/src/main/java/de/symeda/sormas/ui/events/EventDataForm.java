@@ -21,10 +21,15 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.vaadin.server.Page;
+import com.vaadin.shared.Position;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
@@ -50,6 +55,9 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteSuggestionProvider;
+import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteTextField;
+import eu.maxschuster.vaadin.autocompletetextfield.provider.CollectionSuggestionProvider;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
@@ -74,7 +82,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
 
 			loc(LOCATION_HEADING_LOC) +
-			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
+			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT, EventDto.NOM_TYPE_OF_PLACE) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
@@ -134,7 +142,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		typeOfPlace.setNullSelectionAllowed(true);
-		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
+		addField(EventDto.TYPE_OF_PLACE_TEXT,TextField.class);
+		AutocompleteTextField nomTypeOfPlaceField = addField(EventDto.NOM_TYPE_OF_PLACE, AutocompleteTextField.class);
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
 		TextField srcFirstName = addField(EventDto.SRC_FIRST_NAME, TextField.class);
@@ -145,11 +154,14 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.NOM_TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.COMPANY,TypeOfPlace.EHPAD,TypeOfPlace.UNIVERSITY, TypeOfPlace.PENAL_INSTITUTIONS), true);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EventDto.DISEASE_DETAILS), EventDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 
 		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
+		setNomTypeOfPlaceRequirementUniversity(nomTypeOfPlaceField);
+		setNomTypeOfPlaceRequirementCompany(nomTypeOfPlaceField);
 		setTypeOfPlaceTextRequirement();
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 
@@ -159,7 +171,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});
 
-		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo);
+		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo, nomTypeOfPlaceField);
 	}
 
 	@Override
@@ -177,5 +189,50 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		TextField typeOfPlaceTextField = (TextField) fieldGroup.getField(EventDto.TYPE_OF_PLACE_TEXT);
 		typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
 		typeOfPlaceField.addValueChangeListener(event -> typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER));
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void setNomTypeOfPlaceRequirementUniversity(AutocompleteTextField nomTypeOfPlace){
+		FieldGroup fieldGroup = getFieldGroup();
+		ComboBox typeOfPlaceField = (ComboBox) fieldGroup.getField(EventDto.TYPE_OF_PLACE);
+		((AbstractField) typeOfPlaceField).setImmediate(true);
+
+		nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.UNIVERSITY);
+		getListUniversityAutoComplete(nomTypeOfPlace);
+		typeOfPlaceField.addValueChangeListener(event -> nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.UNIVERSITY));
+
+
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void setNomTypeOfPlaceRequirementCompany(AutocompleteTextField nomTypeOfPlace){
+		FieldGroup fieldGroup = getFieldGroup();
+		ComboBox typeOfPlaceField = (ComboBox) fieldGroup.getField(EventDto.TYPE_OF_PLACE);
+		((AbstractField) typeOfPlaceField).setImmediate(true);
+
+		nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.COMPANY);
+		getListSirenAutoComplete(nomTypeOfPlace);
+		typeOfPlaceField.addValueChangeListener(event -> nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.COMPANY));
+
+
+	}
+
+	private void getListUniversityAutoComplete(AutocompleteTextField field) {
+        List<String> listUniversity = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses("Lycée");
+		if(listUniversity != null){
+			AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(listUniversity);
+			field.setSuggestionProvider(suggestionProvider);
+			field.setMinChars(1);
+		}
+	}
+
+
+	private void getListSirenAutoComplete(AutocompleteTextField field) {
+		List<String> listSiren = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(EventDto.NOM_TYPE_OF_PLACE);
+		AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(listSiren);
+		field.setSuggestionProvider(suggestionProvider);
+		field.setMinChars(1);
+
 	}
 }

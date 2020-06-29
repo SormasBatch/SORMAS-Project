@@ -4622,4 +4622,6 @@ UPDATE cases SET surveillanceofficer_id = null FROM users WHERE cases.surveillan
 
 INSERT INTO schema_version (version_number, comment) VALUES (215, 'Remove wrongly assigned surveillance officers from cases #2284');
 
+ALTER TABLE events ADD nomTypeOfPlace varchar(512);
+ALTER TABLE events_history ADD nomTypeOfPlace varchar(512);
 -- *** Insert new sql commands BEFORE this line ***

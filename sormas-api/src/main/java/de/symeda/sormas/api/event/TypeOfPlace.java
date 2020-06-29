@@ -17,19 +17,56 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public enum TypeOfPlace {
 
-	FESTIVITIES,
-	HOME,
-	HOSPITAL,
-	MEANS_OF_TRANSPORT,
-	PUBLIC_PLACE,
-	UNKNOWN,
-	OTHER;
+	FESTIVITIES(new Locale("en")),
+	HOME(new Locale("en")),
+	HOSPITAL(new Locale("en")),
+	MEANS_OF_TRANSPORT(new Locale("en")),
+	PUBLIC_PLACE(new Locale("en")),
+	UNKNOWN(new Locale("en")),
+	UNIVERSITY(new Locale("fr", "FR")),
+	CRECHE(new Locale("fr", "FR")),
+	EHPAD(new Locale("fr", "FR")),
+	HEALTH_INSTITUTION(new Locale("fr", "FR")),
+	DISABLED_PERSON(new Locale("fr", "FR")),
+	CHILD_WELFARE(new Locale("fr", "FR")),
+	HOMELESS_SHELTER(new Locale("fr", "FR")),
+	HOMELESSNESS_HEALTH(new Locale("fr", "FR")),
+	PENAL_INSTITUTIONS(new Locale("fr", "FR")),
+	EXTENDED_FAMILY_HOME(new Locale("fr", "FR")),
+	COMPANY(new Locale("fr", "FR")),
+	EVENT(new Locale("fr", "FR")),
+	SMALL_GEOGRAPHIC_UNIT(new Locale("fr", "FR")),
+	TRANSPORT(new Locale("fr", "FR")),
+	SPECIFIC_COMMUNAUTY(new Locale("fr", "FR")),
+	OTHER(new Locale("en"));
+
+
+	private Locale locale;
+
+	TypeOfPlace(Locale locale) {
+		this.locale = locale;
+	}
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
+
+	public Locale getLocale() {
+		return locale;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+
 }

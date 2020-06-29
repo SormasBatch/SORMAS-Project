@@ -85,7 +85,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
-		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
+		if ((FacadeProvider.getGeocodingFacade().isEnabled() || FacadeProvider.getGeocodingFacadeFrench().isEnabled()) && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
 			getContent().addComponent(createGeoButton(), GEO_BUTTONS_LOC);
 		}
 	}
@@ -170,8 +170,22 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			ValoTheme.BUTTON_BORDERLESS,
 			ValoTheme.BUTTON_LARGE);
 
-		geoButtonLayout.addComponent(geocodeButton);
-		geoButtonLayout.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
+		Button geocodeButtonFrench = ButtonHelper.createIconButtonWithCaption(
+				"geocodeButton",
+				null,
+				VaadinIcons.MAP_MARKER,
+				e -> triggerGeocodingFrench(),
+				ValoTheme.BUTTON_ICON_ONLY,
+				ValoTheme.BUTTON_BORDERLESS,
+				ValoTheme.BUTTON_LARGE);
+
+		if(FacadeProvider.getGeocodingFacadeFrench().isEnabled()){
+			geoButtonLayout.addComponent(geocodeButtonFrench);
+			geoButtonLayout.setComponentAlignment(geocodeButtonFrench, Alignment.BOTTOM_RIGHT);
+		}else{
+			geoButtonLayout.addComponent(geocodeButton);
+			geoButtonLayout.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
+		}
 
 		leafletMapPopup = new MapPopupView();
 		leafletMapPopup.setCaption(" ");
@@ -218,6 +232,19 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		if (latLon != null) {
 			setConvertedValue(LocationDto.LATITUDE, latLon.getLat());
 			setConvertedValue(LocationDto.LONGITUDE, latLon.getLon());
+		}
+	}
+
+	private void triggerGeocodingFrench() {
+
+		String address = getConvertedValue(LocationDto.ADDRESS);
+		String postalCode = getConvertedValue(LocationDto.POSTAL_CODE);
+		String city = getConvertedValue(LocationDto.CITY);
+
+		String label = FacadeProvider.getGeocodingFacadeFrench().getLabel(address);
+
+		if (label != null) {
+			setConvertedValue(LocationDto.LATITUDE, label);
 		}
 	}
 
