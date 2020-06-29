@@ -163,6 +163,25 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		setNomTypeOfPlaceRequirementUniversity(nomTypeOfPlaceField);
 		setNomTypeOfPlaceRequirementCompany(nomTypeOfPlaceField);
 		setTypeOfPlaceTextRequirement();
+
+		// add auto completude for french type of place
+		nomTypeOfPlaceField.addTextChangeListener(event -> {
+			String value = nomTypeOfPlaceField.getValue();
+			if(value != null){
+				List<String> resultList = new ArrayList<>();
+				if(typeOfPlace.getValue() == TypeOfPlace.UNIVERSITY){
+					resultList = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(nomTypeOfPlaceField.getValue().toString());
+				}else if(typeOfPlace.getValue() == TypeOfPlace.COMPANY){
+					resultList = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(nomTypeOfPlaceField.getValue().toString());
+				}
+				if(resultList != null){
+					AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(resultList);
+					nomTypeOfPlaceField.setSuggestionProvider(suggestionProvider);
+					nomTypeOfPlaceField.setMinChars(1);
+				}
+			}
+		});
+
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 
 		districtField.addValueChangeListener(e -> {
@@ -199,19 +218,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.UNIVERSITY);
 		typeOfPlaceField.addValueChangeListener(event -> nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.UNIVERSITY));
-		if(typeOfPlaceField.getValue() == TypeOfPlace.UNIVERSITY){
-			nomTypeOfPlace.addTextChangeListener(event -> {
-				String value = nomTypeOfPlace.getValue();
-				if(value != null){
-					List<String> listUniversity = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(nomTypeOfPlace.getValue().toString());
-					if(listUniversity != null){
-						AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(listUniversity);
-						nomTypeOfPlace.setSuggestionProvider(suggestionProvider);
-						nomTypeOfPlace.setCache(false);
-						nomTypeOfPlace.setMinChars(3);
-					}
-			}});
-		}
 
 	}
 
@@ -223,20 +229,5 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.COMPANY);
 		typeOfPlaceField.addValueChangeListener(event -> nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.COMPANY));
-		if(typeOfPlaceField.getValue() == TypeOfPlace.COMPANY){
-				nomTypeOfPlace.addTextChangeListener(event -> {
-				String value = nomTypeOfPlace.getValue().toString();
-				if(value != null){
-					List<String> listSiren = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(value);
-					if(listSiren != null){
-						AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(listSiren);
-						nomTypeOfPlace.setSuggestionProvider(suggestionProvider);
-						nomTypeOfPlace.setMinChars(3);
-					}
-
-				}
-			});
-		}
-
 	}
 }
