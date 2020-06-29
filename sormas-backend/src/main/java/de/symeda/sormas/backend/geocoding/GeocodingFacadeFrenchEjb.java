@@ -156,7 +156,7 @@ public class GeocodingFacadeFrenchEjb implements GeocodingFacadeFrench {
 
     @Override
     public List<String> getFrenchSchoolAdresses(String prefixe) {
-        String textValue = join(", ", prefixe.replaceAll("\\s", " "));
+        String textValue = join(", ", prefixe.replaceAll("\\s", " ").replaceAll("\\p{M}", ""));
 
         String query = textValue;
 //		Stream.of(

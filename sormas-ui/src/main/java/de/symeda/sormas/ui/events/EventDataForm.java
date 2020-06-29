@@ -198,10 +198,20 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		((AbstractField) typeOfPlaceField).setImmediate(true);
 
 		nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.UNIVERSITY);
-		getListUniversityAutoComplete(nomTypeOfPlace);
 		typeOfPlaceField.addValueChangeListener(event -> nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.UNIVERSITY));
-
-
+		if(typeOfPlaceField.getValue() == TypeOfPlace.UNIVERSITY){
+			nomTypeOfPlace.addTextChangeListener(event -> {
+				String value = nomTypeOfPlace.getValue();
+				if(value != null){
+					List<String> listUniversity = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(nomTypeOfPlace.getValue().toString());
+					if(listUniversity != null){
+						AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(listUniversity);
+						nomTypeOfPlace.setSuggestionProvider(suggestionProvider);
+						nomTypeOfPlace.setCache(false);
+						nomTypeOfPlace.setMinChars(3);
+					}
+			}});
+		}
 
 	}
 
@@ -212,27 +222,21 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		((AbstractField) typeOfPlaceField).setImmediate(true);
 
 		nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.COMPANY);
-		getListSirenAutoComplete(nomTypeOfPlace);
 		typeOfPlaceField.addValueChangeListener(event -> nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.COMPANY));
+		if(typeOfPlaceField.getValue() == TypeOfPlace.COMPANY){
+				nomTypeOfPlace.addTextChangeListener(event -> {
+				String value = nomTypeOfPlace.getValue().toString();
+				if(value != null){
+					List<String> listSiren = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(value);
+					if(listSiren != null){
+						AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(listSiren);
+						nomTypeOfPlace.setSuggestionProvider(suggestionProvider);
+						nomTypeOfPlace.setMinChars(3);
+					}
 
-
-	}
-
-	private void getListUniversityAutoComplete(AutocompleteTextField field) {
-        List<String> listUniversity = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses("Lycée");
-		if(listUniversity != null){
-			AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(listUniversity);
-			field.setSuggestionProvider(suggestionProvider);
-			field.setMinChars(1);
+				}
+			});
 		}
-	}
-
-
-	private void getListSirenAutoComplete(AutocompleteTextField field) {
-		List<String> listSiren = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(EventDto.NOM_TYPE_OF_PLACE);
-		AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(listSiren);
-		field.setSuggestionProvider(suggestionProvider);
-		field.setMinChars(1);
 
 	}
 }

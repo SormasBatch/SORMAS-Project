@@ -82,18 +82,20 @@ public class GeocodingServiceSirenFrench {
         }
 
         SirenCollection fc = response.readEntity(SirenCollection.class);
-        List<UniteLegale> uniteLegales = Optional.of(fc)
-                .map(SirenCollection::getUniteLegale)
+        List<UnitesLegales> uniteLegales = Optional.of(fc)
+                .map(SirenCollection::getUnitesLegales)
                 .filter(ArrayUtils::isNotEmpty)
                 .map(a -> a[0])
                 .map(g -> Arrays.asList(g))
                 .orElse(null);
 
-        List<PeriodeUniteLegale> listePeriodeUnitesLegales = uniteLegales.stream()
-                .map(UniteLegale::getPeriodeUniteLegales)
+        List<PeriodesUniteLegale> listePeriodeUnitesLegales = uniteLegales.stream()
+                .map(UnitesLegales::getPeriodesUniteLegales)
                 .findFirst().get();
+
+
         return listePeriodeUnitesLegales.stream()
-                .map(PeriodeUniteLegale::getDenominationUniteLegale)
+                .map(PeriodesUniteLegale::getDenominationUniteLegale)
                 .collect(Collectors.toList());
     }
 
@@ -111,27 +113,27 @@ public class GeocodingServiceSirenFrench {
     public static class SirenCollection implements Serializable {
         private static final long serialVersionUID = -1;
         public String type;
-        private UniteLegale[]  uniteLegale;
+        private UnitesLegales[]  unitesLegales;
 
         @Override
         public String toString() {
-            return "type " + type + "\n" + ArrayUtils.toString(getUniteLegale());
+            return "type " + type + "\n" + ArrayUtils.toString(getUnitesLegales());
         }
 
-        public UniteLegale[]  getUniteLegale() {
-            return uniteLegale;
+        public UnitesLegales[]  getUnitesLegales() {
+            return unitesLegales;
         }
 
-        public void setUniteLegale(UniteLegale[]   uniteLegale) {
-            this.uniteLegale = uniteLegale;
+        public void setUnitesLegales(UnitesLegales[]   unitesLegales) {
+            this.unitesLegales = unitesLegales;
         }
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class UniteLegale implements Serializable {
+    public static class UnitesLegales implements Serializable {
         private static final long serialVersionUID = -1;
-        private List<PeriodeUniteLegale> periodeUniteLegales;
+        private List<PeriodesUniteLegale> periodesUniteLegales;
         private String siren;
         private String statutDiffusionUniteLegale;
         private String dateCreationUniteLegale;
@@ -145,15 +147,15 @@ public class GeocodingServiceSirenFrench {
 
         @Override
         public String toString() {
-            return "properties " + periodeUniteLegales;
+            return "periodesUniteLegale " + periodesUniteLegales;
         }
 
-        public List<PeriodeUniteLegale> getPeriodeUniteLegales() {
-            return periodeUniteLegales;
+        public List<PeriodesUniteLegale> getPeriodesUniteLegales() {
+            return periodesUniteLegales;
         }
 
-        public void setPeriodeUniteLegales(List<PeriodeUniteLegale> periodeUniteLegales) {
-            this.periodeUniteLegales = periodeUniteLegales;
+        public void setPeriodesUniteLegales(List<PeriodesUniteLegale> periodesUniteLegales) {
+            this.periodesUniteLegales = periodesUniteLegales;
         }
 
         public String getSiren() {
@@ -238,7 +240,7 @@ public class GeocodingServiceSirenFrench {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class PeriodeUniteLegale implements Serializable {
+    public static class PeriodesUniteLegale implements Serializable {
         private static final long serialVersionUID = -1;
 
         private String dateFin;

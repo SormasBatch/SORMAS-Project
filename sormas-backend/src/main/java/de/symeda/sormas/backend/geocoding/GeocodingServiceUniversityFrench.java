@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,7 @@ public class GeocodingServiceUniversityFrench {
 
     public List<String> getFrenchSchoolAdresses(String query) {
 
-        String endpoint = "http://data.education.gouv.fr/api/records/1.0/search/?dataset=fr-en-adresse-et-geolocalisation-etablissements-premier-et-second-degre";
+        String endpoint = "https://data.education.gouv.fr/api/records/1.0/search/?dataset=fr-en-adresse-et-geolocalisation-etablissements-premier-et-second-degre";
         if (endpoint == null) {
             return null;
         }
@@ -62,8 +63,8 @@ public class GeocodingServiceUniversityFrench {
 
         try {
             URIBuilder ub = new URIBuilder(endpoint);
-            ub.addParameter("q", query);
-            ub.addParameter("limit", "10");
+            ub.addParameter("q", "appellation_officielle:"+query);
+            ub.addParameter("rows", "10");
 
             url = ub.build();
         } catch (URISyntaxException e) {
@@ -72,9 +73,7 @@ public class GeocodingServiceUniversityFrench {
 
 
         WebTarget target = client.target(url);
-        Response response = target.request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + "c5173994-3163-3bcf-a39c-7afc0d8dd187")
-                .get();
+        Response response = target.request(MediaType.APPLICATION_JSON_TYPE).get();
 
         if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
             if (logger.isErrorEnabled()) {
@@ -84,17 +83,20 @@ public class GeocodingServiceUniversityFrench {
         }
 
         RecordCollection fc = response.readEntity(RecordCollection.class);
+        List<String> returnList = new ArrayList<>();
         List<Record> records = Optional.of(fc)
                 .map(RecordCollection::getRecords)
                 .filter(ArrayUtils::isNotEmpty)
-                // .map(Record::getProperties)
-                //.map(RecordProperties::getAppelation_officielle)
                 .map(g -> Arrays.asList(g))
                 .orElse(null);
-        return records.stream()
-                .map(Record::getProperties)
-                .map(RecordProperties::getAppelation_officielle)
-                .collect(Collectors.toList());
+       if(records != null){
+           returnList = records.stream()
+                   .map(Record::getFields)
+                   .map(RecordProperties::getAppellation_officielle)
+                   .collect(Collectors.toList());
+       }
+
+        return returnList;
     }
 
 
@@ -110,12 +112,11 @@ public class GeocodingServiceUniversityFrench {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RecordCollection implements Serializable {
         private static final long serialVersionUID = -1;
-        public String type;
         private Record[] records;
 
         @Override
         public String toString() {
-            return "type " + type + "\n" + ArrayUtils.toString(getRecords());
+            return "records " + "\n" + ArrayUtils.toString(getRecords());
         }
 
         public Record[] getRecords() {
@@ -131,22 +132,40 @@ public class GeocodingServiceUniversityFrench {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Record implements Serializable {
         private static final long serialVersionUID = -1;
-        private RecordProperties properties;
+        private RecordProperties fields;
+        private String datasetid;
+        private String recordid;
 
         @Override
         public String toString() {
-            return "properties " + properties;
+            return "datasetid " + getDatasetid() + "\n recordid " + getRecordid() + "\n fields " + getFields();
         }
 
-        public RecordProperties getProperties() {
-            return properties;
+        public RecordProperties getFields() {
+            return fields;
         }
 
-        public void setProperties(RecordProperties properties) {
-            this.properties = properties;
+        public void setFields(RecordProperties fields) {
+            this.fields = fields;
         }
 
+        public String getDatasetid() {
+            return datasetid;
+        }
+
+        public void setDatasetid(String datasetid) {
+            this.datasetid = datasetid;
+        }
+
+        public String getRecordid() {
+            return recordid;
+        }
+
+        public void setRecordid(String recordid) {
+            this.recordid = recordid;
+        }
     }
+
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RecordProperties implements Serializable {
@@ -164,7 +183,7 @@ public class GeocodingServiceUniversityFrench {
         private String code_region;
         private String epsg;
         private String nature_uai_libe;
-        private String appelation_officielle;
+        private String appellation_officielle;
         private double latitude;
         private String secteur_prive_libelle_type_contrat;
         private double coordonnee_y;
@@ -271,12 +290,12 @@ public class GeocodingServiceUniversityFrench {
             this.nature_uai_libe = nature_uai_libe;
         }
 
-        public String getAppelation_officielle() {
-            return appelation_officielle;
+        public String getAppellation_officielle() {
+            return appellation_officielle;
         }
 
-        public void setAppelation_officielle(String appelation_officielle) {
-            this.appelation_officielle = appelation_officielle;
+        public void setAppellation_officielle(String appellation_officielle) {
+            this.appellation_officielle = appellation_officielle;
         }
 
         public double getLatitude() {
