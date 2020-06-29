@@ -101,13 +101,24 @@ public class EventActionsView extends AbstractEventView {
 		return filterLayout;
 	}
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		if (event != null) {
-			super.enter(event);
-		}
+	/**
+	 * Update filter form values.
+	 */
+	private void updateFilterComponents() {
+		// disable triggers on value change
+		applyingCriteria = true;
+		filterForm.setValue(criteria);
+		applyingCriteria = false;
+	}
 
-		String params = event.getParameters().trim();
+	/**
+	 * Reload datas in the list.
+	 */
+	private void reload() {
+		list.reload();
+	}
+
+	@Override protected void initView(String params) {
 		if (params.contains("?")) {
 			criteria.fromUrlParams(params.substring(params.indexOf("?") + 1));
 		}
@@ -129,22 +140,5 @@ public class EventActionsView extends AbstractEventView {
 		updateFilterComponents();
 
 		reload();
-	}
-
-	/**
-	 * Update filter form values.
-	 */
-	private void updateFilterComponents() {
-		// disable triggers on value change
-		applyingCriteria = true;
-		filterForm.setValue(criteria);
-		applyingCriteria = false;
-	}
-
-	/**
-	 * Reload datas in the list.
-	 */
-	private void reload() {
-		list.reload();
 	}
 }
