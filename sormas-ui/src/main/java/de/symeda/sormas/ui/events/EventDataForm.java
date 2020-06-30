@@ -24,10 +24,12 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
@@ -58,6 +60,8 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteSuggestionProvider;
 import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteTextField;
 import eu.maxschuster.vaadin.autocompletetextfield.provider.CollectionSuggestionProvider;
+import eu.maxschuster.vaadin.autocompletetextfield.provider.MatchMode;
+import eu.maxschuster.vaadin.autocompletetextfield.shared.ScrollBehavior;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
@@ -143,8 +147,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		typeOfPlace.setNullSelectionAllowed(true);
 		addField(EventDto.TYPE_OF_PLACE_TEXT,TextField.class);
-		AutocompleteTextField nomTypeOfPlaceField = addField(EventDto.NOM_TYPE_OF_PLACE, AutocompleteTextField.class);
-		//addField(EventDto.NOM_TYPE_OF_PLACE, ComboBox.class);
+		addField(EventDto.NOM_TYPE_OF_PLACE, ComboBox.class);
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
 		TextField srcFirstName = addField(EventDto.SRC_FIRST_NAME, TextField.class);
@@ -161,45 +164,23 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 
 		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
-		setNomTypeOfPlaceRequirementUniversity(nomTypeOfPlaceField);
-		setNomTypeOfPlaceRequirementCompany(nomTypeOfPlaceField);
 		setTypeOfPlaceTextRequirement();
 
-		// add auto completude for french type of place
-		nomTypeOfPlaceField.addTextChangeListener(event -> {
-			//String value = nomTypeOfPlaceField.getValue();
-			String value = event.getText();
-			if(value != null){
-				List<String> resultList = new ArrayList<>();
-				if(typeOfPlace.getValue() == TypeOfPlace.UNIVERSITY){
-					resultList = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(value);
-				}else if(typeOfPlace.getValue() == TypeOfPlace.COMPANY){
-					resultList = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(value);
-				}
-				if(resultList != null){
-					nomTypeOfPlaceField.setCache(false);
-					AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(resultList);
-					nomTypeOfPlaceField.setSuggestionProvider(suggestionProvider);
-					nomTypeOfPlaceField.setMinChars(3);
-				}
-			}
-		});
-		/*ComboBox nomTypeOfPlaceField = (ComboBox) getFieldGroup().getField(EventDto.NOM_TYPE_OF_PLACE);
+		ComboBox nomTypeOfPlaceField = (ComboBox) getFieldGroup().getField(EventDto.NOM_TYPE_OF_PLACE);
 		nomTypeOfPlaceField.setTextInputAllowed(true);
-		nomTypeOfPlaceField.addValueChangeListener(e -> {
-			String value = nomTypeOfPlaceField.getValue().toString();
-			if(value != null){
-				List<String> resultList = new ArrayList<>();
-				if(typeOfPlace.getValue() == TypeOfPlace.UNIVERSITY){
-					resultList = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(value);
-					FieldHelper.updateItems(typeOfPlace, resultList);
-				}else if(typeOfPlace.getValue() == TypeOfPlace.COMPANY) {
-					resultList = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(value);
-					FieldHelper.updateItems(typeOfPlace, resultList);
-				}
+		typeOfPlace.addValueChangeListener(e -> {
+			String value = "";
+			List<String> resultList = new ArrayList<>();
+			if(typeOfPlace.getValue() == TypeOfPlace.UNIVERSITY){
+				resultList = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(value);
 			}
+			if(typeOfPlace.getValue() == TypeOfPlace.COMPANY) {
+				resultList = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(value);
+			}
+			FieldHelper.updateItems(nomTypeOfPlaceField, resultList);
+		});
 
-		});*/
+
 
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 

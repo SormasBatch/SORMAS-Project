@@ -104,11 +104,9 @@ public class GeocodingFacadeFrenchEjb implements GeocodingFacadeFrench {
 
     @Override
     public List<String> getSireneEntrepriseAutoComplete(String address) {
-
-        if (StringUtils.isBlank(address)) {
-            return null;
+        if(address == null){
+            address="";
         }
-
         String textValue = join(", ", address.replaceAll("\\s", " "));
 
         String query = textValue;
@@ -122,7 +120,7 @@ public class GeocodingFacadeFrenchEjb implements GeocodingFacadeFrench {
 //		.collect(Collectors.joining(" AND "));
 
         if (StringUtils.isBlank(query)) {
-            return null;
+            query = "";
         }
 
         return geocodingServiceSirenFrench.getSireneEntrepriseAutoComplete(query);
@@ -156,6 +154,9 @@ public class GeocodingFacadeFrenchEjb implements GeocodingFacadeFrench {
 
     @Override
     public List<String> getFrenchSchoolAdresses(String prefixe) {
+        if(prefixe == null){
+            prefixe="";
+        }
         String textValue = join(", ", prefixe.replaceAll("\\s", " ").replaceAll("\\p{M}", ""));
 
         String query = textValue;

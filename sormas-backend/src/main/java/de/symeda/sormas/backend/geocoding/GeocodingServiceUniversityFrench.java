@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.symeda.sormas.api.region.GeoLatLon;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +64,11 @@ public class GeocodingServiceUniversityFrench {
 
         try {
             URIBuilder ub = new URIBuilder(endpoint);
-            ub.addParameter("q", "appellation_officielle:"+query.concat("*"));
-            ub.addParameter("rows", "60");
+            //ub.addParameter("q", query);
+            if (!StringUtils.isBlank(query)) {
+                ub.addParameter("q", query);
+            }
+            ub.addParameter("rows", "500");
 
             url = ub.build();
         } catch (URISyntaxException e) {

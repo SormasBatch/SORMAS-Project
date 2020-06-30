@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.geocoding;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -60,7 +62,13 @@ public class GeocodingServiceSirenFrench {
 
         try {
             URIBuilder ub = new URIBuilder(endpoint);
-            ub.addParameter("q", "periode(denominationUniteLegale:"+query.concat("*")+")");
+            if (StringUtils.isBlank(query)) {
+                ub.addParameter("q", "periode(denominationUniteLegale:*)");
+            }else{
+                ub.addParameter("q", "periode(denominationUniteLegale:*"+query+"*)");
+            }
+
+            ub.addParameter("nombre", "200");
 
             url = ub.build();
         } catch (URISyntaxException e) {
@@ -84,14 +92,13 @@ public class GeocodingServiceSirenFrench {
         List<UnitesLegales> uniteLegales = Optional.of(fc)
                 .map(SirenCollection::getUnitesLegales)
                 .filter(ArrayUtils::isNotEmpty)
-                .map(a -> a[0])
                 .map(g -> Arrays.asList(g))
                 .orElse(null);
 
         List<PeriodesUniteLegale> listePeriodeUnitesLegales = uniteLegales.stream()
                 .map(UnitesLegales::getPeriodesUniteLegale)
-                .map(g -> Arrays.asList(g))
-                .findFirst().get();
+                .map(a -> a[0])
+                .collect(Collectors.toList());
 
 
         return listePeriodeUnitesLegales.stream()
