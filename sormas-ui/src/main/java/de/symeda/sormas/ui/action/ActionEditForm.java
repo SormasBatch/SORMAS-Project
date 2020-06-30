@@ -47,7 +47,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 			fluidRowLocs(ActionDto.DESCRIPTION) +
 			fluidRowLocs(ActionDto.REPLY) +
 			fluidRowLocs(ActionDto.ACTION_STATUS);
-	//@formatter:off
+	//@formatter:on
 
 	public ActionEditForm(boolean create) {
 
