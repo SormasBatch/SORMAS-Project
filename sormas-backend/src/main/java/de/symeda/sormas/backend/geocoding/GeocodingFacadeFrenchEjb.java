@@ -169,7 +169,7 @@ public class GeocodingFacadeFrenchEjb implements GeocodingFacadeFrench {
 //		.collect(Collectors.joining(" AND "));
 
         if (StringUtils.isBlank(query)) {
-            return null;
+            query = "";
         }
 
         return geocodingServiceUniversityFrench.getFrenchSchoolAdresses(query);

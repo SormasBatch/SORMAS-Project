@@ -144,6 +144,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		typeOfPlace.setNullSelectionAllowed(true);
 		addField(EventDto.TYPE_OF_PLACE_TEXT,TextField.class);
 		AutocompleteTextField nomTypeOfPlaceField = addField(EventDto.NOM_TYPE_OF_PLACE, AutocompleteTextField.class);
+		//addField(EventDto.NOM_TYPE_OF_PLACE, ComboBox.class);
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
 		TextField srcFirstName = addField(EventDto.SRC_FIRST_NAME, TextField.class);
@@ -166,21 +167,39 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		// add auto completude for french type of place
 		nomTypeOfPlaceField.addTextChangeListener(event -> {
-			String value = nomTypeOfPlaceField.getValue();
+			//String value = nomTypeOfPlaceField.getValue();
+			String value = event.getText();
 			if(value != null){
 				List<String> resultList = new ArrayList<>();
 				if(typeOfPlace.getValue() == TypeOfPlace.UNIVERSITY){
-					resultList = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(nomTypeOfPlaceField.getValue().toString());
+					resultList = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(value);
 				}else if(typeOfPlace.getValue() == TypeOfPlace.COMPANY){
-					resultList = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(nomTypeOfPlaceField.getValue().toString());
+					resultList = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(value);
 				}
 				if(resultList != null){
+					nomTypeOfPlaceField.setCache(false);
 					AutocompleteSuggestionProvider suggestionProvider = new CollectionSuggestionProvider(resultList);
 					nomTypeOfPlaceField.setSuggestionProvider(suggestionProvider);
-					nomTypeOfPlaceField.setMinChars(1);
+					nomTypeOfPlaceField.setMinChars(3);
 				}
 			}
 		});
+		/*ComboBox nomTypeOfPlaceField = (ComboBox) getFieldGroup().getField(EventDto.NOM_TYPE_OF_PLACE);
+		nomTypeOfPlaceField.setTextInputAllowed(true);
+		nomTypeOfPlaceField.addValueChangeListener(e -> {
+			String value = nomTypeOfPlaceField.getValue().toString();
+			if(value != null){
+				List<String> resultList = new ArrayList<>();
+				if(typeOfPlace.getValue() == TypeOfPlace.UNIVERSITY){
+					resultList = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(value);
+					FieldHelper.updateItems(typeOfPlace, resultList);
+				}else if(typeOfPlace.getValue() == TypeOfPlace.COMPANY) {
+					resultList = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(value);
+					FieldHelper.updateItems(typeOfPlace, resultList);
+				}
+			}
+
+		});*/
 
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 

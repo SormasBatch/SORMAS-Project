@@ -41,7 +41,7 @@ public class GeocodingServiceSirenFrench {
 
     public List<String> getSireneEntrepriseAutoComplete(String query) {
 
-        String endpoint = "https://api.insee.fr/entreprises/sirene/siren/";
+        String endpoint = "https://api.insee.fr/entreprises/sirene/V3/siren";
         if (endpoint == null) {
             return null;
         }
@@ -60,8 +60,7 @@ public class GeocodingServiceSirenFrench {
 
         try {
             URIBuilder ub = new URIBuilder(endpoint);
-            ub.addParameter("q", "denominationUniteLegale:"+query);
-            ub.addParameter("limit", "10");
+            ub.addParameter("q", "periode(denominationUniteLegale:"+query.concat("*")+")");
 
             url = ub.build();
         } catch (URISyntaxException e) {
@@ -90,7 +89,8 @@ public class GeocodingServiceSirenFrench {
                 .orElse(null);
 
         List<PeriodesUniteLegale> listePeriodeUnitesLegales = uniteLegales.stream()
-                .map(UnitesLegales::getPeriodesUniteLegales)
+                .map(UnitesLegales::getPeriodesUniteLegale)
+                .map(g -> Arrays.asList(g))
                 .findFirst().get();
 
 
@@ -112,12 +112,11 @@ public class GeocodingServiceSirenFrench {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class SirenCollection implements Serializable {
         private static final long serialVersionUID = -1;
-        public String type;
         private UnitesLegales[]  unitesLegales;
 
         @Override
         public String toString() {
-            return "type " + type + "\n" + ArrayUtils.toString(getUnitesLegales());
+            return "unitesLegales " + "\n" + ArrayUtils.toString(getUnitesLegales());
         }
 
         public UnitesLegales[]  getUnitesLegales() {
@@ -133,7 +132,7 @@ public class GeocodingServiceSirenFrench {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class UnitesLegales implements Serializable {
         private static final long serialVersionUID = -1;
-        private List<PeriodesUniteLegale> periodesUniteLegales;
+        private PeriodesUniteLegale[] periodesUniteLegale;
         private String siren;
         private String statutDiffusionUniteLegale;
         private String dateCreationUniteLegale;
@@ -147,15 +146,15 @@ public class GeocodingServiceSirenFrench {
 
         @Override
         public String toString() {
-            return "periodesUniteLegale " + periodesUniteLegales;
+            return "periodesUniteLegale " + getPeriodesUniteLegale();
         }
 
-        public List<PeriodesUniteLegale> getPeriodesUniteLegales() {
-            return periodesUniteLegales;
+        public PeriodesUniteLegale[] getPeriodesUniteLegale() {
+            return periodesUniteLegale;
         }
 
-        public void setPeriodesUniteLegales(List<PeriodesUniteLegale> periodesUniteLegales) {
-            this.periodesUniteLegales = periodesUniteLegales;
+        public void setPeriodesUniteLegale(PeriodesUniteLegale[] periodesUniteLegale) {
+            this.periodesUniteLegale = periodesUniteLegale;
         }
 
         public String getSiren() {

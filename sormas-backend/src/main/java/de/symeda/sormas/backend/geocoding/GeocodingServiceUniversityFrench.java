@@ -63,8 +63,8 @@ public class GeocodingServiceUniversityFrench {
 
         try {
             URIBuilder ub = new URIBuilder(endpoint);
-            ub.addParameter("q", "appellation_officielle:"+query);
-            ub.addParameter("rows", "10");
+            ub.addParameter("q", "appellation_officielle:"+query.concat("*"));
+            ub.addParameter("rows", "60");
 
             url = ub.build();
         } catch (URISyntaxException e) {
