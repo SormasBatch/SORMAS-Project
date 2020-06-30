@@ -443,6 +443,10 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
+				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY),
+				caseRoot.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
+				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
+				caseRoot.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
 
 				joins.getHospitalization().get(Hospitalization.ADMITTED_TO_HEALTH_FACILITY), joins.getHospitalization().get(Hospitalization.ADMISSION_DATE),
 				joins.getHospitalization().get(Hospitalization.DISCHARGE_DATE), joins.getHospitalization().get(Hospitalization.LEFT_AGAINST_ADVICE),
@@ -1367,15 +1371,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			&& newCase.getHealthFacility() != null
 			&& existingCase.getHealthFacility() != null
 			&& !newCase.getHealthFacility().getUuid().equals(existingCase.getHealthFacility().getUuid())) {
-			for (Task task : newCase.getTasks()) {
-				if (task.getTaskStatus() != TaskStatus.PENDING) {
-					continue;
-				}
-
-				assignOfficerOrSupervisorToTask(newCase, task);
-
-				taskService.ensurePersisted(task);
-			}
+			reassignTasks(newCase);
 		}
 
 		// Create a task to search for other cases for new Plague cases
@@ -1487,8 +1483,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	private void setResponsibleSurveillanceOfficer(Case caze) {
-
+	public void setResponsibleSurveillanceOfficer(Case caze) {
 		if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
 			&& caze.getReportingUser().getDistrict().equals(caze.getDistrict())) {
 			caze.setSurveillanceOfficer(caze.getReportingUser());
@@ -1506,6 +1501,18 @@ public class CaseFacadeEjb implements CaseFacade {
 					caze.setSurveillanceOfficer(null);
 				}
 			}
+		}
+	}
+
+	public void reassignTasks(Case caze) {
+		for (Task task : caze.getTasks()) {
+			if (task.getTaskStatus() != TaskStatus.PENDING) {
+				continue;
+			}
+
+			assignOfficerOrSupervisorToTask(caze, task);
+
+			taskService.ensurePersisted(task);
 		}
 	}
 
@@ -2110,7 +2117,14 @@ public class CaseFacadeEjb implements CaseFacade {
 			filter = cb.and(filter, cb.like(caze.get(Case.EPID_NUMBER), prefixString + "%"));
 
 			// for the suffix only consider the actual number. Any other characters and leading zeros are ignored
-			int suffixNumber = Integer.parseInt(suffixString);
+			int suffixNumber;
+			try {
+				suffixNumber = Integer.parseInt(suffixString);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException(
+					String.format("Invalid suffix for epid number. epidNumber: '%s', suffixString: '%s'", epidNumber, suffixString),
+					e);
+			}
 			regexPattern = cb.parameter(String.class);
 			regexReplacement = cb.parameter(String.class);
 			regexFlags = cb.parameter(String.class);

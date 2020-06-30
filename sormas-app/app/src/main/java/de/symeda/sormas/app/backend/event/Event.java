@@ -58,10 +58,12 @@ public class Event extends AbstractDomainObject {
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
+	public static final String SRC_ORIGIN = "srcOrigin";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
+	public static final String TYPE_OF_RISK = "typeOfRisk";
 
 	@Deprecated
 	@DatabaseField
@@ -100,6 +102,9 @@ public class Event extends AbstractDomainObject {
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String srcEmail;
 
+	@Column(length = 512)
+	private String srcOrigin;
+
 	@Enumerated(EnumType.STRING)
 	private Disease disease;
 
@@ -111,6 +116,9 @@ public class Event extends AbstractDomainObject {
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String typeOfPlaceText;
+
+	@Enumerated(EnumType.STRING)
+	private TypeOfRisk typeOfRisk;
 
 	@DatabaseField
 	private Double reportLat;
@@ -207,6 +215,14 @@ public class Event extends AbstractDomainObject {
 		this.srcEmail = srcEmail;
 	}
 
+	public String getSrcOrigin() {
+		return srcOrigin;
+	}
+
+	public void setSrcOrigin(String srcOrigin) {
+		this.srcOrigin = srcOrigin;
+	}
+
 	public Disease getDisease() {
 		return disease;
 	}
@@ -237,6 +253,14 @@ public class Event extends AbstractDomainObject {
 
 	public void setTypeOfPlaceText(String typeOfPlaceText) {
 		this.typeOfPlaceText = typeOfPlaceText;
+	}
+
+	public String getTypeOfRisk() {
+		return typeOfRisk;
+	}
+
+	public void setTypeOfRisk(String typeOfRisk) {
+		this.typeOfRisk = typeOfRisk;
 	}
 
 	public Double getReportLat() {

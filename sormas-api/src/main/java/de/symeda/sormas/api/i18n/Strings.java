@@ -42,6 +42,8 @@ public interface Strings {
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
+	String confirmationArchiveArea = "confirmationArchiveArea";
+	String confirmationArchiveAreas = "confirmationArchiveAreas";
 	String confirmationArchiveCampaign = "confirmationArchiveCampaign";
 	String confirmationArchiveCase = "confirmationArchiveCase";
 	String confirmationArchiveCases = "confirmationArchiveCases";
@@ -62,6 +64,8 @@ public interface Strings {
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
 	String confirmationContactSourceCaseDiscardUnsavedChanges = "confirmationContactSourceCaseDiscardUnsavedChanges";
+	String confirmationDearchiveArea = "confirmationDearchiveArea";
+	String confirmationDearchiveAreas = "confirmationDearchiveAreas";
 	String confirmationDearchiveCampaign = "confirmationDearchiveCampaign";
 	String confirmationDearchiveCase = "confirmationDearchiveCase";
 	String confirmationDearchiveCases = "confirmationDearchiveCases";
@@ -96,10 +100,13 @@ public interface Strings {
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
+	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	String day = "day";
 	String done = "done";
 	String edit = "edit";
+	String entityAction = "entityAction";
+	String entityActions = "entityActions";
 	String entityAdditionalTest = "entityAdditionalTest";
 	String entityAdditionalTests = "entityAdditionalTests";
 	String entityBurial = "entityBurial";
@@ -184,6 +191,7 @@ public interface Strings {
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateEntry = "headingCreateEntry";
+	String headingCreateNewAction = "headingCreateNewAction";
 	String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
 	String headingCreateNewCampaign = "headingCreateNewCampaign";
 	String headingCreateNewCase = "headingCreateNewCase";
@@ -212,6 +220,7 @@ public interface Strings {
 	String headingDownloadErrorReport = "headingDownloadErrorReport";
 	String headingDownloadImportGuide = "headingDownloadImportGuide";
 	String headingDownloadImportTemplate = "headingDownloadImportTemplate";
+	String headingEditAction = "headingEditAction";
 	String headingEditAdditionalTest = "headingEditAdditionalTest";
 	String headingEditAggregateReport = "headingEditAggregateReport";
 	String headingEditCampaign = "headingEditCampaign";
@@ -246,6 +255,7 @@ public interface Strings {
 	String headingHealthConditions = "headingHealthConditions";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
+	String headingImportAreas = "headingImportAreas";
 	String headingImportCaseContacts = "headingImportCaseContacts";
 	String headingImportCases = "headingImportCases";
 	String headingImportCommunities = "headingImportCommunities";
@@ -316,6 +326,7 @@ public interface Strings {
 	String headingResults = "headingResults";
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
+	String headingSaveUser = "headingSaveUser";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
@@ -390,6 +401,7 @@ public interface Strings {
 	String infoNoPathogenTests = "infoNoPathogenTests";
 	String infoNoSourceCaseSelected = "infoNoSourceCaseSelected";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
+	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
@@ -411,6 +423,14 @@ public interface Strings {
 	String infoUserEmail = "infoUserEmail";
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
+	String labelNumberOfAreas = "labelNumberOfAreas";
+	String labelNumberOfCommunities = "labelNumberOfCommunities";
+	String labelNumberOfDistricts = "labelNumberOfDistricts";
+	String labelNumberOfFacilities = "labelNumberOfFacilities";
+	String labelNumberOfLaboratories = "labelNumberOfLaboratories";
+	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
+	String labelNumberOfRegions = "labelNumberOfRegions";
+	String labelNumberOfUsers = "labelNumberOfUsers";
 	String lastTwoDays = "lastTwoDays";
 	String lastTwoWeeks = "lastTwoWeeks";
 	String lastTwoYears = "lastTwoYears";
@@ -421,6 +441,12 @@ public interface Strings {
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	String messageAggregateReportFound = "messageAggregateReportFound";
 	String messageAnimalContactsHint = "messageAnimalContactsHint";
+	String messageAreaArchived = "messageAreaArchived";
+	String messageAreaArchivingNotPossible = "messageAreaArchivingNotPossible";
+	String messageAreaDearchived = "messageAreaDearchived";
+	String messageAreasArchived = "messageAreasArchived";
+	String messageAreasArchivingNotPossible = "messageAreasArchivingNotPossible";
+	String messageAreasDearchived = "messageAreasDearchived";
 	String messageCampaignArchived = "messageCampaignArchived";
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
@@ -674,15 +700,6 @@ public interface Strings {
 	String reportedBy = "reportedBy";
 	String reportedOn = "reportedOn";
 	String step = "step";
-	
-	String labelNumberOfUsers = "labelNumberOfUsers";
-	String labelNumberOfRegions = "labelNumberOfRegions";
-	String labelNumberOfDistricts = "labelNumberOfDistricts";
-	String labelNumberOfCommunities = "labelNumberOfCommunities";
-	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
-	String labelNumberOfFacilities = "labelNumberOfFacilities";
-	String labelNumberOfLaboratories = "labelNumberOfLaboratories";
-	
 	String toCase = "toCase";
 	String total = "total";
 	String unknown = "unknown";

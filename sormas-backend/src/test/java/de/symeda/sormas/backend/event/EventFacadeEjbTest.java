@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -27,12 +28,16 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.action.ActionContext;
+import de.symeda.sormas.api.action.ActionDto;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.DashboardEventDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventExportDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -103,16 +108,19 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), eventPerson, "Description");
+		ActionDto action = creator.createAction(event.toReference());
 
 		// Database should contain the created event and event participant
 		assertNotNull(getEventFacade().getEventByUuid(event.getUuid()));
 		assertNotNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
+		assertNotNull(getActionFacade().getByUuid(action.getUuid()));
 
 		getEventFacade().deleteEvent(event.getUuid());
 
 		// Event should be marked as deleted; Event participant should be deleted
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
+		assertNull(getActionFacade().getByUuid(action.getUuid()));
 	}
 
 	@Test
@@ -141,6 +149,34 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 		// List should have one entry
 		assertEquals(1, results.size());
+	}
+
+	@Test
+	public void testGetExportList() {
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+
+		creator.createEvent(
+			EventStatus.POSSIBLE,
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
+
+		EventCriteria eventCriteria = new EventCriteria();
+		eventCriteria.setDisease(Disease.EVD);
+		List<EventExportDto> results = getEventFacade().getExportList(eventCriteria, 0, 100);
+
+		// List should have one entry
+		assertThat(results, Matchers.hasSize(1));
 	}
 
 	@Test

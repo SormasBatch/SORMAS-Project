@@ -50,7 +50,6 @@ public enum TypeOfPlace {
 	SPECIFIC_COMMUNAUTY(new Locale("fr", "FR")),
 	OTHER(new Locale("en"));
 
-
 	private Locale locale;
 
 	TypeOfPlace(Locale locale) {

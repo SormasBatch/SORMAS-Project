@@ -4622,6 +4622,99 @@ UPDATE cases SET surveillanceofficer_id = null FROM users WHERE cases.surveillan
 
 INSERT INTO schema_version (version_number, comment) VALUES (215, 'Remove wrongly assigned surveillance officers from cases #2284');
 
+-- 2020-06-18 Add campaign forms #2268
+CREATE TABLE campaignforms(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	formid varchar(255),
+	languagecode varchar(255),
+	campaignformelements text,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE campaignforms OWNER TO sormas_user;
+
+CREATE TABLE campaignforms_history (LIKE campaigns);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON campaignforms
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignforms_history', true);
+ALTER TABLE campaignforms_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (216, 'Add campaign forms #2268');
+
+-- 2020-06-19 Add Area as new infrastructure type #1983
+CREATE TABLE areas(
+	id bigint not null,
+	uuid varchar(36) not null unique,
+	changedate timestamp not null,
+	creationdate timestamp not null,
+	name varchar(512),
+	externalid varchar(512),
+	archived boolean DEFAULT false,
+	sys_period tstzrange not null,
+	primary key(id)
+);
+
+ALTER TABLE areas OWNER TO sormas_user;
+
+CREATE TABLE areas_history (LIKE areas);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON areas
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'areas_history', true);
+ALTER TABLE areas_history OWNER TO sormas_user;
+
+ALTER TABLE region ADD COLUMN area_id bigint;
+ALTER TABLE region ADD CONSTRAINT fk_region_area_id FOREIGN KEY (area_id) REFERENCES areas(id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (217, 'Add Area as new infrastructure type #1983');
+
+-- 2020-06-09 Add origin of the source of an event
+
+ALTER TABLE events ADD COLUMN srcorigin character varying(512);
+ALTER TABLE events_history ADD COLUMN srcorigin character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (218, 'Adds the field origin of the source of an event');
+
+-- 2020-06-10 Add actions
+
+CREATE TABLE action (
+id bigint not null,
+reply varchar(4096),
+changedate timestamp not null,
+creationdate timestamp not null,
+description varchar(4096),
+date timestamp,
+statuschangedate timestamp,
+actioncontext varchar(512),
+actionstatus varchar(512),
+uuid varchar(36) not null unique,
+event_id bigint,
+creatoruser_id bigint,
+priority varchar(512),
+sys_period tstzrange not null,
+PRIMARY KEY (id));
+
+ALTER TABLE action OWNER TO sormas_user;
+
+ALTER TABLE action ADD CONSTRAINT fk_action_event_id FOREIGN KEY (event_id) REFERENCES events (id);
+ALTER TABLE action ADD CONSTRAINT fk_action_creatoruser_id FOREIGN KEY (creatoruser_id) REFERENCES users (id);
+
+UPDATE action SET sys_period=tstzrange(creationdate, null);
+ALTER TABLE action ALTER COLUMN sys_period SET NOT NULL;
+CREATE TABLE action_history (LIKE action);
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON action
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'action_history', true);
+ALTER TABLE action_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (219, 'Adds actions to events');
+
+-- 2020-06-18 Add type of risk of an event
+ALTER TABLE events ADD COLUMN typeofrisk character varying(255);
+ALTER TABLE events_history ADD COLUMN typeofrisk character varying(255);
+INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add field type of risk of an event');
+             
 ALTER TABLE events ADD nomTypeOfPlace varchar(512);
 ALTER TABLE events_history ADD nomTypeOfPlace varchar(512);
 -- *** Insert new sql commands BEFORE this line ***
