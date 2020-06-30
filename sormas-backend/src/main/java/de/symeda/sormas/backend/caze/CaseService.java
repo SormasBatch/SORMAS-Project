@@ -43,22 +43,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.caze.CaseLogic;
-import de.symeda.sormas.api.contact.ContactLogic;
-import de.symeda.sormas.api.contact.ContactProximity;
-import de.symeda.sormas.api.contact.ContactStatus;
-import de.symeda.sormas.api.contact.FollowUpStatus;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
-import de.symeda.sormas.backend.util.DateHelper8;
-import de.symeda.sormas.backend.visit.Visit;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -66,6 +56,7 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
@@ -75,6 +66,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
@@ -87,6 +79,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataBurial;
 import de.symeda.sormas.backend.epidata.EpiDataGathering;
@@ -120,6 +113,8 @@ import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.backend.visit.Visit;
 
 @Stateless
 @LocalBean
@@ -491,8 +486,18 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (caseCriteria.getFollowUpStatus() != null) {
 			filter = and(cb, filter, cb.equal(from.get(Case.FOLLOW_UP_STATUS), caseCriteria.getFollowUpStatus()));
 		}
-		if (caseCriteria.getFollowUpUntilTo() != null) {
+		if (caseCriteria.getFollowUpUntilFrom() != null && caseCriteria.getFollowUpUntilTo() != null) {
+			filter = and(
+					cb,
+					filter,
+					cb.between(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilFrom(), caseCriteria.getFollowUpUntilTo()));
+		} else if (caseCriteria.getFollowUpUntilFrom() != null) {
+			filter = and(cb, filter, cb.greaterThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilFrom()));
+		} else if (caseCriteria.getFollowUpUntilTo() != null) {
 			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.FOLLOW_UP_UNTIL), caseCriteria.getFollowUpUntilTo()));
+		}
+		if (caseCriteria.getReportDateTo() != null) {
+			filter = and(cb, filter, cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), caseCriteria.getReportDateTo()));
 		}
 		if (Boolean.TRUE.equals(caseCriteria.getExcludeSharedCases())) {
 			User currentUser = getCurrentUser();
