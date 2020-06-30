@@ -76,7 +76,6 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setDescription(source.getDescription());
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
-		// TODO is this a good place to do this?
 		if (target.getActionStatus() != source.getActionStatus()) {
 			target.setStatusChangeDate(new Date());
 		} else {
