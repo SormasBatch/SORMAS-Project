@@ -162,7 +162,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.NOM_TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.COMPANY,TypeOfPlace.EHPAD,TypeOfPlace.UNIVERSITY, TypeOfPlace.PENAL_INSTITUTIONS), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.NOM_TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.PROFESSIONAL_CIRCLES,TypeOfPlace.EHPAD,TypeOfPlace.SCHOOLS_UNIVERSITIES, TypeOfPlace.PENITENTIARY_ESTABLISHMENTS), true);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EventDto.DISEASE_DETAILS), EventDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
@@ -175,10 +175,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		typeOfPlace.addValueChangeListener(e -> {
 			String value = "";
 			List<String> resultList = new ArrayList<>();
-			if(typeOfPlace.getValue() == TypeOfPlace.UNIVERSITY){
+			if(typeOfPlace.getValue() == TypeOfPlace.SCHOOLS_UNIVERSITIES){
 				resultList = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(value);
 			}
-			if(typeOfPlace.getValue() == TypeOfPlace.COMPANY) {
+			if(typeOfPlace.getValue() == TypeOfPlace.PROFESSIONAL_CIRCLES) {
 				resultList = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(value);
 			}
 			FieldHelper.updateItems(nomTypeOfPlaceField, resultList);
@@ -221,8 +221,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox typeOfPlaceField = (ComboBox) fieldGroup.getField(EventDto.TYPE_OF_PLACE);
 		((AbstractField) typeOfPlaceField).setImmediate(true);
 
-		nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.UNIVERSITY);
-		typeOfPlaceField.addValueChangeListener(event -> nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.UNIVERSITY));
+		nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.SCHOOLS_UNIVERSITIES);
+		typeOfPlaceField.addValueChangeListener(event -> nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.SCHOOLS_UNIVERSITIES));
 
 	}
 
@@ -232,7 +232,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox typeOfPlaceField = (ComboBox) fieldGroup.getField(EventDto.TYPE_OF_PLACE);
 		((AbstractField) typeOfPlaceField).setImmediate(true);
 
-		nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.COMPANY);
-		typeOfPlaceField.addValueChangeListener(event -> nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.COMPANY));
+		nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.PROFESSIONAL_CIRCLES);
+		typeOfPlaceField.addValueChangeListener(event -> nomTypeOfPlace.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.PROFESSIONAL_CIRCLES));
 	}
 }
