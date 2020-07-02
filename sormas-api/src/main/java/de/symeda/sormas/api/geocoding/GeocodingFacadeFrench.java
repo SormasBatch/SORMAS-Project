@@ -22,13 +22,16 @@ import javax.ejb.Remote;
 import de.symeda.sormas.api.region.GeoLatLon;
 
 import java.util.List;
+import java.util.Map;
 
 @Remote
 public interface GeocodingFacadeFrench {
 
     boolean isEnabled();
 
-    String getLabel(String address);
+    Map<String, Map<String, String>> getAdresses(String address);
+
+    //List<String> getPostalCode(String address);
 
     List<String> getSireneEntrepriseAutoComplete(String address);
 

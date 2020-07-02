@@ -20,8 +20,9 @@ package de.symeda.sormas.backend.geocoding;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -61,18 +62,18 @@ public class GeocodingServiceFrench {
     }
 
 
-    public String getLabel(String query) {
+    public Map<String, Map<String, String>> getAdresses(String query) {
 
         String endpoint = "http://api-adresse.data.gouv.fr/search/";
         if (endpoint == null) {
             return null;
         }
 
-        return getLabel(query, endpoint);
+        return getLabels(query, endpoint);
     }
 
 
-    String getLabel(String query, String endpoint) {
+    Map<String, Map<String, String>> getLabels(String query, String endpoint) {
 
         Client client = ClientBuilder.newBuilder()
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -85,7 +86,7 @@ public class GeocodingServiceFrench {
             URIBuilder ub = new URIBuilder(endpoint);
             ub.addParameter("q", query);
             ub.addParameter("type", "street");
-            ub.addParameter("limit", "10");
+            ub.addParameter("limit", "50");
 
             url = ub.build();
         } catch (URISyntaxException e) {
@@ -105,14 +106,51 @@ public class GeocodingServiceFrench {
 
         FeatureCollection fc = response.readEntity(FeatureCollection.class);
 
-        return Optional.of(fc)
+        List<String> returnList = new ArrayList<>();
+        Map<String, Map<String, String>> returnMap = new HashMap<>();
+
+        Map<String, String> map;
+
+        List<Feature> features = Optional.of(fc)
                 .map(FeatureCollection::getFeatures)
                 .filter(ArrayUtils::isNotEmpty)
-                .map(a -> a[0])
-                .map(Feature::getProperties)
-                .map(FeatureProperties::getLabel)
+                .map(g -> Arrays.asList(g))
                 .orElse(null);
+        if(features != null) {
+            List<String> listNames = features.stream()
+                    .map(Feature::getProperties)
+                    .map(FeatureProperties::getLabel).collect(Collectors.toList());
+
+            List<String> listPostCodes = features.stream()
+                    .map(Feature::getProperties)
+                    .map(FeatureProperties::getPostcode).collect(Collectors.toList());
+
+            List<String> listCities = features.stream()
+                    .map(Feature::getProperties)
+                    .map(FeatureProperties::getCity).collect(Collectors.toList());
+
+            List<Double> listLatitudes = features.stream()
+                    .map(Feature::getProperties)
+                    .map(FeatureProperties::getX).collect(Collectors.toList());
+
+            List<Double> listLongitudes = features.stream()
+                    .map(Feature::getProperties)
+                    .map(FeatureProperties::getY).collect(Collectors.toList());
+
+            for (int i = 0; i < listNames.size(); i++) {
+                map = new HashMap<>();
+                map.put("postCode",listPostCodes.get(i));
+                map.put("city",listCities.get(i));
+                map.put("latitude",listLatitudes.get(i).toString());
+                map.put("longitude",listLongitudes.get(i).toString());
+                returnMap.put(listNames.get(i),map);
+            }
+        }
+
+        return returnMap;
     }
+
+
 
     String getName(String query, String endpoint) {
 
@@ -210,31 +248,25 @@ public class GeocodingServiceFrench {
     public static class FeatureProperties implements Serializable {
         private static final long serialVersionUID = -1;
 
-        private String text;
-        private String type;
+        private String label;
         private double score;
-        private String houseNumber;
+        private String id;
+        private String type;
+        private double x;
+        private double y;
+        private double importance;
         private String name;
-        private String postCode;
-        private String cityCode;
+        private String postcode;
+        private String citycode;
         private String city;
         private String context;
-        private String label;
 
-        public String getText() {
-            return text;
+        public String getLabel() {
+            return label;
         }
 
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String typ) {
-            this.type = type;
+        public void setLabel(String label) {
+            this.label = label;
         }
 
         public double getScore() {
@@ -245,36 +277,68 @@ public class GeocodingServiceFrench {
             this.score = score;
         }
 
-        public String getHouseNumber() {
-            return houseNumber;
+        public String getId() {
+            return id;
         }
 
-        public void setHouseNumber(String houseNumber) {
-            this.houseNumber = houseNumber;
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public double getX() {
+            return x;
+        }
+
+        public void setX(double x) {
+            this.x = x;
+        }
+
+        public double getY() {
+            return y;
+        }
+
+        public void setY(double y) {
+            this.y = y;
+        }
+
+        public double getImportance() {
+            return importance;
+        }
+
+        public void setImportance(double importance) {
+            this.importance = importance;
         }
 
         public String getName() {
             return name;
         }
 
-        public void setName(String rs) {
+        public void setName(String name) {
             this.name = name;
         }
 
-        public String getPostCode() {
-            return postCode;
+        public String getPostcode() {
+            return postcode;
         }
 
-        public void setPostCode(String postCode) {
-            this.postCode = postCode;
+        public void setPostcode(String postcode) {
+            this.postcode = postcode;
         }
 
-        public String getCityCode() {
-            return cityCode;
+        public String getCitycode() {
+            return citycode;
         }
 
-        public void setCityCode(String cityCode) {
-            this.cityCode = cityCode;
+        public void setCitycode(String citycode) {
+            this.citycode = citycode;
         }
 
         public String getCity() {
@@ -292,14 +356,5 @@ public class GeocodingServiceFrench {
         public void setContext(String context) {
             this.context = context;
         }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
-        }
-
     }
 }

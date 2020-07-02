@@ -19,6 +19,7 @@ package de.symeda.sormas.backend.geocoding;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,7 +78,7 @@ public class GeocodingFacadeFrenchEjb implements GeocodingFacadeFrench {
     }
 
     @Override
-    public String getLabel(String address) {
+    public Map<String, Map<String, String>> getAdresses(String address) {
 
         if (StringUtils.isBlank(address)) {
             return null;
@@ -99,7 +100,7 @@ public class GeocodingFacadeFrenchEjb implements GeocodingFacadeFrench {
             return null;
         }
 
-        return geocodingServiceFrench.getLabel(query);
+        return geocodingServiceFrench.getAdresses(query);
     }
 
     @Override
