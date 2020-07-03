@@ -4714,5 +4714,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (219, 'Adds actions 
 ALTER TABLE events ADD COLUMN typeofrisk character varying(255);
 ALTER TABLE events_history ADD COLUMN typeofrisk character varying(255);
 INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add field type of risk of an event');
-
+             
+ALTER TABLE events ADD nomTypeOfPlace varchar(512);
+ALTER TABLE events_history ADD nomTypeOfPlace varchar(512);
 -- *** Insert new sql commands BEFORE this line ***
