@@ -137,6 +137,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		typeOfPlace.setNullSelectionAllowed(true);
+		typeOfPlace.setPageLength(0);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
