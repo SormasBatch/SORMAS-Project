@@ -73,6 +73,7 @@ import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
@@ -1427,20 +1428,20 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		float completeness = 0f;
 
-		if (ContactStatus.DROPPED.equals(contact.getContactStatus())) { // annuler le suivi abandon
-			completeness += 0.25f;
+		if (contact.getLastContactDate() != null) { // annuler le suivi abandon
+			completeness += 0.2f;
 		}
-		if (FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())) {
+		if (contact.getRelationToCase() != null) {
+			completeness += 0.2f;
+		}
+		if (contact.getPerson().getNationalHealthId() != null) {
 			completeness += 0.2f;
 		}
 		if (sampleService.getSampleCountByContact(contact) > 0) {
-			completeness += 0.15f;
+			completeness += 0.10f;
 		}
-		/*if (!ContactClassification.UNCONFIRMED.equals(contact.getContactClassification())) {
-			completeness += 0.2f;
-		}*/
-		if (contactService.getContactCountByCase(contact.getCaze()) > 0) {
-			completeness += 0.30f;
+		if (contact.getVisits().size() > 0) {
+			completeness += 0.10f;
 		}
 		if (contact.getPerson().getBirthdateYYYY() != null || contact.getPerson().getApproximateAge() != null) {
 			completeness += 0.05f;
@@ -1448,18 +1449,22 @@ public class ContactFacadeEjb implements ContactFacade {
 		if (contact.getPerson().getSex() != null) {
 			completeness += 0.05f;
 		}
-
+		if(contact.getCaseOrEventInformation() != null){
+            completeness += 0.05f;
+        }
+        if(contact.getRelationDescription() != null){
+            completeness += 0.05f;
+        }
 		return completeness;
 	}
 
 	@Override
 	public void mergeCase(String leadUuid, String otherUuid) {
-
 		mergeCase(getContactByUuid(leadUuid), getContactByUuid(otherUuid), false);
 	}
 
 	private void mergeCase(ContactDto leadContact, ContactDto otherContact, boolean cloning) {
-// 1 Merge Dtos
+		// 1 Merge Dtos
 		// 1.1 Contact
 		fillDto(leadContact, otherContact, cloning);
 		saveContact(leadContact, !cloning);
@@ -1478,21 +1483,6 @@ public class ContactFacadeEjb implements ContactFacade {
 		Contact leadCont = contactService.getByUuid(leadContact.getUuid());
 		Contact otherCont = contactService.getByUuid(otherContact.getUuid());
 
-		// 2.1 Cazes
-		/*List<Case> cases = caseService.findBy(new CaseCriteria().contact(otherCont.toReference()), true);
-		for (Case caze : cases) {
-			if (cloning) {
-				VisitDto visitDto = VisitDto.build(leadContact.getPerson(),leadContact.getDisease());
-				CaseDataDto newCase = CaseDataDto.buildFromContact(leadContact, visitDto);
-				newCase.setPerson(new PersonReferenceDto(caze.getPerson().getUuid()));
-				fillDto(newCase, CaseFacadeEjb.toDto(caze), cloning);
-				caseFacade.saveCase(newCase, false);
-			} else {
-				// simply move existing entities to the merge target
-				//caze.set(leadCont);
-				caseService.ensurePersisted(caze);
-			}
-		}*/
 
 		// 2.2 Samples
 		List<Sample> samples = sampleService.findBy(new SampleCriteria().contact(otherCont.toReference()), null);
@@ -1516,7 +1506,8 @@ public class ContactFacadeEjb implements ContactFacade {
 			}
 		}
 
-		// 2.3 Tasks
+
+		// 2.4 Tasks
 		if (!cloning) {
 			// simply move existing entities to the merge target
 

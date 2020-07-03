@@ -139,7 +139,7 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
         Button btnMerge = ButtonHelper.createIconButton(Captions.actionMerge, VaadinIcons.COMPRESS_SQUARE, e -> {
             VaadinUiUtil.showConfirmationPopup(
                     I18nProperties.getString(Strings.headingConfirmChoice),
-                    new Label(I18nProperties.getString(Strings.confirmationMergeCaseAndDeleteOther)),
+                    new Label(I18nProperties.getString(Strings.confirmationMergeContactAndDeleteOther)),
                     I18nProperties.getCaption(Captions.actionConfirm),
                     I18nProperties.getCaption(Captions.actionCancel),
                     640,
@@ -161,7 +161,7 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
         Button btnPick = ButtonHelper.createIconButton(Captions.actionPick, VaadinIcons.CHECK, e -> {
             VaadinUiUtil.showConfirmationPopup(
                     I18nProperties.getString(Strings.headingConfirmChoice),
-                    new Label(I18nProperties.getString(Strings.confirmationPickCaseAndDeleteOther)),
+                    new Label(I18nProperties.getString(Strings.confirmationPickContactAndDeleteOther)),
                     I18nProperties.getCaption(Captions.actionConfirm),
                     I18nProperties.getCaption(Captions.actionCancel),
                     640,
