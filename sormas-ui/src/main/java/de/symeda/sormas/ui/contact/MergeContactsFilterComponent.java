@@ -107,7 +107,7 @@ public class MergeContactsFilterComponent extends VerticalLayout {
         tfSearch.setId(ContactCriteria.NAME_UUID_CASE_LIKE);
         tfSearch.setWidth(200, Unit.PIXELS);
         CssStyles.style(tfSearch, CssStyles.FORCE_CAPTION);
-        tfSearch.setPlaceholder(I18nProperties.getString(Strings.promptCasesSearchField));
+        tfSearch.setPlaceholder(I18nProperties.getString(Strings.promptContactsSearchField));
         binder.bind(tfSearch, ContactCriteria.NAME_UUID_CASE_LIKE);
         firstRowLayout.addComponent(tfSearch);
 

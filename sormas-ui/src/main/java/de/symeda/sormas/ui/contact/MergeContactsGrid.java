@@ -87,7 +87,6 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
         }).setId(COLUMN_UUID);
 
         setColumns(
-                ContactIndexDto.ID,
                 COLUMN_UUID,
                 COLUMN_DISEASE,
                 ContactIndexDto.CASE_CLASSIFICATION,

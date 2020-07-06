@@ -1306,8 +1306,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		Join<Contact, Region> region = root.join(Contact.REGION, JoinType.LEFT);
 		Join<Contact, Region> region2 = root2.join(Contact.REGION, JoinType.LEFT);
 
-		Predicate userFilter = contactService.createUserFilter(cb, cq, root);
-		Predicate criteriaFilter = criteria != null ? contactService.buildCriteriaFilter(criteria, cb, root) : null;
+		Predicate userFilter = contactService.createUserFilter(cb, cq, root2);
+		Predicate criteriaFilter = criteria != null ? contactService.buildCriteriaFilter(criteria, cb, root2) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");
