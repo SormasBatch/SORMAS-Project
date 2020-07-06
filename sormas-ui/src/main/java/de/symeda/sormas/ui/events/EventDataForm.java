@@ -21,10 +21,17 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
+import com.vaadin.server.Page;
+import com.vaadin.shared.Position;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
@@ -50,6 +57,11 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteSuggestionProvider;
+import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteTextField;
+import eu.maxschuster.vaadin.autocompletetextfield.provider.CollectionSuggestionProvider;
+import eu.maxschuster.vaadin.autocompletetextfield.provider.MatchMode;
+import eu.maxschuster.vaadin.autocompletetextfield.shared.ScrollBehavior;
 import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
@@ -77,7 +89,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
 
 			loc(LOCATION_HEADING_LOC) +
-			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
+			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT, EventDto.NAME_TYPE_OF_PLACE) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
@@ -139,6 +151,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		typeOfPlace.setNullSelectionAllowed(true);
 		typeOfPlace.setPageLength(0);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
+		addField(EventDto.NAME_TYPE_OF_PLACE, ComboBox.class);
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
 		TextField srcOrigin = addField(EventDto.SRC_ORIGIN, TextField.class);
@@ -150,12 +163,30 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true);
+		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.NAME_TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.PROFESSIONAL_CIRCLES,TypeOfPlace.EHPAD,TypeOfPlace.SCHOOLS_UNIVERSITIES, TypeOfPlace.PENITENTIARY_ESTABLISHMENTS), true);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EventDto.DISEASE_DETAILS), EventDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 
 		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 		setTypeOfPlaceTextRequirement();
+
+		ComboBox nameTypeOfPlaceField = (ComboBox) getFieldGroup().getField(EventDto.NAME_TYPE_OF_PLACE);
+		nameTypeOfPlaceField.setTextInputAllowed(true);
+		typeOfPlace.addValueChangeListener(e -> {
+			String value = "";
+			List<String> resultList = new ArrayList<>();
+			if(typeOfPlace.getValue() == TypeOfPlace.SCHOOLS_UNIVERSITIES){
+				resultList = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(value);
+			}
+			if(typeOfPlace.getValue() == TypeOfPlace.PROFESSIONAL_CIRCLES) {
+				resultList = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(value);
+			}
+			FieldHelper.updateItems(nameTypeOfPlaceField, resultList);
+		});
+
+
+
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 
 		districtField.addValueChangeListener(e -> {
@@ -163,6 +194,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				.getUserRefsByDistrict((DistrictReferenceDto) districtField.getValue(), false, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});
+
 
 		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo, srcOrigin);
 	}
@@ -183,4 +215,5 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
 		typeOfPlaceField.addValueChangeListener(event -> typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER));
 	}
+
 }

@@ -75,6 +75,7 @@ public class Event extends CoreAdo {
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String ARCHIVED = "archived";
+	public static final String NAME_TYPE_OF_PLACE = "nameTypeOfPlace";
 	public static final String TYPE_OF_RISK = "typeOfRisk";
 
 	private EventStatus eventStatus;
@@ -97,6 +98,7 @@ public class Event extends CoreAdo {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private String nameTypeOfPlace;
 	private TypeOfRisk typeOfRisk;
 
 	private boolean archived;
@@ -318,4 +320,12 @@ public class Event extends CoreAdo {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getNameTypeOfPlace() {
+		return nameTypeOfPlace;
+	}
+
+	public void setNameTypeOfPlace(String nameTypeOfPlace) {
+		this.nameTypeOfPlace = nameTypeOfPlace;
+	}
 }
