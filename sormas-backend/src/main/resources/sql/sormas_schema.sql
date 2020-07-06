@@ -4717,4 +4717,5 @@ INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add field typ
              
 ALTER TABLE events ADD nomTypeOfPlace varchar(512);
 ALTER TABLE events_history ADD nomTypeOfPlace varchar(512);
+INSERT INTO schema_version (version_number, comment) VALUES (221, 'Add field nom type of place of an event');
 -- *** Insert new sql commands BEFORE this line ***
