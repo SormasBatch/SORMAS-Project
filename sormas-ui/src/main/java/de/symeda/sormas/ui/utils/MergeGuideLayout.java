@@ -13,10 +13,6 @@ public class MergeGuideLayout extends VerticalLayout {
 
 	private static final long serialVersionUID = -4739282529871338153L;
 
-	public MergeGuideLayout(boolean isCaze) {
-		this();
-	}
-
 	public MergeGuideLayout() {
 
 		setMargin(true);
