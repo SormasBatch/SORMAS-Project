@@ -78,7 +78,7 @@ public class GeocodingServiceSirenFrench {
 
         WebTarget target = client.target(url);
         Response response = target.request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + "c5173994-3163-3bcf-a39c-7afc0d8dd187")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + "c305032c-eaa7-3d47-bdcc-ed9c62e68aa1")
                 .get();
 
         if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {

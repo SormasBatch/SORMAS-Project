@@ -45,7 +45,7 @@ public enum TypeOfPlace {
 	PROFESSIONAL_CIRCLES(new Locale("fr", "FR")),
 	EVENT(new Locale("fr", "FR")),
 	SMALL_GEOGRAPHIC_UNIT(new Locale("fr", "FR")),
-	SPECIFIC_COMMUNAUTY(new Locale("fr", "FR")),
+	SPECIFIC_COMMUNITIES(new Locale("fr", "FR")),
 	OTHER(new Locale("en"));
 
 	private Locale locale;
