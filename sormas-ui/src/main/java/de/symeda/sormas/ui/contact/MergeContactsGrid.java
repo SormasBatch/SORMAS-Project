@@ -145,8 +145,8 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
                     confirmed -> {
                         if (confirmed.booleanValue()) {
                             ContactIndexDto caseToMergeAndDelete = data.getParent(contact) != null ? data.getParent(contact) : data.getChildren(contact).get(0);
-                            FacadeProvider.getContactFacade().mergeCase(contact.getUuid(), caseToMergeAndDelete.getUuid());
-                            FacadeProvider.getContactFacade().deleteCaseAsDuplicate(caseToMergeAndDelete.getUuid(), contact.getUuid());
+                            FacadeProvider.getContactFacade().mergeContact(contact.getUuid(), caseToMergeAndDelete.getUuid());
+                            FacadeProvider.getContactFacade().deleteContactAsDuplicate(caseToMergeAndDelete.getUuid(), contact.getUuid());
 
                             if (FacadeProvider.getContactFacade().isDeleted(caseToMergeAndDelete.getUuid())) {
                                 reload();
@@ -167,7 +167,7 @@ public class MergeContactsGrid extends TreeGrid<ContactIndexDto> {
                     confirmed -> {
                         if (confirmed.booleanValue()) {
                             ContactIndexDto contactToDelete = data.getParent(contact) != null ? data.getParent(contact) : data.getChildren(contact).get(0);
-                            FacadeProvider.getContactFacade().deleteCaseAsDuplicate(contactToDelete.getUuid(), contact.getUuid());
+                            FacadeProvider.getContactFacade().deleteContactAsDuplicate(contactToDelete.getUuid(), contact.getUuid());
 
                             if (FacadeProvider.getContactFacade().isDeleted(contactToDelete.getUuid())) {
                                 data.removeItem(data.getParent(contact) == null ? contact : data.getParent(contact));
