@@ -4753,4 +4753,9 @@ ALTER TABLE cases_visits_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (222, 'Adds visit to cases');
 
+-- 2020-07-07 Add replying user of an action
+ALTER TABLE action ADD COLUMN replyinguser_id bigint;
+ALTER TABLE action_history ADD COLUMN replyinguser_id bigint;
+INSERT INTO schema_version (version_number, comment) VALUES (223, 'Add replying user of an action');
+
 -- *** Insert new sql commands BEFORE this line ***

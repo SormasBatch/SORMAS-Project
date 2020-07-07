@@ -34,11 +34,9 @@ public class ActionDto extends EntityDto {
 	public static final String I18N_PREFIX = "Action";
 	public static final String DESCRIPTION = "description";
 	public static final String REPLY = "reply";
-	public static final String CREATOR_USER = "creatorUser";
 	public static final String PRIORITY = "priority";
 	public static final String DATE = "date";
 	public static final String EVENT = "event";
-	public static final String STATUS_CHANGE_DATE = "statusChangeDate";
 	public static final String ACTION_CONTEXT = "actionContext";
 	public static final String ACTION_STATUS = "actionStatus";
 
@@ -55,6 +53,7 @@ public class ActionDto extends EntityDto {
 	private UserReferenceDto creatorUser;
 	private String description;
 	private String reply;
+	private UserReferenceDto replyingUser;
 
 	public static ActionDto build(ActionContext context, ReferenceDto entityRef) {
 
@@ -134,6 +133,14 @@ public class ActionDto extends EntityDto {
 
 	public void setReply(String reply) {
 		this.reply = reply;
+	}
+
+	public UserReferenceDto getReplyingUser() {
+		return replyingUser;
+	}
+
+	public void setReplyingUser(UserReferenceDto replyingUser) {
+		this.replyingUser = replyingUser;
 	}
 
 	public ActionPriority getPriority() {
