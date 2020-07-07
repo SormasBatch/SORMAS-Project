@@ -17,16 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.common;
 
-import java.util.Locale;
-import java.util.Properties;
-
-import javax.annotation.Resource;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.region.GeoLatLon;
@@ -34,6 +24,16 @@ import de.symeda.sormas.api.utils.CompatibilityCheckResponse;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.VersionHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Resource;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import java.util.Locale;
+import java.util.Properties;
 
 /**
  * Provides the application configuration settings
@@ -51,6 +51,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String VERSION_PLACEHOLER = "%version";
 
 	public static final String DEV_MODE = "devmode";
+
+	public static final String CUSTOM_BRANDING = "custombranding";
+	public static final String CUSTOM_BRANDING_NAME = "custombranding.name";
+	public static final String CUSTOM_BRANDING_LOGO_PATH = "custombranding.logo.path";
 
 	public static final String APP_URL = "app.url";
 	public static final String APP_LEGACY_URL = "app.legacy.url";
@@ -71,6 +75,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String NAME_SIMILARITY_THRESHOLD = "namesimilaritythreshold";
 	public static final String INFRASTRUCTURE_SYNC_THRESHOLD = "infrastructuresyncthreshold";
+
+	public static final String INTERFACE_PIA_URL = "interface.pia.url";
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
@@ -180,6 +186,26 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public boolean isCustomBranding() {
+		return getBoolean(CUSTOM_BRANDING, false);
+	}
+
+	@Override
+	public String getCustomBrandingName() {
+		return getProperty(CUSTOM_BRANDING_NAME, "SORMAS");
+	}
+
+	@Override
+	public String getCustomBrandingLogoPath() {
+		return getProperty(CUSTOM_BRANDING_LOGO_PATH, null);
+	}
+
+	@Override
+	public String getSormasInstanceName() {
+		return isCustomBranding() ? getCustomBrandingName() : "SORMAS";
+	}
+
+	@Override
 	public String getAppUrl() {
 
 		String appUrl = getProperty(APP_URL, null);
@@ -277,6 +303,29 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getGeocodingOsgtsEndpoint() {
 		return getProperty(GEOCODING_OSGTS_ENDPOINT, null);
+	}
+
+	@Override
+	public String getPIAUrl() {
+		return getProperty(INTERFACE_PIA_URL, null);
+	}
+
+	@Override
+	public void validateExternalUrls() {
+
+		String piaUrl = getPIAUrl();
+
+		if (StringUtils.isBlank(piaUrl)) {
+			return;
+		}
+
+		// Must be a valid URL
+		if (!new UrlValidator(
+			new String[] {
+				"http",
+				"https" }).isValid(piaUrl)) {
+			throw new IllegalArgumentException("Property '" + ConfigFacadeEjb.INTERFACE_PIA_URL + "' is not a valid URL");
+		}
 	}
 
 	@Override

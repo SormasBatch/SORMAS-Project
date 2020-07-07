@@ -17,17 +17,15 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import java.util.Collection;
-import java.util.function.Consumer;
-
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -54,10 +52,15 @@ import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.caze.CaseSelectionField;
 import de.symeda.sormas.ui.caze.CasesView;
 import de.symeda.sormas.ui.caze.MergeCasesView;
+import de.symeda.sormas.ui.epidata.ContactEpiDataView;
+import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+
+import java.util.Collection;
+import java.util.function.Consumer;
 
 public class ContactController {
 
@@ -75,6 +78,7 @@ public class ContactController {
 		navigator.addView(ContactDataView.VIEW_NAME, ContactDataView.class);
 		navigator.addView(ContactPersonView.VIEW_NAME, ContactPersonView.class);
 		navigator.addView(ContactVisitsView.VIEW_NAME, ContactVisitsView.class);
+		navigator.addView(ContactEpiDataView.VIEW_NAME, ContactEpiDataView.class);
 	}
 
 	public void create() {
@@ -168,8 +172,7 @@ public class ContactController {
 						if (selectedPerson != null) {
 							dto.setPerson(selectedPerson);
 
-							// set the contact person's address to the one of the case when it is currently
-							// empty and
+							// set the contact person's address to the one of the case when it is currently empty and
 							// the relationship with the case has been set to living in the same household
 							if (dto.getRelationToCase() == ContactRelation.SAME_HOUSEHOLD && dto.getCaze() != null) {
 								PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
@@ -462,5 +465,38 @@ public class ContactController {
 	public void navigateToIndex() {
 		String navigationState = ContactsView.VIEW_NAME;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
+
+	public void openPIAAccountCreationWindow(PersonDto person) {
+		BrowserFrame piaIFrame = new BrowserFrame("", new ExternalResource(FacadeProvider.getPersonFacade().getPIAAccountCreationUrl(person)));
+		piaIFrame.setWidth("800px");
+		piaIFrame.setHeight("600px");
+
+		VaadinUiUtil.showPopupWindow(piaIFrame, I18nProperties.getString(Strings.headingPIAAccountCreation));
+	}
+
+	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid, ViewMode viewMode) {
+
+		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), viewMode);
+		epiDataForm.setValue(contact.getEpiData());
+
+		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
+			epiDataForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
+			epiDataForm.getFieldGroup());
+
+		editView.addCommitListener(new CommitListener() {
+
+			@Override
+			public void onCommit() {
+				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+				contactDto.setEpiData(epiDataForm.getValue());
+				FacadeProvider.getContactFacade().saveContact(contactDto);
+				Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
+			}
+		});
+
+		return editView;
 	}
 }
