@@ -1523,11 +1523,11 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public void mergeCase(String leadUuid, String otherUuid) {
-		mergeCase(getContactByUuid(leadUuid), getContactByUuid(otherUuid), false);
+	public void mergeContact(String leadUuid, String otherUuid) {
+		mergeContact(getContactByUuid(leadUuid), getContactByUuid(otherUuid), false);
 	}
 
-	private void mergeCase(ContactDto leadContact, ContactDto otherContact, boolean cloning) {
+	private void mergeContact(ContactDto leadContact, ContactDto otherContact, boolean cloning) {
 		// 1 Merge Dtos
 		// 1.1 Contact
 		fillDto(leadContact, otherContact, cloning);
@@ -1584,7 +1584,7 @@ public class ContactFacadeEjb implements ContactFacade {
 	}
 
 	@Override
-	public void deleteCaseAsDuplicate(String contactUuid, String duplicateOfContactUuid) {
+	public void deleteContactAsDuplicate(String contactUuid, String duplicateOfContactUuid) {
 
 		Contact contact = contactService.getByUuid(contactUuid);
 		Contact duplicateOfCase = contactService.getByUuid(duplicateOfContactUuid);

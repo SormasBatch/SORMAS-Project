@@ -465,6 +465,7 @@ public class ContactController {
 	public void navigateToIndex() {
 		String navigationState = ContactsView.VIEW_NAME;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
 
 	public void openPIAAccountCreationWindow(PersonDto person) {
 		BrowserFrame piaIFrame = new BrowserFrame("", new ExternalResource(FacadeProvider.getPersonFacade().getPIAAccountCreationUrl(person)));

@@ -124,9 +124,9 @@ public interface ContactFacade {
 
 	void updateCompleteness(String caseUuid);
 
-	public void mergeCase(String leadUuid, String otherUuid);
+	public void mergeContact(String leadUuid, String otherUuid);
 
-	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
+	public void deleteContactAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
 
 	boolean exists(String uuid);
 }
