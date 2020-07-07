@@ -688,7 +688,6 @@ public class Contact extends CoreAdo {
 
 	public void setDuplicateOf(Contact duplicateOf) {
 		this.duplicateOf = duplicateOf;
-	}
 	// It's necessary to do a lazy fetch here because having three eager fetching
 	// one to one relations
 	// produces an error where two non-xa connections are opened
