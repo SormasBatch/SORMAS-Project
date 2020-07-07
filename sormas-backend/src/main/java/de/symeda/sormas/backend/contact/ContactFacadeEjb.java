@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -111,6 +112,7 @@ import de.symeda.sormas.api.contact.DashboardContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.epidata.EpiDataTravelHelper;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -140,6 +142,10 @@ import de.symeda.sormas.backend.caze.CaseJurisdictionChecker;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.epidata.EpiData;
+import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
+import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiDataTravel;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -219,6 +225,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private PersonFacadeEjbLocal personFacade;
 	@EJB
 	private PathogenTestFacadeEjbLocal sampleTestFacade;
+  @EJB
+	private EpiDataFacadeEjbLocal epiDataFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -414,9 +422,14 @@ public class ContactFacadeEjb implements ContactFacade {
 						contact.get(Contact.FOLLOW_UP_STATUS),
 						contact.get(Contact.FOLLOW_UP_UNTIL),
 						contact.get(Contact.QUARANTINE),
+						contact.get(Contact.QUARANTINE_TYPE_DETAILS),
 						contact.get(Contact.QUARANTINE_FROM),
 						contact.get(Contact.QUARANTINE_TO),
 						contact.get(Contact.QUARANTINE_HELP_NEEDED),
+						contact.get(Contact.QUARANTINE_ORDERED_VERBALLY),
+						contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
+						contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
+						contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
 						joins.getPerson().get(Person.PRESENT_CONDITION),
 						joins.getPerson().get(Person.DEATH_DATE),
 						joins.getAddressRegion().get(Region.NAME),
@@ -432,9 +445,17 @@ public class ContactFacadeEjb implements ContactFacade {
 						joins.getOccupationFacility().get(Facility.UUID),
 						joins.getPerson().get(Person.OCCUPATION_FACILITY_DETAILS),
 						joins.getRegion().get(Region.NAME),
-						joins.getDistrict().get(District.NAME)),
+						joins.getDistrict().get(District.NAME),
+						joins.getEpiData().get(EpiData.ID),
+						joins.getEpiData().get(EpiData.TRAVELED),
+						joins.getEpiData().get(EpiData.BURIAL_ATTENDED),
+						joins.getEpiData().get(EpiData.DIRECT_CONTACT_CONFIRMED_CASE),
+						joins.getEpiData().get(EpiData.DIRECT_CONTACT_PROBABLE_CASE),
+						joins.getEpiData().get(EpiData.RODENTS)),
 					listCriteriaBuilder.getJurisdictionSelections(joins))
 				.collect(Collectors.toList()));
+
+		cq.distinct(true);
 
 		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, cb, contact, cq);
 
@@ -442,7 +463,7 @@ public class ContactFacadeEjb implements ContactFacade {
 			cq.where(filter);
 		}
 
-		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)));
+		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)), cb.desc(contact.get(Contact.ID)));
 
 		List<ContactExportDto> exportContacts = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
 
@@ -464,6 +485,17 @@ public class ContactFacadeEjb implements ContactFacade {
 
 			List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
 
+			Map<Long, List<EpiDataTravel>> travels = null;
+			List<EpiDataTravel> travelsList = null;
+			CriteriaQuery<EpiDataTravel> travelsCq = cb.createQuery(EpiDataTravel.class);
+			Root<EpiDataTravel> travelsRoot = travelsCq.from(EpiDataTravel.class);
+			Join<EpiDataTravel, EpiData> travelsEpiDataJoin = travelsRoot.join(EpiDataTravel.EPI_DATA, JoinType.LEFT);
+			Expression<String> epiDataIdsExpr = travelsEpiDataJoin.get(EpiData.ID);
+			travelsCq.where(epiDataIdsExpr.in(exportContacts.stream().map(ContactExportDto::getEpiDataId).collect(Collectors.toList())));
+			travelsCq.orderBy(cb.asc(travelsEpiDataJoin.get(EpiData.ID)));
+			travelsList = em.createQuery(travelsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			travels = travelsList.stream().collect(Collectors.groupingBy(t -> ((EpiDataTravel) t).getEpiData().getId()));
+
 			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
 			for (ContactExportDto exportContact : exportContacts) {
@@ -483,11 +515,34 @@ public class ContactFacadeEjb implements ContactFacade {
 						.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
 				}
 
-				pseudonymizationService.pseudonymizeDto(
-					ContactExportDto.class,
-					exportContact,
-					contactJurisdictionChecker.isInJurisdiction(exportContact.getJurisdiction()),
-					null);
+				if (travels != null) {
+					Optional.ofNullable(travels.get(exportContact.getEpiDataId())).ifPresent(caseTravels -> {
+						StringBuilder travelHistoryBuilder = new StringBuilder();
+						caseTravels.forEach(travel -> {
+							travelHistoryBuilder.append(
+								EpiDataTravelHelper.buildTravelString(
+									travel.getTravelType(),
+									travel.getTravelDestination(),
+									travel.getTravelDateFrom(),
+									travel.getTravelDateTo(),
+									userLanguage))
+								.append(", ");
+						});
+						if (travelHistoryBuilder.length() > 0) {
+							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length());
+						}
+						if (travelHistoryBuilder.length() == 0 && exportContact.getTraveled() != null) {
+							travelHistoryBuilder.append(exportContact.getTraveled());
+						}
+						exportContact.setTravelHistory(travelHistoryBuilder.toString());
+					});
+				}
+
+//				pseudonymizationService.pseudonymizeDto(
+//					ContactExportDto.class,
+//					exportContact,
+//					contactJurisdictionChecker.isInJurisdiction(exportContact.getJurisdiction()),
+//					null);
 			}
 		}
 
@@ -706,11 +761,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			resultMap.values().stream().forEach(contactFollowUpDto -> {
 				contactFollowUpDto.initVisitSize(interval + 1);
 
-				pseudonymizationService.pseudonymizeDto(
-					PersonReferenceDto.class,
-					contactFollowUpDto.getPerson(),
-					contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction()),
-					null);
+//				pseudonymizationService.pseudonymizeDto(
+//					PersonReferenceDto.class,
+//					contactFollowUpDto.getPerson(),
+//					contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction()),
+//					null);
 			});
 			visits.stream().forEach(v -> {
 				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
@@ -748,19 +803,19 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(
-			ContactIndexDto.class,
-			dtos,
-			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
-			(c, isInJurisdiction) -> {
-				if (c.getCaze() != null) {
-					pseudonymizationService.pseudonymizeDto(
-						CaseReferenceDto.class,
-						c.getCaze(),
-						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),
-						null);
-				}
-			});
+//		pseudonymizationService.pseudonymizeDtoCollection(
+//			ContactIndexDto.class,
+//			dtos,
+//			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
+//			(c, isInJurisdiction) -> {
+//				if (c.getCaze() != null) {
+//					pseudonymizationService.pseudonymizeDto(
+//						CaseReferenceDto.class,
+//						c.getCaze(),
+//						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),
+//						null);
+//				}
+//			});
 
 		return dtos;
 	}
@@ -781,11 +836,11 @@ public class ContactFacadeEjb implements ContactFacade {
 			dtos = em.createQuery(query).getResultList();
 		}
 
-		pseudonymizationService.pseudonymizeDtoCollection(
-			ContactIndexDetailedDto.class,
-			dtos,
-			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
-			null);
+//		pseudonymizationService.pseudonymizeDtoCollection(
+//			ContactIndexDetailedDto.class,
+//			dtos,
+//			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
+//			null);
 
 		return dtos;
 	}
@@ -899,6 +954,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getQuarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 
@@ -918,6 +974,8 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		target.setEpiData(epiDataFacade.fromDto(source.getEpiData()));
 
 		return target;
 	}
@@ -982,17 +1040,17 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		ContactDto dto = toDto(source);
 
-		if (dto != null) {
-			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
-			pseudonymizationService.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
-				if (c.getCaze() != null) {
-					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
-					pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), isCaseInJurisdiction, null);
-				}
-
-				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, dto.getPerson(), isInJurisdiction, null);
-			});
-		}
+//		if (dto != null) {
+//			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
+//			pseudonymizationService.pseudonymizeDto(ContactDto.class, dto, isInJurisdiction, (c) -> {
+//				if (c.getCaze() != null) {
+//					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
+//					pseudonymizationService.pseudonymizeDto(CaseReferenceDto.class, c.getCaze(), isCaseInJurisdiction, null);
+//				}
+//
+//				pseudonymizationService.pseudonymizeDto(PersonReferenceDto.class, dto.getPerson(), isInJurisdiction, null);
+//			});
+//		}
 
 		return dto;
 	}
@@ -1001,17 +1059,17 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		ContactReferenceDto dto = toReferenceDto(source);
 
-		if (dto != null) {
-			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
-			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, dto, isInJurisdiction, (c) -> {
-				if (source.getCaze() != null) {
-					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
-					pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getCaseName(), isCaseInJurisdiction, null);
-				}
-
-				pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getContactName(), isInJurisdiction, null);
-			});
-		}
+//		if (dto != null) {
+//			boolean isInJurisdiction = contactJurisdictionChecker.isInJurisdiction(source);
+//			pseudonymizationService.pseudonymizeDto(ContactReferenceDto.class, dto, isInJurisdiction, (c) -> {
+//				if (source.getCaze() != null) {
+//					Boolean isCaseInJurisdiction = caseJurisdictionChecker.isInJurisdiction(source.getCaze());
+//					pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getCaseName(), isCaseInJurisdiction, null);
+//				}
+//
+//				pseudonymizationService.pseudonymizeDto(ContactReferenceDto.PersonName.class, c.getContactName(), isInJurisdiction, null);
+//			});
+//		}
 
 		return dto;
 	}
@@ -1069,6 +1127,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
 
 		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
 		target.setQuarantineFrom(source.getQuarantineFrom());
 		target.setQuarantineTo(source.getQuarantineTo());
 
@@ -1088,7 +1147,7 @@ public class ContactFacadeEjb implements ContactFacade {
 		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
 		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
 		target.setAdditionalDetails(source.getAdditionalDetails());
-
+		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
 
 		return target;
 	}
@@ -1265,22 +1324,27 @@ public class ContactFacadeEjb implements ContactFacade {
 
 		List<SimilarContactDto> contacts = em.createQuery(cq).getResultList();
 
-		pseudonymizationService.pseudonymizeDtoCollection(
-			SimilarContactDto.class,
-			contacts,
-			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
-			(c, isInJurisdiction) -> {
-				CaseReferenceDto contactCase = c.getCaze();
-				if (contactCase != null) {
-					pseudonymizationService.pseudonymizeDto(
-						CaseReferenceDto.class,
-						contactCase,
-						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),
-						null);
-				}
-			});
+//		pseudonymizationService.pseudonymizeDtoCollection(
+//			SimilarContactDto.class,
+//			contacts,
+//			c -> contactJurisdictionChecker.isInJurisdiction(c.getJurisdiction()),
+//			(c, isInJurisdiction) -> {
+//				CaseReferenceDto contactCase = c.getCaze();
+//				if (contactCase != null) {
+//					pseudonymizationService.pseudonymizeDto(
+//						CaseReferenceDto.class,
+//						contactCase,
+//						caseJurisdictionChecker.isInJurisdiction(c.getCaseJurisdiction()),
+//						null);
+//				}
+//			});
 
 		return contacts;
+	}
+
+	@Override
+	public boolean exists(String uuid) {
+		return this.contactService.exists(uuid);
 	}
 
 	@LocalBean

@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -52,6 +53,7 @@ import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
@@ -97,6 +99,7 @@ public class Contact extends CoreAdo {
 	public static final String CARE_FOR_PEOPLE_OVER_60 = "careForPeopleOver60";
 	public static final String GENERAL_PRACTITIONER_DETAILS = "generalPracticionerDetails";
 	public static final String QUARANTINE = "quarantine";
+	public static final String QUARANTINE_TYPE_DETAILS = "quarantineTypeDetails";
 	public static final String QUARANTINE_FROM = "quarantineFrom";
 	public static final String QUARANTINE_TO = "quarantineTo";
 	public static final String DISEASE = "disease";
@@ -118,7 +121,7 @@ public class Contact extends CoreAdo {
 	public static final String VISITS = "visits";
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
 	public static final String COMPLETENESS = "completeness";
-
+	public static final String EPI_DATA = "epiData";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -157,6 +160,7 @@ public class Contact extends CoreAdo {
 	private YesNoUnknown careForPeopleOver60;
 
 	private QuarantineType quarantine;
+	private String quarantineTypeDetails;
 	private Date quarantineFrom;
 	private Date quarantineTo;
 	private Contact duplicateOf;
@@ -177,6 +181,7 @@ public class Contact extends CoreAdo {
 	private YesNoUnknown quarantineHomeSupplyEnsured;
 	private String quarantineHomeSupplyEnsuredComment;
 	private String additionalDetails;
+	private EpiData epiData;
 
 	private List<Task> tasks;
 	private Set<Sample> samples;
@@ -505,6 +510,15 @@ public class Contact extends CoreAdo {
 		this.quarantine = quarantine;
 	}
 
+	@Column(length = COLUMN_LENGTH_DEFAULT)
+	public String getquarantineTypeDetails() {
+		return quarantineTypeDetails;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
+	}
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getQuarantineFrom() {
 		return quarantineFrom;
@@ -674,5 +688,20 @@ public class Contact extends CoreAdo {
 
 	public void setDuplicateOf(Contact duplicateOf) {
 		this.duplicateOf = duplicateOf;
+	}
+	// It's necessary to do a lazy fetch here because having three eager fetching
+	// one to one relations
+	// produces an error where two non-xa connections are opened
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public EpiData getEpiData() {
+		if (epiData == null) {
+			epiData = new EpiData();
+		}
+		return epiData;
+	}
+
+	public void setEpiData(EpiData epiData) {
+		this.epiData = epiData;
 	}
 }

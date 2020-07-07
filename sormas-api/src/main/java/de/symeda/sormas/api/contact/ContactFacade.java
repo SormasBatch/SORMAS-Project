@@ -31,7 +31,6 @@ import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 
 @Remote
@@ -115,7 +114,7 @@ public interface ContactFacade {
 	 */
 	int getNonSourceCaseCountForDashboard(List<String> caseUuids);
 
-	void validate(ContactDto contact) throws ValidationRuntimeException;
+	void validate(ContactDto contact);
 
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
 
@@ -129,4 +128,5 @@ public interface ContactFacade {
 
 	public void deleteContactAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
 
+	boolean exists(String uuid);
 }
