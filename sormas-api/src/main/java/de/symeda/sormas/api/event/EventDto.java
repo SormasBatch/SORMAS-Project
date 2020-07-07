@@ -34,6 +34,7 @@ public class EventDto extends EntityDto {
 
 	public static final String EVENT_STATUS = "eventStatus";
 	public static final String EVENT_PERSONS = "eventPersons";
+	public static final String EVENT_ACTIONS = "eventActions";
 	public static final String EVENT_DESC = "eventDesc";
 	public static final String EVENT_DATE = "eventDate";
 	public static final String REPORT_DATE_TIME = "reportDateTime";
@@ -44,12 +45,15 @@ public class EventDto extends EntityDto {
 	public static final String SRC_LAST_NAME = "srcLastName";
 	public static final String SRC_TEL_NO = "srcTelNo";
 	public static final String SRC_EMAIL = "srcEmail";
+	public static final String SRC_ORIGIN = "srcOrigin";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String SURVEILLANCE_OFFICER = "surveillanceOfficer";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
+	public static final String NAME_TYPE_OF_PLACE = "nameTypeOfPlace";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
+	public static final String TYPE_OF_RISK = "typeOfRisk";
 
 	@Required
 	private EventStatus eventStatus;
@@ -66,6 +70,7 @@ public class EventDto extends EntityDto {
 	private String srcLastName;
 	private String srcTelNo;
 	private String srcEmail;
+	private String srcOrigin;
 	private Disease disease;
 	private String diseaseDetails;
 	private UserReferenceDto surveillanceOfficer;
@@ -73,6 +78,8 @@ public class EventDto extends EntityDto {
 	private Double reportLat;
 	private Double reportLon;
 	private Float reportLatLonAccuracy;
+	private String nameTypeOfPlace;
+	private TypeOfRisk typeOfRisk;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -165,6 +172,14 @@ public class EventDto extends EntityDto {
 		this.srcEmail = srcEmail;
 	}
 
+	public String getSrcOrigin() {
+		return srcOrigin;
+	}
+
+	public void setSrcOrigin(String srcOrigin) {
+		this.srcOrigin = srcOrigin;
+	}
+
 	public LocationDto getEventLocation() {
 		return eventLocation;
 	}
@@ -229,7 +244,23 @@ public class EventDto extends EntityDto {
 		this.reportLatLonAccuracy = reportLatLonAccuracy;
 	}
 
+	public TypeOfRisk getTypeOfRisk() {
+		return typeOfRisk;
+	}
+
+	public void setTypeOfRisk(TypeOfRisk typeOfRisk) {
+		this.typeOfRisk = typeOfRisk;
+	}
+
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid());
+	}
+
+	public String getNameTypeOfPlace() {
+		return nameTypeOfPlace;
+	}
+
+	public void setNameTypeOfPlace(String nameTypeOfPlace) {
+		this.nameTypeOfPlace = nameTypeOfPlace;
 	}
 }

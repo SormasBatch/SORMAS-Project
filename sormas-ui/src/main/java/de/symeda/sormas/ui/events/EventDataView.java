@@ -17,12 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.action.ActionStatsComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -36,17 +37,21 @@ public class EventDataView extends AbstractEventView {
 
 	public static final String EVENT_LOC = "event";
 	public static final String TASKS_LOC = "tasks";
+	public static final String ACTIONS_LOC = "actions";
 
 	public EventDataView() {
 		super(VIEW_NAME);
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-		super.enter(event);
+	protected void initView(String params) {
+
 		setHeightUndefined();
 
-		String htmlLayout = LayoutUtil.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EVENT_LOC), LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC));
+		String htmlLayout = LayoutUtil.fluidRow(
+				LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EVENT_LOC),
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
+				LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ACTIONS_LOC));
 
 		VerticalLayout container = new VerticalLayout();
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -69,5 +74,10 @@ public class EventDataView extends AbstractEventView {
 		TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef());
 		taskList.addStyleName(CssStyles.SIDE_COMPONENT);
 		layout.addComponent(taskList, TASKS_LOC);
+
+		ActionStatsComponent actionList = new ActionStatsComponent(ActionContext.EVENT, getEventRef());
+		actionList.addStyleName(CssStyles.SIDE_COMPONENT);
+		layout.addComponent(actionList, ACTIONS_LOC);
+		setEventEditPermission(container);
 	}
 }

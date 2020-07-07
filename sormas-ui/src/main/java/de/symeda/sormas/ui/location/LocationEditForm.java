@@ -25,21 +25,20 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Stream;
 
+import com.vaadin.ui.*;
+import com.vaadin.v7.data.Property;
+import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteSuggestionProvider;
+import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteTextField;
+import eu.maxschuster.vaadin.autocompletetextfield.provider.CollectionSuggestionProvider;
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -63,6 +62,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private static final long serialVersionUID = 1L;
 
 	private static final String GEO_BUTTONS_LOC = "geoButtons";
+	Map<String, Map<String, String>> resultMap = new HashMap<>();
 
 	private static final String HTML_LAYOUT =
 		//XXX #1620 are the divs needed?
@@ -85,7 +85,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, FieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
-		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
+		if ((FacadeProvider.getGeocodingFacade().isEnabled() || FacadeProvider.getGeocodingFacadeFrench().isEnabled()) && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
 			getContent().addComponent(createGeoButton(), GEO_BUTTONS_LOC);
 		}
 	}
@@ -105,12 +105,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	@Override
 	protected void addFields() {
-		TextArea addressField = addField(LocationDto.ADDRESS, TextArea.class);
-		addressField.setRows(5);
+		ComboBox addressField = addInfrastructureField(LocationDto.ADDRESS);
 
 		addField(LocationDto.DETAILS, TextField.class);
-		addField(LocationDto.CITY, TextField.class);
-		addField(LocationDto.POSTAL_CODE, TextField.class);
+		TextField city = addField(LocationDto.CITY, TextField.class);
+		TextField postalCode = addField(LocationDto.POSTAL_CODE, TextField.class);
 		ComboBox areaType = addField(LocationDto.AREA_TYPE, ComboBox.class);
 		areaType.setDescription(I18nProperties.getDescription(getPropertyI18nPrefix() + "." + LocationDto.AREA_TYPE));
 
@@ -124,6 +123,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		tfAccuracy.setConverter(new StringToAngularLocationConverter());
 		removeMaxLengthValidators(tfAccuracy);
 
+
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
@@ -135,17 +135,56 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			setReadOnly(true, LocationDto.REGION, LocationDto.DISTRICT);
 		}
 
+		resultMap = FacadeProvider.getGeocodingFacadeFrench().getAdresses("a");
+		FieldHelper.updateItems(addressField, new ArrayList<String>(resultMap.keySet()));
+
+		addressField.setTextInputAllowed(true);
+		addressField.addValueChangeListener(event -> {
+			String value = event.getProperty().getValue().toString();
+			postalCode.setValue(resultMap.get(value.toString()).get("postCode"));
+			city.setValue(resultMap.get(value.toString()).get("city"));
+			tfLatitude.setValue(resultMap.get(value.toString()).get("latitude"));
+			tfLongitude.setValue(resultMap.get(value.toString()).get("longitude"));
+		});
+
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper
 				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+			FieldHelper.removeItems(addressField);
+
+			String districtValue = null;
+
+			if (district.getValue() == null) {
+				districtValue = "";
+			} else {
+				districtValue = district.getValue().toString();
+			}
+
+			resultMap.clear();
+			resultMap = FacadeProvider.getGeocodingFacadeFrench().getAdresses(regionDto.toString()+" "+districtValue);
+			FieldHelper.updateItems(addressField, new ArrayList<String>(resultMap.keySet()));
 		});
+
 		district.addValueChangeListener(e -> {
 			FieldHelper.removeItems(community);
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(
 				community,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+			FieldHelper.removeItems(addressField);
+
+			String regionValue = null;
+
+			if (region.getValue() == null) {
+				regionValue = "";
+			} else {
+				regionValue = region.getValue().toString();
+			}
+
+			resultMap.clear();
+			resultMap = FacadeProvider.getGeocodingFacadeFrench().getAdresses(districtDto.toString()+" "+regionValue);
+			FieldHelper.updateItems(addressField, new ArrayList<String>(resultMap.keySet()));
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 
@@ -170,8 +209,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			ValoTheme.BUTTON_BORDERLESS,
 			ValoTheme.BUTTON_LARGE);
 
-		geoButtonLayout.addComponent(geocodeButton);
-		geoButtonLayout.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
+			geoButtonLayout.addComponent(geocodeButton);
+			geoButtonLayout.setComponentAlignment(geocodeButton, Alignment.BOTTOM_RIGHT);
 
 		leafletMapPopup = new MapPopupView();
 		leafletMapPopup.setCaption(" ");

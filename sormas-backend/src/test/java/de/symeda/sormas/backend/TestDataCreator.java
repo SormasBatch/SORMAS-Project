@@ -27,6 +27,8 @@ import java.util.function.Function;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.action.ActionContext;
+import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -462,6 +464,14 @@ public class TestDataCreator {
 
 		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 		return eventParticipant;
+	}
+
+	public ActionDto createAction(EventReferenceDto event) {
+
+		ActionDto action = ActionDto.build(ActionContext.EVENT, event);
+
+		action = beanTest.getActionFacade().saveAction(action);
+		return action;
 	}
 
 	public SampleDto createSample(CaseReferenceDto associatedCase, UserReferenceDto reportingUser, Facility lab) {
