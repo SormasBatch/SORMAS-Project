@@ -20,7 +20,6 @@ package de.symeda.sormas.api;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
@@ -37,7 +36,6 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.facility.FacilityFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geocoding.GeocodingFacade;
-import de.symeda.sormas.api.geocoding.GeocodingFacadeFrench;
 import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
@@ -119,10 +117,6 @@ public class FacadeProvider {
 
 	public static TaskFacade getTaskFacade() {
 		return get().lookupEjbRemote(TaskFacade.class);
-	}
-
-	public static ActionFacade getActionFacade() {
-		return get().lookupEjbRemote(ActionFacade.class);
 	}
 
 	public static SampleFacade getSampleFacade() {
@@ -259,10 +253,6 @@ public class FacadeProvider {
 
 	public static GeocodingFacade getGeocodingFacade() {
 		return get().lookupEjbRemote(GeocodingFacade.class);
-	}
-
-	public static GeocodingFacadeFrench getGeocodingFacadeFrench() {
-		return get().lookupEjbRemote(GeocodingFacadeFrench.class);
 	}
 
 	public static CampaignFacade getCampaignFacade() {

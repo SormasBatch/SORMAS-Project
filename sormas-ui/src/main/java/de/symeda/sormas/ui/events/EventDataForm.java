@@ -17,21 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
-import com.vaadin.server.Page;
-import com.vaadin.shared.Position;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.AbstractField;
@@ -40,8 +25,8 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
-
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -57,39 +42,35 @@ import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteSuggestionProvider;
-import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteTextField;
-import eu.maxschuster.vaadin.autocompletetextfield.provider.CollectionSuggestionProvider;
-import eu.maxschuster.vaadin.autocompletetextfield.provider.MatchMode;
-import eu.maxschuster.vaadin.autocompletetextfield.shared.ScrollBehavior;
-import de.symeda.sormas.ui.utils.TextFieldWithMaxLengthWrapper;
+import de.symeda.sormas.ui.utils.MaxLengthValidator;
+import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
+import static de.symeda.sormas.ui.utils.LayoutUtil.h3;
 
 public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String EVENT_DATA_HEADING_LOC = "contactDataHeadingLoc";
-	private static final String INFORMATION_SOURCE_HEADING_LOC = "followUpStatusHeadingLoc";
-	private static final String LOCATION_HEADING_LOC = "locationHeadingLoc";
-
 	private static final String STATUS_CHANGE = "statusChange";
 
 	//@formatter:off
-	private static final String HTML_LAYOUT =
-			loc(EVENT_DATA_HEADING_LOC) +
+	private static final String HTML_LAYOUT = 
+			h3(I18nProperties.getString(Strings.headingEventData)) +
 			fluidRowLocs(4, EventDto.UUID, 3, EventDto.REPORT_DATE_TIME, 5, EventDto.REPORTING_USER) +
 			fluidRowLocs(4, EventDto.EVENT_DATE, 8, EventDto.EVENT_STATUS) +
 			fluidRowLocs(EventDto.DISEASE, EventDto.DISEASE_DETAILS) +
-			fluidRowLocs(EventDto.TYPE_OF_RISK) +
-			fluidRowLocs(EventDto.EVENT_DESC) +
-					
-			loc(INFORMATION_SOURCE_HEADING_LOC) +
-			fluidRowLocs(EventDto.SRC_ORIGIN) +
+			fluidRowLocs(EventDto.EVENT_DESC) + 
+			
+			h3(I18nProperties.getString(Strings.headingInformationSource)) +
 			fluidRowLocs(EventDto.SRC_FIRST_NAME, EventDto.SRC_LAST_NAME) +
-			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) +
-
-			loc(LOCATION_HEADING_LOC) +
-			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT, EventDto.NAME_TYPE_OF_PLACE) +
+			fluidRowLocs(EventDto.SRC_TEL_NO, EventDto.SRC_EMAIL) + 
+			
+			h3(I18nProperties.getString(Strings.headingLocation)) +
+			fluidRowLocs(EventDto.TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE_TEXT) +
 			fluidRowLocs(EventDto.EVENT_LOCATION) +
 			fluidRowLocs("", EventDto.SURVEILLANCE_OFFICER);
 	//@formatter:on
@@ -118,25 +99,13 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			return;
 		}
 
-		Label eventDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingEventData));
-		eventDataHeadingLabel.addStyleName(H3);
-		getContent().addComponent(eventDataHeadingLabel, EVENT_DATA_HEADING_LOC);
-
-		Label informationSourceHeadingLabel = new Label(I18nProperties.getString(Strings.headingInformationSource));
-		informationSourceHeadingLabel.addStyleName(H3);
-		getContent().addComponent(informationSourceHeadingLabel, INFORMATION_SOURCE_HEADING_LOC);
-
-		Label locationHeadingLabel = new Label(I18nProperties.getString(Strings.headingLocation));
-		locationHeadingLabel.addStyleName(H3);
-		getContent().addComponent(locationHeadingLabel, LOCATION_HEADING_LOC);
-
 		addField(EventDto.UUID, TextField.class);
 		addDiseaseField(EventDto.DISEASE, false);
 		addField(EventDto.DISEASE_DETAILS, TextField.class);
-		addField(EventDto.TYPE_OF_RISK, ComboBox.class);
 		DateField eventDate = addField(EventDto.EVENT_DATE, DateField.class);
 		addField(EventDto.EVENT_STATUS, OptionGroup.class);
-		addField(EventDto.EVENT_DESC, TextArea.class, new TextFieldWithMaxLengthWrapper<>());
+		TextArea descriptionField = addField(EventDto.EVENT_DESC, TextArea.class);
+		descriptionField.setRows(2);
 		addField(EventDto.EVENT_LOCATION, LocationEditForm.class).setCaption(null);
 
 		LocationEditForm locationForm = (LocationEditForm) getFieldGroup().getField(EventDto.EVENT_LOCATION);
@@ -149,12 +118,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		ComboBox typeOfPlace = addField(EventDto.TYPE_OF_PLACE, ComboBox.class);
 		typeOfPlace.setNullSelectionAllowed(true);
-		typeOfPlace.setPageLength(0);
 		addField(EventDto.TYPE_OF_PLACE_TEXT, TextField.class);
-		addField(EventDto.NAME_TYPE_OF_PLACE, ComboBox.class);
 		addField(EventDto.REPORT_DATE_TIME, DateTimeField.class);
 		addField(EventDto.REPORTING_USER, ComboBox.class);
-		TextField srcOrigin = addField(EventDto.SRC_ORIGIN, TextField.class);
 		TextField srcFirstName = addField(EventDto.SRC_FIRST_NAME, TextField.class);
 		TextField srcLastName = addField(EventDto.SRC_LAST_NAME, TextField.class);
 		TextField srcTelNo = addField(EventDto.SRC_TEL_NO, TextField.class);
@@ -163,30 +129,12 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		setReadOnly(true, EventDto.UUID, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.TYPE_OF_PLACE_TEXT, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.OTHER), true);
-		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.NAME_TYPE_OF_PLACE, EventDto.TYPE_OF_PLACE, Arrays.asList(TypeOfPlace.PROFESSIONAL_CIRCLES,TypeOfPlace.EHPAD,TypeOfPlace.SCHOOLS_UNIVERSITIES, TypeOfPlace.PENITENTIARY_ESTABLISHMENTS), true);
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), Arrays.asList(EventDto.DISEASE_DETAILS), EventDto.DISEASE, Arrays.asList(Disease.OTHER), true);
 		FieldHelper.setRequiredWhen(getFieldGroup(), EventDto.DISEASE, Arrays.asList(EventDto.DISEASE_DETAILS), Arrays.asList(Disease.OTHER));
 
 		setRequired(true, EventDto.EVENT_STATUS, EventDto.UUID, EventDto.EVENT_DESC, EventDto.REPORT_DATE_TIME, EventDto.REPORTING_USER);
 		setTypeOfPlaceTextRequirement();
-
-		ComboBox nameTypeOfPlaceField = (ComboBox) getFieldGroup().getField(EventDto.NAME_TYPE_OF_PLACE);
-		nameTypeOfPlaceField.setTextInputAllowed(true);
-		typeOfPlace.addValueChangeListener(e -> {
-			String value = "";
-			List<String> resultList = new ArrayList<>();
-			if(typeOfPlace.getValue() == TypeOfPlace.SCHOOLS_UNIVERSITIES){
-				resultList = FacadeProvider.getGeocodingFacadeFrench().getFrenchSchoolAdresses(value);
-			}
-			if(typeOfPlace.getValue() == TypeOfPlace.PROFESSIONAL_CIRCLES) {
-				resultList = FacadeProvider.getGeocodingFacadeFrench().getSireneEntrepriseAutoComplete(value);
-			}
-			FieldHelper.updateItems(nameTypeOfPlaceField, resultList);
-		});
-
-
-
 		locationForm.setFieldsRequirement(true, LocationDto.REGION, LocationDto.DISTRICT);
 
 		districtField.addValueChangeListener(e -> {
@@ -195,8 +143,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			FieldHelper.updateItems(surveillanceOfficerField, assignableSurveillanceOfficers);
 		});
 
-
-		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo, srcOrigin);
+		FieldHelper.addSoftRequiredStyle(eventDate, typeOfPlace, surveillanceOfficerField, srcFirstName, srcLastName, srcTelNo);
 	}
 
 	@Override
@@ -215,5 +162,4 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER);
 		typeOfPlaceField.addValueChangeListener(event -> typeOfPlaceTextField.setRequired(typeOfPlaceField.getValue() == TypeOfPlace.OTHER));
 	}
-
 }

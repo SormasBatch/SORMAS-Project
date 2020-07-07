@@ -52,7 +52,6 @@ public class EventController {
 		navigator.addView(EventsView.VIEW_NAME, EventsView.class);
 		navigator.addView(EventDataView.VIEW_NAME, EventDataView.class);
 		navigator.addView(EventParticipantsView.VIEW_NAME, EventParticipantsView.class);
-		navigator.addView(EventActionsView.VIEW_NAME, EventActionsView.class);
 	}
 
 	public void create() {

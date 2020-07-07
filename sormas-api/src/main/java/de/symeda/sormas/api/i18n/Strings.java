@@ -102,8 +102,6 @@ public interface Strings {
 	String day = "day";
 	String done = "done";
 	String edit = "edit";
-	String entityAction = "entityAction";
-	String entityActions = "entityActions";
 	String entityAdditionalTest = "entityAdditionalTest";
 	String entityAdditionalTests = "entityAdditionalTests";
 	String entityBurial = "entityBurial";
@@ -188,7 +186,6 @@ public interface Strings {
 	String headingContactsPerCase = "headingContactsPerCase";
 	String headingCreateAdditionalTest = "headingCreateAdditionalTest";
 	String headingCreateEntry = "headingCreateEntry";
-	String headingCreateNewAction = "headingCreateNewAction";
 	String headingCreateNewAggregateReport = "headingCreateNewAggregateReport";
 	String headingCreateNewCampaign = "headingCreateNewCampaign";
 	String headingCreateNewCase = "headingCreateNewCase";
@@ -217,7 +214,6 @@ public interface Strings {
 	String headingDownloadErrorReport = "headingDownloadErrorReport";
 	String headingDownloadImportGuide = "headingDownloadImportGuide";
 	String headingDownloadImportTemplate = "headingDownloadImportTemplate";
-	String headingEditAction = "headingEditAction";
 	String headingEditAdditionalTest = "headingEditAdditionalTest";
 	String headingEditAggregateReport = "headingEditAggregateReport";
 	String headingEditCampaign = "headingEditCampaign";

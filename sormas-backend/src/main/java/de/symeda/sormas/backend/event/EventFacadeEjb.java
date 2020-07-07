@@ -339,12 +339,10 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
-		target.setSrcOrigin(source.getSrcOrigin());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(userService.getByReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
-		target.setTypeOfRisk(source.getTypeOfRisk());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());
@@ -382,12 +380,10 @@ public class EventFacadeEjb implements EventFacade {
 		target.setSrcLastName(source.getSrcLastName());
 		target.setSrcTelNo(source.getSrcTelNo());
 		target.setSrcEmail(source.getSrcEmail());
-		target.setSrcOrigin(source.getSrcOrigin());
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
 		target.setSurveillanceOfficer(UserFacadeEjb.toReferenceDto(source.getSurveillanceOfficer()));
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
-		target.setTypeOfRisk(source.getTypeOfRisk());
 
 		target.setReportLat(source.getReportLat());
 		target.setReportLon(source.getReportLon());

@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-import de.symeda.sormas.ui.action.ActionController;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
 import de.symeda.sormas.ui.configuration.infrastructure.InfrastructureController;
@@ -50,7 +49,6 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final PersonController personController;
 	private final UserController userController;
 	private final TaskController taskController;
-	private final ActionController actionController;
 	private final SampleController sampleController;
 	private final PathogenTestController pathogenTestController;
 	private final AdditionalTestController additionalTestController;
@@ -74,7 +72,6 @@ public class ControllerProvider extends BaseControllerProvider {
 		personController = new PersonController();
 		userController = new UserController();
 		taskController = new TaskController();
-		actionController = new ActionController();
 		sampleController = new SampleController();
 		pathogenTestController = new PathogenTestController();
 		additionalTestController = new AdditionalTestController();
@@ -125,10 +122,6 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static TaskController getTaskController() {
 		return get().taskController;
-	}
-
-	public static ActionController getActionController() {
-		return get().actionController;
 	}
 
 	public static SampleController getSampleController() {

@@ -111,18 +111,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-            <de.symeda.sormas.app.component.controls.ControlTextReadField
-                android:id="@+id/event_typeOfRisk"
-                app:value="@{data.typeOfRisk}"
-                style="@style/ControlSingleColumnStyle" />
-
-            </LinearLayout>
-
             <ImageView style="@style/FullHorizontalDividerStyle"/>
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField
@@ -145,18 +133,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/heading_source_of_information"
                 style="@style/SubHeadingStyle" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <de.symeda.sormas.app.component.controls.ControlTextReadField
-                    android:id="@+id/event_srcOrigin"
-                    app:value="@{data.srcOrigin}"
-                    style="@style/ControlSingleColumnStyle" />
-
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
