@@ -44,7 +44,6 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.contact.Contact;
-import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DateFormatHelper;
@@ -71,9 +70,6 @@ public class Sample extends AbstractDomainObject {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Contact associatedContact;
-
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private EventParticipant associatedEventParticipant;
 
 	@Column(length = COLUMN_LENGTH_DEFAULT)
 	private String labSampleID;
@@ -183,14 +179,6 @@ public class Sample extends AbstractDomainObject {
 
 	public void setAssociatedContact(Contact associatedContact) {
 		this.associatedContact = associatedContact;
-	}
-
-	public EventParticipant getAssociatedEventParticipant() {
-		return associatedEventParticipant;
-	}
-
-	public void setAssociatedEventParticipant(EventParticipant associatedEventParticipant) {
-		this.associatedEventParticipant = associatedEventParticipant;
 	}
 
 	public String getLabSampleID() {

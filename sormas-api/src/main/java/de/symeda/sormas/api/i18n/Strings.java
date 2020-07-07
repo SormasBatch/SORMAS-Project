@@ -42,8 +42,6 @@ public interface Strings {
 	String classificationYearsOrLess = "classificationYearsOrLess";
 	String classificationYearsOrMore = "classificationYearsOrMore";
 	String comparedTo = "comparedTo";
-	String confirmationArchiveArea = "confirmationArchiveArea";
-	String confirmationArchiveAreas = "confirmationArchiveAreas";
 	String confirmationArchiveCampaign = "confirmationArchiveCampaign";
 	String confirmationArchiveCase = "confirmationArchiveCase";
 	String confirmationArchiveCases = "confirmationArchiveCases";
@@ -64,8 +62,6 @@ public interface Strings {
 	String confirmationCancelFollowUp = "confirmationCancelFollowUp";
 	String confirmationChangeCaseDisease = "confirmationChangeCaseDisease";
 	String confirmationContactSourceCaseDiscardUnsavedChanges = "confirmationContactSourceCaseDiscardUnsavedChanges";
-	String confirmationDearchiveArea = "confirmationDearchiveArea";
-	String confirmationDearchiveAreas = "confirmationDearchiveAreas";
 	String confirmationDearchiveCampaign = "confirmationDearchiveCampaign";
 	String confirmationDearchiveCase = "confirmationDearchiveCase";
 	String confirmationDearchiveCases = "confirmationDearchiveCases";
@@ -100,7 +96,6 @@ public interface Strings {
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
-	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
 	String confirmationMergeContactAndDeleteOther = "confirmationMergeContactAndDeleteOther";
 	String confirmationPickContactAndDeleteOther = "confirmationPickContactAndDeleteOther";
@@ -122,7 +117,6 @@ public interface Strings {
 	String entityDistricts = "entityDistricts";
 	String entityEvent = "entityEvent";
 	String entityEvents = "entityEvents";
-	String entityEventParticipant = "entityEventParticipant";
 	String entityGathering = "entityGathering";
 	String entityPathogenTests = "entityPathogenTests";
 	String entityPrescription = "entityPrescription";
@@ -153,7 +147,6 @@ public interface Strings {
 	String errorWasReported = "errorWasReported";
 	String forCase = "forCase";
 	String forContact = "forContact";
-	String forEventParticipant = "forEventParticipant";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingAdditionalTests = "headingAdditionalTests";
 	String headingAllContacts = "headingAllContacts";
@@ -255,7 +248,6 @@ public interface Strings {
 	String headingHealthConditions = "headingHealthConditions";
 	String headingHospitalization = "headingHospitalization";
 	String headingHowToMergeCases = "headingHowToMergeCases";
-	String headingImportAreas = "headingImportAreas";
 	String headingImportCaseContacts = "headingImportCaseContacts";
 	String headingImportCases = "headingImportCases";
 	String headingImportCommunities = "headingImportCommunities";
@@ -294,7 +286,6 @@ public interface Strings {
 	String headingNoCasesSelected = "headingNoCasesSelected";
 	String headingNoClinicalVisitsSelected = "headingNoClinicalVisitsSelected";
 	String headingNoContactsSelected = "headingNoContactsSelected";
-	String headingNoEventFound = "headingNoEventFound";
 	String headingNoEventParticipantsSelected = "headingNoEventParticipantsSelected";
 	String headingNoEventsSelected = "headingNoEventsSelected";
 	String headingNoFile = "headingNoFile";
@@ -311,7 +302,6 @@ public interface Strings {
 	String headingPersonData = "headingPersonData";
 	String headingPersonInformation = "headingPersonInformation";
 	String headingPersonOccupation = "headingPersonOccupation";
-	String headingPIAAccountCreation = "headingPIAAccountCreation";
 	String headingPickOrCreateCase = "headingPickOrCreateCase";
 	String headingPickOrCreateContact = "headingPickOrCreateContact";
 	String headingPickOrCreatePerson = "headingPickOrCreatePerson";
@@ -326,7 +316,6 @@ public interface Strings {
 	String headingResults = "headingResults";
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
-	String headingSaveUser = "headingSaveUser";
 	String headingSelectSourceCase = "headingSelectSourceCase";
 	String headingSetOutbreakStatus = "headingSetOutbreakStatus";
 	String headingSignsAndSymptoms = "headingSignsAndSymptoms";
@@ -401,7 +390,6 @@ public interface Strings {
 	String infoNoPathogenTests = "infoNoPathogenTests";
 	String infoNoSourceCaseSelected = "infoNoSourceCaseSelected";
 	String infoPickOrCreateCase = "infoPickOrCreateCase";
-	String infoPickOrCreateCaseNewCase = "infoPickOrCreateCaseNewCase";
 	String infoPopulationCollectionDate = "infoPopulationCollectionDate";
 	String infoPopulationDataView = "infoPopulationDataView";
 	String infoPopulationReferenceYear = "infoPopulationReferenceYear";
@@ -415,7 +403,6 @@ public interface Strings {
 	String infoSelectOrCreatePersonForContactImport = "infoSelectOrCreatePersonForContactImport";
 	String infoSelectOrCreatePersonForEventParticipant = "infoSelectOrCreatePersonForEventParticipant";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";
-	String infoSpecificEventSearch = "infoSpecificEventSearch";
 	String infoStatisticsDisclaimer = "infoStatisticsDisclaimer";
 	String infoStatisticsFilter = "infoStatisticsFilter";
 	String infoStatisticsResults = "infoStatisticsResults";
@@ -423,14 +410,6 @@ public interface Strings {
 	String infoUserEmail = "infoUserEmail";
 	String infoUserPhoneNumber = "infoUserPhoneNumber";
 	String infoWeeklyReportsView = "infoWeeklyReportsView";
-	String labelNumberOfAreas = "labelNumberOfAreas";
-	String labelNumberOfCommunities = "labelNumberOfCommunities";
-	String labelNumberOfDistricts = "labelNumberOfDistricts";
-	String labelNumberOfFacilities = "labelNumberOfFacilities";
-	String labelNumberOfLaboratories = "labelNumberOfLaboratories";
-	String labelNumberOfPointofEntry = "labelNumberOfPointofEntry";
-	String labelNumberOfRegions = "labelNumberOfRegions";
-	String labelNumberOfUsers = "labelNumberOfUsers";
 	String lastTwoDays = "lastTwoDays";
 	String lastTwoWeeks = "lastTwoWeeks";
 	String lastTwoYears = "lastTwoYears";
@@ -441,12 +420,6 @@ public interface Strings {
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	String messageAggregateReportFound = "messageAggregateReportFound";
 	String messageAnimalContactsHint = "messageAnimalContactsHint";
-	String messageAreaArchived = "messageAreaArchived";
-	String messageAreaArchivingNotPossible = "messageAreaArchivingNotPossible";
-	String messageAreaDearchived = "messageAreaDearchived";
-	String messageAreasArchived = "messageAreasArchived";
-	String messageAreasArchivingNotPossible = "messageAreasArchivingNotPossible";
-	String messageAreasDearchived = "messageAreasDearchived";
 	String messageCampaignArchived = "messageCampaignArchived";
 	String messageCampaignCreated = "messageCampaignCreated";
 	String messageCampaignDearchived = "messageCampaignDearchived";
@@ -483,7 +456,6 @@ public interface Strings {
 	String messageCommunityDearchivingNotPossible = "messageCommunityDearchivingNotPossible";
 	String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	String messageConfirmCaseAfterPathogenTest = "messageConfirmCaseAfterPathogenTest";
-	String messageConvertEventParticipantToCase = "messageConvertEventParticipantToCase";
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
 	String messageContactCreated = "messageContactCreated";
@@ -558,7 +530,6 @@ public interface Strings {
 	String messageNoContactsSelected = "messageNoContactsSelected";
 	String messageNoCsvFile = "messageNoCsvFile";
 	String messageNoEndDate = "messageNoEndDate";
-	String messageNoEventFound = "messageNoEventFound";
 	String messageNoEventParticipantsSelected = "messageNoEventParticipantsSelected";
 	String messageNoEventsSelected = "messageNoEventsSelected";
 	String messageNoPathogenTestsSelected = "messageNoPathogenTestsSelected";
@@ -675,11 +646,6 @@ public interface Strings {
 	String promptDateTo = "promptDateTo";
 	String promptDisease = "promptDisease";
 	String promptDistrict = "promptDistrict";
-	String promptEventDateFrom = "promptEventDateFrom";
-	String promptEventDateTo = "promptEventDateTo";
-	String promptEventEpiWeekFrom = "promptEventEpiWeekFrom";
-	String promptEventEpiWeekTo = "promptEventEpiWeekTo";
-	String promptEventsSearchField = "promptEventsSearchField";
 	String promptFilterByPeriod = "promptFilterByPeriod";
 	String promptNamePhoneEmail = "promptNamePhoneEmail";
 	String promptNewCaseDateType = "promptNewCaseDateType";
@@ -711,6 +677,4 @@ public interface Strings {
 	String years = "years";
 	String yes = "yes";
 	String yesterday = "yesterday";
-	String infoSelectOrCreatePersonForCase = "infoSelectOrCreatePersonForCase";
-	String infoSelectOrCreatePersonForCaseImport = "infoSelectOrCreatePersonForCaseImport";
 }

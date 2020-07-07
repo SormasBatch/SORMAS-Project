@@ -47,11 +47,5 @@ public interface EventParticipantFacade {
 		Integer max,
 		List<SortProperty> sortProperties);
 
-	void validate(EventParticipantDto eventParticipant);
-
 	long count(EventParticipantCriteria eventParticipantCriteria);
-
-	boolean exists(String uuid);
-
-	EventParticipantReferenceDto getReferenceByUuid(String uuid);
 }

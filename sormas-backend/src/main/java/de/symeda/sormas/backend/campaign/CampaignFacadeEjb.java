@@ -21,7 +21,6 @@ import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.CampaignIndexDto;
-import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
@@ -204,16 +203,9 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		campaignService.ensurePersisted(campaign);
 	}
 
-	public static CampaignReferenceDto toReferenceDto(Campaign entity) {
-		if (entity == null) {
-			return null;
-		}
-		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.toString());
-		return dto;
-	}
-
 	@LocalBean
 	@Stateless
 	public static class CampaignFacadeEjbLocal extends CampaignFacadeEjb {
+
 	}
 }

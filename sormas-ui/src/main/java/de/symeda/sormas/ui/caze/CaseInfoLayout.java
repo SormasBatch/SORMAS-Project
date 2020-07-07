@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -30,12 +31,11 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.AbstractInfoLayout;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 @SuppressWarnings("serial")
-public class CaseInfoLayout extends AbstractInfoLayout {
+public class CaseInfoLayout extends HorizontalLayout {
 
 	private final CaseDataDto caseDto;
 
@@ -58,12 +58,10 @@ public class CaseInfoLayout extends AbstractInfoLayout {
 		leftColumnLayout.setMargin(false);
 		leftColumnLayout.setSpacing(true);
 		{
-			final Label caseIdLabel = addDescLabel(
-					leftColumnLayout,
-					DataHelper.getShortUuid(caseDto.getUuid()),
-					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID));
-			caseIdLabel.setId("caseIdLabel");
-			caseIdLabel.setDescription(caseDto.getUuid());
+			addDescLabel(
+				leftColumnLayout,
+				DataHelper.getShortUuid(caseDto.getUuid()),
+				I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.UUID)).setDescription(caseDto.getUuid());
 
 			if (FacadeProvider.getConfigFacade().isGermanServer()) {
 				addDescLabel(
@@ -123,5 +121,13 @@ public class CaseInfoLayout extends AbstractInfoLayout {
 			}
 		}
 		this.addComponent(rightColumnLayout);
+	}
+
+	private static Label addDescLabel(AbstractLayout layout, Object content, String caption) {
+		String contentString = content != null ? content.toString() : "";
+		Label label = new Label(contentString);
+		label.setCaption(caption);
+		layout.addComponent(label);
+		return label;
 	}
 }

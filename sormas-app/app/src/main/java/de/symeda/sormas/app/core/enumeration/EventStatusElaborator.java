@@ -39,15 +39,12 @@ public class EventStatusElaborator implements StatusElaborator {
 
 	@Override
 	public int getColorIndicatorResource() {
-		switch (status) {
-			case SIGNAL:
-				return R.color.indicatorSignal;
-			case EVENT:
-			case SCREENING:
-			case CLUSTER:
-				return R.color.indicatorEvent;
-			case DROPPED:
-				return R.color.indicatorDroppedEvent;
+		if (status == EventStatus.POSSIBLE) {
+			return R.color.indicatorPossibleEvent;
+		} else if (status == EventStatus.CONFIRMED) {
+			return R.color.indicatorConfirmedEvent;
+		} else if (status == EventStatus.NO_EVENT) {
+			return R.color.indicatorNoEvent;
 		}
 
 		return R.color.noColor;
@@ -61,13 +58,11 @@ public class EventStatusElaborator implements StatusElaborator {
 	@Override
 	public int getIconResourceId() {
 		switch (status) {
-		case SIGNAL:
+		case POSSIBLE:
 			return R.drawable.ic_lp_possible_alerts_192dp;
-		case EVENT:
-		case SCREENING:
-		case CLUSTER:
+		case CONFIRMED:
 			return R.drawable.ic_lp_confirmed_alerts_192dp;
-		case DROPPED:
+		case NO_EVENT:
 			return R.drawable.ic_lp_not_an_alert_192dp;
 		default:
 			throw new IllegalArgumentException(status.toString());

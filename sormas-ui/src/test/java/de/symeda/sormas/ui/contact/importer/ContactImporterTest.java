@@ -76,8 +76,9 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 				List<PersonIndexDto> entries = new ArrayList<>();
 				for (PersonNameDto person : persons) {
-					if (PersonHelper
-						.areNamesSimilar(newPerson.getFirstName(), newPerson.getLastName(), person.getFirstName(), person.getLastName())) {
+					if (PersonHelper.areNamesSimilar(
+						newPerson.getFirstName() + " " + newPerson.getLastName(),
+						person.getFirstName() + " " + person.getLastName())) {
 						PersonIndexDto indexDto = FacadeProvider.getPersonFacade().getIndexDto(person.getUuid());
 						entries.add(indexDto);
 					}

@@ -25,7 +25,6 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -42,17 +41,14 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 
 	public SampleList(ContactReferenceDto contactRef) {
 		super(5);
+
 		sampleCriteria.contact(contactRef);
 	}
 
 	public SampleList(CaseReferenceDto caseRef) {
 		super(5);
-		sampleCriteria.caze(caseRef);
-	}
 
-	public SampleList(EventParticipantReferenceDto eventParticipantRef) {
-		super(5);
-		sampleCriteria.eventParticipant(eventParticipantRef);
+		sampleCriteria.caze(caseRef);
 	}
 
 	@Override
@@ -65,10 +61,7 @@ public class SampleList extends PaginationList<SampleIndexDto> {
 		} else {
 			updatePaginationLayout();
 			Label noSamplesLabel = new Label(
-				I18nProperties.getCaption(
-					sampleCriteria.getCaze() != null
-						? Captions.sampleNoSamplesForCase
-						: sampleCriteria.getContact() != null ? Captions.sampleNoSamplesForContact : Captions.sampleNoSamplesForContact));
+				I18nProperties.getCaption(sampleCriteria.getCaze() != null ? Captions.sampleNoSamplesForCase : Captions.sampleNoSamplesForContact));
 			listLayout.addComponent(noSamplesLabel);
 		}
 	}

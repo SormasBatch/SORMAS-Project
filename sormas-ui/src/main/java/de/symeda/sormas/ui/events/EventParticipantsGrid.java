@@ -31,13 +31,12 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
 import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
 @SuppressWarnings("serial")
 public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto, EventParticipantCriteria> {
 
-	private static final String CASE_ID = Captions.EventParticipant_caseUuid;
+	private static final String CASE_ID = Captions.EventParticipant_caseId;
 
 	@SuppressWarnings("unchecked")
 	public EventParticipantsGrid(EventParticipantCriteria criteria) {
@@ -57,6 +56,8 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			setSelectionMode(SelectionMode.NONE);
 		}
 
+		addEditColumn(e -> ControllerProvider.getEventParticipantController().editEventParticipant(e.getItem().getUuid()));
+
 		Column<EventParticipantIndexDto, String> caseIdColumn = addColumn(entry -> {
 			if (entry.getCaseUuid() != null) {
 				return entry.getCaseUuid();
@@ -69,7 +70,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		caseIdColumn.setRenderer(new CaseUuidRenderer(true));
 
 		setColumns(
-			EventParticipantIndexDto.UUID,
+			EDIT_BTN_ID,
 			EventParticipantIndexDto.PERSON_UUID,
 			EventParticipantIndexDto.NAME,
 			EventParticipantIndexDto.SEX,
@@ -77,25 +78,23 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			EventParticipantIndexDto.INVOLVEMENT_DESCRIPTION,
 			CASE_ID);
 
-		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<EventParticipantIndexDto, String>) getColumn(EventParticipantIndexDto.PERSON_UUID)).setRenderer(new UuidRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(EventParticipantIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 
-		addItemClickListener(new ShowDetailsListener<>(CASE_ID, false, e -> {
-			if (e.getCaseUuid() != null) {
-				ControllerProvider.getCaseController().navigateToCase(e.getCaseUuid());
-			} else {
-				EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getUuid());
-				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
+		addItemClickListener(e -> {
+			if (e.getColumn() != null && CASE_ID.equals(e.getColumn().getId())) {
+				if (e.getItem().getCaseUuid() != null) {
+					ControllerProvider.getCaseController().navigateToCase(e.getItem().getCaseUuid());
+				} else {
+					EventParticipantDto eventParticipant =
+						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(e.getItem().getUuid());
+					ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
+				}
 			}
-		}));
-		addItemClickListener(
-			new ShowDetailsListener<>(
-				EventParticipantIndexDto.UUID,
-				e -> ControllerProvider.getEventParticipantController().navigateToData(e.getUuid())));
+		});
 	}
 
 	public void reload() {

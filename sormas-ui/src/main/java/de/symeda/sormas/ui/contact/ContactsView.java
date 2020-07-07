@@ -473,19 +473,19 @@ public class ContactsView extends AbstractView {
 				scrollLayout.setMargin(false);
 
 				DateField toReferenceDate = new DateField(I18nProperties.getCaption(Captions.to), LocalDate.now());
-				toReferenceDate.setId("toReferenceDateField");
 				LocalDate fromReferenceLocal =
 					DateHelper8.toLocalDate(DateHelper.subtractDays(DateHelper8.toDate(LocalDate.now()), followUpRangeInterval - 1));
 				DateField fromReferenceDate = new DateField(I18nProperties.getCaption(Captions.from), fromReferenceLocal);
-				fromReferenceDate.setId("fromReferenceDateField");
 
-				Button minusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.contactMinusDays), e -> {
+				Button minusDaysButton = new Button(I18nProperties.getCaption(Captions.contactMinusDays));
+				CssStyles.style(minusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+				minusDaysButton.addClickListener(e -> {
 					followUpRangeInterval =
-							DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+						DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
 					buttonPreviousOrNextClick = true;
 					toReferenceDate.setValue(toReferenceDate.getValue().minusDays(followUpRangeInterval));
 					fromReferenceDate.setValue(fromReferenceDate.getValue().minusDays(followUpRangeInterval));
-				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+				});
 				scrollLayout.addComponent(minusDaysButton);
 
 				fromReferenceDate.addValueChangeListener(e -> {
@@ -510,13 +510,15 @@ public class ContactsView extends AbstractView {
 				});
 				scrollLayout.addComponent(toReferenceDate);
 
-				Button plusDaysButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.contactPlusDays), e -> {
+				Button plusDaysButton = new Button(I18nProperties.getCaption(Captions.contactPlusDays));
+				CssStyles.style(plusDaysButton, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+				plusDaysButton.addClickListener(e -> {
 					followUpRangeInterval =
-							DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
+						DateHelper.getDaysBetween(DateHelper8.toDate(fromReferenceDate.getValue()), DateHelper8.toDate(toReferenceDate.getValue()));
 					buttonPreviousOrNextClick = true;
 					toReferenceDate.setValue(toReferenceDate.getValue().plusDays(followUpRangeInterval));
 					fromReferenceDate.setValue(fromReferenceDate.getValue().plusDays(followUpRangeInterval));
-				}, ValoTheme.BUTTON_PRIMARY, CssStyles.FORCE_CAPTION);
+				});
 				scrollLayout.addComponent(plusDaysButton);
 
 				actionButtonsLayout.addComponent(scrollLayout);

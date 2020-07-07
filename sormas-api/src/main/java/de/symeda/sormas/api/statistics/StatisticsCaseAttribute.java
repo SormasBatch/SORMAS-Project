@@ -47,7 +47,7 @@ public enum StatisticsCaseAttribute {
 
 	JURISDICTION(StatisticsCaseAttributeGroup.PLACE,
 		true,
-		true,
+		false,
 		StatisticsCaseSubAttribute.REGION,
 		StatisticsCaseSubAttribute.DISTRICT,
 		StatisticsCaseSubAttribute.COMMUNITY,

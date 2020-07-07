@@ -11,7 +11,6 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -210,7 +209,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetAllActiveVisitsAfter() throws InterruptedException {
+	public void testGetAllActiveVisitsAfter() {
 
 		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
@@ -232,7 +231,6 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 		date = new Date();
 
-		TimeUnit.MILLISECONDS.sleep(1);
 		visitWithChanges.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(visitWithChanges);
 

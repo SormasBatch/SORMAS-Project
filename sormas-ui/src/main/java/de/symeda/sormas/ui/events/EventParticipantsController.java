@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.events;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Notification;
@@ -28,7 +29,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -62,22 +62,29 @@ public class EventParticipantsController {
 				UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
 				createForm.getFieldGroup());
 
-		createComponent.addCommitListener(() -> {
-			if (!createForm.getFieldGroup().isModified()) {
-				final EventParticipantDto dto = createForm.getValue();
-				final PersonDto person = PersonDto.build();
-				person.setFirstName(createForm.getPersonFirstName());
-				person.setLastName(createForm.getPersonLastName());
+		createComponent.addCommitListener(new CommitListener() {
 
-				ControllerProvider.getPersonController()
-					.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant), selectedPerson -> {
-						if (selectedPerson != null) {
-							dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
-							EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
-							Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
-							ControllerProvider.getEventParticipantController().editEventParticipant(savedDto.getUuid(), doneConsumer);
-						}
-					});
+			@Override
+			public void onCommit() {
+				if (!createForm.getFieldGroup().isModified()) {
+					final EventParticipantDto dto = createForm.getValue();
+					final PersonDto person = PersonDto.build();
+					person.setFirstName(createForm.getPersonFirstName());
+					person.setLastName(createForm.getPersonLastName());
+
+					ControllerProvider.getPersonController()
+						.selectOrCreatePerson(
+							person,
+							I18nProperties.getString(Strings.infoSelectOrCreatePersonForEventParticipant),
+							selectedPerson -> {
+								if (selectedPerson != null) {
+									dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
+									EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
+									Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
+									ControllerProvider.getEventParticipantController().editEventParticipant(savedDto.getUuid());
+								}
+							});
+				}
 			}
 		});
 
@@ -87,12 +94,7 @@ public class EventParticipantsController {
 		});
 	}
 
-	public void navigateToData(String eventParticipantUuid) {
-		final String navigationState = EventParticipantDataView.VIEW_NAME + "/" + eventParticipantUuid;
-		SormasUI.get().getNavigator().navigateTo(navigationState);
-	}
-
-	public void editEventParticipant(String eventParticipantUuid, Consumer<EventParticipantReferenceDto> doneConsumer) {
+	public void editEventParticipant(String eventParticipantUuid) {
 
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
 		EventParticipantEditForm editForm =
@@ -116,19 +118,25 @@ public class EventParticipantsController {
 					personFacade.savePerson(dto.getPerson());
 					dto = eventParticipantFacade.saveEventParticipant(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
-					if (doneConsumer != null)
-						doneConsumer.accept(null);
-					SormasUI.refreshView();
+					refreshView();
 				}
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(editForm.getValue().toReference());
 				UI.getCurrent().removeWindow(window);
-				SormasUI.refreshView();
+				refreshView();
 			}, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX));
+		}
+	}
+
+	private void refreshView() {
+		View currentView = SormasUI.get().getNavigator().getCurrentView();
+		if (currentView instanceof EventParticipantsView) {
+			// force refresh, because view didn't change
+			((EventParticipantsView) currentView).enter(null);
 		}
 	}
 
@@ -155,38 +163,5 @@ public class EventParticipantsController {
 						false).show(Page.getCurrent());
 				});
 		}
-	}
-
-	public CommitDiscardWrapperComponent<?> getEventParticipantDataEditComponent(String eventParticipantUuid) {
-		final EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantUuid);
-
-		final EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid());
-
-		final EventParticipantEditForm editForm = new EventParticipantEditForm(event);
-		editForm.setValue(eventParticipant);
-		editForm.setWidth(100, Unit.PERCENTAGE);
-		final CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent = new CommitDiscardWrapperComponent<>(
-			editForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT),
-			editForm.getFieldGroup());
-
-		editComponent.addCommitListener(() -> {
-			if (!editForm.getFieldGroup().isModified()) {
-				EventParticipantDto dto = editForm.getValue();
-
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(dto);
-				Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
-				SormasUI.refreshView();
-			}
-		});
-
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipant.toReference());
-				UI.getCurrent().getNavigator().navigateTo(EventParticipantsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityEventParticipant));
-		}
-
-		return editComponent;
 	}
 }

@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.contact;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
@@ -67,8 +68,9 @@ public class ContactDataView extends AbstractContactView {
 	}
 
 	@Override
-	protected void initView(String params) {
+	public void enter(ViewChangeEvent event) {
 
+		super.enter(event);
 		setHeightUndefined();
 
 		String htmlLayout = LayoutUtil.fluidRow(

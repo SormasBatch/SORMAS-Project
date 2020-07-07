@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.samples;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -30,9 +31,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -40,7 +38,6 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.contact.ContactInfoLayout;
-import de.symeda.sormas.ui.events.EventParticipantInfoLayout;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.LayoutUtil;
@@ -54,7 +51,6 @@ public class SampleDataView extends AbstractSampleView {
 	public static final String EDIT_LOC = "edit";
 	public static final String CASE_LOC = "case";
 	public static final String CONTACT_LOC = "contact";
-	public static final String EVENT_PARTICIPANT_LOC = "eventParticipant";
 	public static final String PATHOGEN_TESTS_LOC = "pathogenTests";
 	public static final String ADDITIONAL_TESTS_LOC = "additionalTests";
 
@@ -63,15 +59,14 @@ public class SampleDataView extends AbstractSampleView {
 	}
 
 	@Override
-	protected void initView(String params) {
-
+	public void enter(ViewChangeEvent event) {
+		super.enter(event);
 		setHeightUndefined();
 
 		String htmlLayout = LayoutUtil.fluidRow(
 			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CONTACT_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_PARTICIPANT_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, PATHOGEN_TESTS_LOC),
 			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ADDITIONAL_TESTS_LOC));
 
@@ -108,18 +103,6 @@ public class SampleDataView extends AbstractSampleView {
 			final ContactInfoLayout contactInfoLayout = new ContactInfoLayout(contactDto);
 			contactInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(contactInfoLayout, CONTACT_LOC);
-		}
-		final EventParticipantReferenceDto associatedEventParticipant = sampleDto.getAssociatedEventParticipant();
-		if (associatedEventParticipant != null) {
-			final EventParticipantDto eventParticipantDto =
-				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
-			final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid());
-
-			disease = eventDto.getDisease();
-
-			final EventParticipantInfoLayout eventParticipantInfoLayout = new EventParticipantInfoLayout(eventParticipantDto, eventDto);
-			eventParticipantInfoLayout.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(eventParticipantInfoLayout, EVENT_PARTICIPANT_LOC);
 		}
 
 		CommitDiscardWrapperComponent<SampleEditForm> editComponent =
@@ -162,7 +145,5 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
 		}
 		//}
-
-		setSampleEditPermission(container);
 	}
 }

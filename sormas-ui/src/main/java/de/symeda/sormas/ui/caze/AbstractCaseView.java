@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.caze;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.Property.ValueChangeEvent;
@@ -45,21 +44,22 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoView;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
-import de.symeda.sormas.ui.epidata.CaseEpiDataView;
+import de.symeda.sormas.ui.epidata.EpiDataView;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
 import de.symeda.sormas.ui.therapy.TherapyView;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.ViewMode;
 
 @SuppressWarnings("serial")
-public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceDto> {
+public abstract class AbstractCaseView extends AbstractSubNavigationView {
 
 	public static final String VIEW_MODE_URL_PREFIX = "v";
 
 	public static final String ROOT_VIEW_NAME = CasesView.VIEW_NAME;
 
+	private CaseReferenceDto caseRef = null;
 	private Boolean hasOutbreak;
 
 	private final ViewConfiguration viewConfiguration;
@@ -97,7 +97,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			public void valueChange(ValueChangeEvent event) {
 				viewConfiguration.setViewMode((ViewMode) event.getProperty().getValue());
 				// refresh
-				ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
+				ControllerProvider.getCaseController().navigateToCase(getCaseRef().getUuid());
 			}
 		};
 		viewModeToggle.addValueChangeListener(viewModeToggleListener);
@@ -106,11 +106,19 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
 
-		if (!findReferenceByParams(params)) {
+		String[] passedParams = params.split("\\?");
+		if (passedParams.length > 0) {
+			// Remove possible slash from filters
+			String uuid = passedParams[0].replaceAll("/", "");
+			caseRef = FacadeProvider.getCaseFacade().getReferenceByUuid(uuid);
+		}
+
+		if (caseRef == null) {
+			ControllerProvider.getCaseController().navigateToIndex();
 			return;
 		}
 
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getReference().getUuid());
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseRef.getUuid());
 
 		// Handle outbreaks for the disease and district of the case
 		if (FacadeProvider.getOutbreakFacade().hasOutbreak(caze.getDistrict(), caze.getDisease()) && caze.getDisease().usesSimpleViewForOutbreaks()) {
@@ -161,7 +169,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			}
 			menu.addView(CaseSymptomsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.SYMPTOMS), params);
 			if (caze.getDisease() != Disease.CONGENITAL_RUBELLA) {
-				menu.addView(CaseEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
+				menu.addView(EpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPI_DATA), params);
 			}
 			if (UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)
 				&& !caze.isUnreferredPortHealthCase()
@@ -183,7 +191,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			menu.addView(CaseContactsView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseContacts), params);
 		}
 
-		infoLabel.setValue(getReference().getCaption());
+		infoLabel.setValue(caseRef.getCaption());
 
 		infoLabelSub.setValue(
 			caze.getDisease() != Disease.OTHER
@@ -196,44 +204,37 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 		super.enter(event);
 
-		if (getReference() == null) {
-			UI.getCurrent().getNavigator().navigateTo(getRootViewName());
-		} else if (redirectSimpleModeToCaseDataView && getViewMode() == ViewMode.SIMPLE) {
-			ControllerProvider.getCaseController().navigateToCase(getReference().getUuid());
+		if (caseRef == null) {
+			// NOOP: opening a case centric view without a case defaults to another view
 		} else {
-			initView(event.getParameters().trim());
+			if (redirectSimpleModeToCaseDataView && getViewMode() == ViewMode.SIMPLE) {
+				ControllerProvider.getCaseController().navigateToCase(caseRef.getUuid());
+			} else {
+				initView(event.getParameters().trim());
+			}
 		}
 	}
 
-	@Override
-	protected String getRootViewName() {
-		return ROOT_VIEW_NAME;
-	}
-
-	@Override
-	protected CaseReferenceDto getReferenceByUuid(String uuid) {
-
-		final CaseReferenceDto reference;
-		if (FacadeProvider.getCaseFacade().exists(uuid)) {
-			reference = FacadeProvider.getCaseFacade().getReferenceByUuid(uuid);
-		} else {
-			reference = null;
-		}
-		return reference;
-	}
+	/**
+	 * We be called by {@link #enter(ViewChangeEvent)}, when a case is selected and the view shall show its specific content.
+	 * 
+	 * @param params
+	 *            The URL parameters String
+	 */
+	protected abstract void initView(String params);
 
 	@Override
 	protected void setSubComponent(Component newComponent) {
 
 		super.setSubComponent(newComponent);
 
-		if (getReference() != null && FacadeProvider.getCaseFacade().isDeleted(getReference().getUuid())) {
+		if (caseRef != null && FacadeProvider.getCaseFacade().isDeleted(caseRef.getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}
 
 	public CaseReferenceDto getCaseRef() {
-		return getReference();
+		return caseRef;
 	}
 
 	public boolean isHasOutbreak() {
@@ -251,7 +252,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 	public void setCaseEditPermission(Component component) {
 
-		Boolean isCaseEditAllowed = FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid());
+		Boolean isCaseEditAllowed = FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid());
 		if (!isCaseEditAllowed) {
 			component.setEnabled(false);
 		}

@@ -51,7 +51,6 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -153,7 +152,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@Override
 	public List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek) {
 
-		if (userService.getCurrentUser().getJurisdictionLevel() != JurisdictionLevel.NATION) {
+		//Only for national users
+		if (!UserRole.isNational(userService.getCurrentUser().getUserRoles())) {
 			return new ArrayList<>();
 		}
 

@@ -20,7 +20,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -51,7 +50,6 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 	private Join<Location, Region> addressRegion;
 	private Join<Location, Region> addressDistrict;
 	private Join<Person, Facility> occupationFacility;
-	private Join<Contact, EpiData> epiData;
 
 	public ContactJoins(Root<Contact> contact) {
 		super(contact);
@@ -193,13 +191,5 @@ public class ContactJoins extends AbstractDomainObjectJoins<Contact, Contact> {
 
 	private void setOccupationFacility(Join<Person, Facility> occupationFacility) {
 		this.occupationFacility = occupationFacility;
-	}
-
-	public Join<Contact, EpiData> getEpiData() {
-		return getOrCreate(epiData, Contact.EPI_DATA, JoinType.LEFT, this::setEpiData);
-	}
-
-	private void setEpiData(Join<Contact, EpiData> epiData) {
-		this.epiData = epiData;
 	}
 }

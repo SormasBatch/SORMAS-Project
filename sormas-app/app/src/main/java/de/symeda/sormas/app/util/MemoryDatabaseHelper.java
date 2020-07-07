@@ -39,7 +39,6 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.epidata.TravelType;
 import de.symeda.sormas.api.epidata.WaterSource;
-import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.facility.FacilityType;
@@ -660,12 +659,12 @@ public class MemoryDatabaseHelper {
 			return eventList;
 		}
 
-		public static List<Event> getSignals(int number) {
+		public static List<Event> getPossibleEvents(int number) {
 			eventList.clear();
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			List<Event> list = EventGenerator.get(min);
 			for (Event item : list) {
-				if (item.getEventStatus() == EventStatus.SIGNAL) {
+				if (item.getEventStatus() == EventStatus.POSSIBLE) {
 					eventList.add(item);
 				}
 			}
@@ -678,7 +677,7 @@ public class MemoryDatabaseHelper {
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			List<Event> list = EventGenerator.get(min);
 			for (Event item : list) {
-				if (item.getEventStatus() == EventStatus.EVENT) {
+				if (item.getEventStatus() == EventStatus.CONFIRMED) {
 					eventList.add(item);
 				}
 			}
@@ -686,12 +685,12 @@ public class MemoryDatabaseHelper {
 			return eventList;
 		}
 
-		public static List<Event> getDroppedEvents(int number) {
+		public static List<Event> getNoEvents(int number) {
 			eventList.clear();
 			int min = Math.min(number, BaseDataGenerator.DEFAULT_RECORD_NUMBER);
 			List<Event> list = EventGenerator.get(min);
 			for (Event item : list) {
-				if (item.getEventStatus() == EventStatus.DROPPED) {
+				if (item.getEventStatus() == EventStatus.NO_EVENT) {
 					eventList.add(item);
 				}
 			}
@@ -1625,12 +1624,11 @@ class EventGenerator extends BaseDataGenerator {
 			data1.setUuid(getRandomUuid());
 			data1.setEventStatus(getRandomEventStatus());
 			data1.setEventDesc(getRandomSentence());
-			data1.setStartDate(getRandomDate());
+			data1.setEventDate(getRandomDate());
 			data1.setReportDateTime(getRandomDate());
 			data1.setReportingUser(UserGenerator.getSingle());
 			data1.setEventLocation(LocationGenerator.getSingle());
 			data1.setTypeOfPlace(getRandomTypeOfPlace());
-			data1.setSrcType(EventSourceType.HOTLINE_PERSON);
 			data1.setSrcFirstName(getRandomName());
 			data1.setSrcLastName(getRandomName());
 			data1.setSrcTelNo(getRandomPhoneNumber());
@@ -2394,11 +2392,9 @@ abstract class BaseDataGenerator {
 		List<EventStatus> list = new ArrayList<EventStatus>() {
 
 			{
-				add(EventStatus.SIGNAL);
-				add(EventStatus.EVENT);
-				add(EventStatus.SCREENING);
-				add(EventStatus.CLUSTER);
-				add(EventStatus.DROPPED);
+				add(EventStatus.POSSIBLE);
+				add(EventStatus.CONFIRMED);
+				add(EventStatus.NO_EVENT);
 			}
 		};
 

@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
-import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
-
 import java.util.Arrays;
 import java.util.Set;
 
@@ -40,7 +38,6 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -50,6 +47,8 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.region.Community;
 import de.symeda.sormas.backend.region.District;
 import de.symeda.sormas.backend.region.Region;
+
+import static de.symeda.sormas.api.EntityDto.COLUMN_LENGTH_DEFAULT;
 
 @Entity(name = "users")
 @Audited
@@ -315,10 +314,5 @@ public class User extends AbstractDomainObject {
 	 */
 	public boolean hasAnyUserRole(UserRole... userRoles) {
 		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
-	}
-
-	@Transient
-	public JurisdictionLevel getJurisdictionLevel() {
-		return UserRole.getJurisdictionLevel(this.getUserRoles());
 	}
 }

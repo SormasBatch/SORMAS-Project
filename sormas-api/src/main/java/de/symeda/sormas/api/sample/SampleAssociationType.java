@@ -6,8 +6,7 @@ public enum SampleAssociationType {
 
 	ALL,
 	CASE,
-	CONTACT,
-	EVENT_PARTICIPANT;
+	CONTACT;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

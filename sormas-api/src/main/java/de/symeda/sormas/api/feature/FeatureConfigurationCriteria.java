@@ -15,18 +15,18 @@ public class FeatureConfigurationCriteria extends BaseCriteria implements Clonea
 	public static final String DISEASE = "disease";
 	public static final String ENABLED = "enabled";
 
-	private FeatureType[] featureTypes;
+	private FeatureType featureType;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private Disease disease;
 	private Boolean enabled;
 
-	public FeatureType[] getFeatureTypes() {
-		return featureTypes;
+	public FeatureType getFeatureType() {
+		return featureType;
 	}
 
-	public FeatureConfigurationCriteria featureType(FeatureType... featureTypes) {
-		this.featureTypes = featureTypes;
+	public FeatureConfigurationCriteria featureType(FeatureType featureType) {
+		this.featureType = featureType;
 		return this;
 	}
 

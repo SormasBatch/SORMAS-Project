@@ -11,13 +11,13 @@
       </entry>
       <entry>
          <key>BASIC</key>
-         <value>//label[(text() = 'Contacts' or . = 'Contacts')]</value>
+         <value>//*[(text() = 'Contacts' or . = 'Contacts')]</value>
       </entry>
    </selectorCollection>
    <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
-      <isSelected>true</isSelected>
+      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>tag</name>
       <type>Main</type>

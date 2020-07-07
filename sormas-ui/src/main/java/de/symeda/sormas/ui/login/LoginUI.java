@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.login;
 
+import javax.servlet.annotation.HttpConstraint;
+import javax.servlet.annotation.ServletSecurity;
+import javax.servlet.annotation.WebServlet;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Viewport;
@@ -27,15 +31,11 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
-import de.symeda.sormas.api.FacadeProvider;
+
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasErrorHandler;
 import de.symeda.sormas.ui.login.LoginScreen.LoginListener;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
-
-import javax.servlet.annotation.HttpConstraint;
-import javax.servlet.annotation.ServletSecurity;
-import javax.servlet.annotation.WebServlet;
 
 /**
  * Main UI class of the application that shows either the login screen or the
@@ -61,15 +61,19 @@ public class LoginUI extends UI {
 
 		VaadinSession.getCurrent().setConverterFactory(new SormasDefaultConverterFactory());
 
-		getPage().setTitle(FacadeProvider.getConfigFacade().getSormasInstanceName());
+		getPage().setTitle("SORMAS");
 
-		setContent(
-			new LoginScreen(
-				(LoginListener) () -> UI.getCurrent()
+		setContent(new LoginScreen(new LoginListener() {
+
+			@Override
+			public void loginSuccessful() {
+				UI.getCurrent()
 					.getPage()
 					.setLocation(
 						VaadinServletService.getCurrentServletRequest().getContextPath() + "#"
-							+ DataHelper.toStringNullable(UI.getCurrent().getPage().getUriFragment()))));
+							+ DataHelper.toStringNullable(UI.getCurrent().getPage().getUriFragment()));
+			}
+		}));
 	}
 
 	@WebServlet(urlPatterns = {

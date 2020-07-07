@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 
@@ -28,75 +27,45 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
 
 @SuppressWarnings("serial")
-public abstract class AbstractEventView extends AbstractDetailView<EventReferenceDto> {
+public class AbstractEventView extends AbstractSubNavigationView {
 
 	public static final String ROOT_VIEW_NAME = EventsView.VIEW_NAME;
+
+	private EventReferenceDto eventRef;
 
 	protected AbstractEventView(String viewName) {
 		super(viewName);
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
-
-		super.enter(event);
-		initOrRedirect(event);
-	}
-
-	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
-
-		if (!findReferenceByParams(params)) {
-			return;
+		if (params.endsWith("/")) {
+			params = params.substring(0, params.length() - 1);
 		}
+
+		eventRef = FacadeProvider.getEventFacade().getReferenceByUuid(params);
 
 		menu.removeAllViews();
 		menu.addView(EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventsList));
 		menu.addView(EventDataView.VIEW_NAME, I18nProperties.getCaption(EventDto.I18N_PREFIX), params);
 		menu.addView(EventParticipantsView.VIEW_NAME, I18nProperties.getCaption(Captions.eventEventParticipants), params);
-		infoLabel.setValue(getReference().getCaption());
-		infoLabelSub.setValue(DataHelper.getShortUuid(getReference().getUuid()));
-	}
-
-	@Override
-	protected EventReferenceDto getReferenceByUuid(String uuid) {
-
-		final EventReferenceDto reference;
-		if (FacadeProvider.getEventFacade().exists(uuid)) {
-			reference = FacadeProvider.getEventFacade().getReferenceByUuid(uuid);
-		} else {
-			reference = null;
-		}
-		return reference;
-	}
-
-	@Override
-	protected String getRootViewName() {
-		return ROOT_VIEW_NAME;
+		infoLabel.setValue(eventRef.getCaption());
+		infoLabelSub.setValue(DataHelper.getShortUuid(eventRef.getUuid()));
 	}
 
 	@Override
 	protected void setSubComponent(Component newComponent) {
 		super.setSubComponent(newComponent);
 
-		if (FacadeProvider.getEventFacade().isDeleted(getReference().getUuid())) {
+		if (FacadeProvider.getEventFacade().isDeleted(eventRef.getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}
 
-	public void setEventEditPermission(Component component) {
-
-		Boolean isEventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(getEventRef().getUuid());
-
-		if (!isEventEditAllowed) {
-			component.setEnabled(false);
-		}
-	}
-
 	public EventReferenceDto getEventRef() {
-		return getReference();
+		return eventRef;
 	}
 }

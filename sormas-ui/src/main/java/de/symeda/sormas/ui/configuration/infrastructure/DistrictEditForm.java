@@ -34,7 +34,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	private static final String HTML_LAYOUT =
 		fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE) + fluidRowLocs(DistrictDto.REGION) + fluidRowLocs(RegionDto.EXTERNAL_ID); // ,DistrictDto.GROWTH_RATE);
 
-	private final boolean create;
+	private boolean create;
 
 	public DistrictEditForm(boolean create) {
 

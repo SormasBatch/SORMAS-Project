@@ -45,7 +45,6 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.RowCount;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -75,8 +74,6 @@ public class UsersView extends AbstractView {
 	private ComboBox districtFilter;
 	private TextField searchField;
 
-	private RowCount rowsCount;
-
 	public UsersView() {
 		super(VIEW_NAME);
 
@@ -86,10 +83,6 @@ public class UsersView extends AbstractView {
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-
-		rowsCount = new RowCount(Strings.labelNumberOfUsers, grid.getItemCount());
-		gridLayout.addComponent(rowsCount);
-
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -186,7 +179,6 @@ public class UsersView extends AbstractView {
 		searchField.addTextChangeListener(e -> {
 			criteria.freeText(e.getText());
 			grid.reload();
-			rowsCount.update(grid.getItemCount());
 		});
 		filterLayout.addComponent(searchField);
 

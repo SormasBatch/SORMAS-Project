@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.caze.porthealthinfo;
 
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
 @SuppressWarnings("serial")
 public class PortHealthInfoView extends AbstractCaseView {
@@ -32,11 +31,6 @@ public class PortHealthInfoView extends AbstractCaseView {
 
 	@Override
 	protected void initView(String params) {
-
-		CommitDiscardWrapperComponent<PortHealthInfoForm> portHealthInfoComponent =
-			ControllerProvider.getCaseController().getPortHealthInfoComponent(getCaseRef().getUuid());
-		setSubComponent(portHealthInfoComponent);
-
-		setCaseEditPermission(portHealthInfoComponent);
+		setSubComponent(ControllerProvider.getCaseController().getPortHealthInfoComponent(getCaseRef().getUuid()));
 	}
 }

@@ -67,13 +67,16 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		return getDataProvider().size(new Query<>());
 	}
 
-	protected void addEditColumn(Consumer<T> handler) {
-
+	protected void addEditColumn(Consumer<ItemClick<T>> handler) {
 		Column<T, String> editColumn = addColumn(entry -> VaadinIcons.EDIT.getHtml(), new HtmlRenderer());
 		editColumn.setId(EDIT_BTN_ID);
 		editColumn.setSortable(false);
 		editColumn.setWidth(20);
 
-		addItemClickListener(new ShowDetailsListener<>(EDIT_BTN_ID, e -> handler.accept(e)));
+		addItemClickListener(e -> {
+			if (e.getColumn() != null && (EDIT_BTN_ID.equals(e.getColumn().getId()) || e.getMouseEventDetails().isDoubleClick())) {
+				handler.accept(e);
+			}
+		});
 	}
 }

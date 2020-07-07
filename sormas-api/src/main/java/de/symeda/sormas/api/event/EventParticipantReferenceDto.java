@@ -18,8 +18,6 @@
 package de.symeda.sormas.api.event;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.utils.DataHelper;
 
 public class EventParticipantReferenceDto extends ReferenceDto {
 
@@ -33,25 +31,8 @@ public class EventParticipantReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 	}
 
-	public EventParticipantReferenceDto(String uuid, String firstName, String lastName) {
-		super(uuid);
-		this.setCaption(buildCaption(uuid, firstName, lastName));
-	}
-
 	public EventParticipantReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
-	}
-
-	public static String buildCaption(String uuid, String firstName, String lastName) {
-
-		String personName = PersonDto.buildCaption(firstName, lastName);
-		String shortUuid = DataHelper.getShortUuid(uuid);
-
-		if (personName.trim().length() > 0) {
-			return personName + " (" + shortUuid + ")";
-		}
-
-		return shortUuid;
 	}
 }

@@ -57,7 +57,6 @@ import de.symeda.sormas.backend.common.MessageType;
 import de.symeda.sormas.backend.common.MessagingService;
 import de.symeda.sormas.backend.common.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.facility.FacilityService;
 import de.symeda.sormas.backend.region.Region;
@@ -323,92 +322,48 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		final Sample sample = sampleService.getByUuid(sampleUuid);
 		final Case caze = sample.getAssociatedCase();
 		final Contact contact = sample.getAssociatedContact();
-		final EventParticipant eventParticipant = sample.getAssociatedEventParticipant();
 		final List<User> messageRecipients = new ArrayList<>();
-		Disease disease = null;
 
 		if (caze != null) {
 			final Region region = caze.getRegion();
-			disease = caze.getDisease();
+			final Disease disease = caze.getDisease();
 			messageRecipients.addAll(userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR));
-
+			sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease, messageRecipients);
 		}
 
 		if (contact != null) {
 			final Region region = contact.getRegion() != null ? contact.getRegion() : contact.getCaze().getRegion();
-			disease = contact.getDisease() != null ? contact.getDisease() : contact.getCaze().getDisease();
+			final Disease disease = contact.getDisease() != null ? contact.getDisease() : contact.getCaze().getDisease();
 			messageRecipients.addAll(
 				userService.getAllByRegionAndUserRoles(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR)
 					.stream()
 					.filter(user -> !messageRecipients.contains(user))
 					.collect(Collectors.toList()));
-		}
-
-		if (eventParticipant != null) {
-			final Region region = eventParticipant.getEvent().getEventLocation().getRegion();
-			disease = eventParticipant.getEvent().getDisease();
-			messageRecipients.addAll(
-				userService.getAllByRegionAndUserRoles(region, UserRole.EVENT_OFFICER)
-					.stream()
-					.filter(user -> !messageRecipients.contains(user))
-					.collect(Collectors.toList()));
-			if (disease == null) {
-				sendMessageOnPathogenTestChanged(
-					existingPathogenTest,
-					newPathogenTest,
-					null,
-					messageRecipients,
-					MessagingService.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT_NO_DISEASE,
-					MessagingService.CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT_NO_DISEASE,
-					DataHelper.getShortUuid(eventParticipant.getUuid()));
-			}
-		}
-
-		if (disease != null) {
-			final String contentLabResultArrived = caze != null
-				? MessagingService.CONTENT_LAB_RESULT_ARRIVED
-				: contact != null
-					? MessagingService.CONTENT_LAB_RESULT_ARRIVED_CONTACT
-					: MessagingService.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT;
-
-			final String contentLabResultSpecified = caze != null
-				? MessagingService.CONTENT_LAB_RESULT_SPECIFIED
-				: contact != null
-					? MessagingService.CONTENT_LAB_RESULT_SPECIFIED_CONTACT
-					: MessagingService.CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT;
-			final String shortUuid =
-				DataHelper.getShortUuid(caze != null ? caze.getUuid() : contact != null ? contact.getUuid() : eventParticipant.getUuid());
-			sendMessageOnPathogenTestChanged(
-				existingPathogenTest,
-				newPathogenTest,
-				disease,
-				messageRecipients,
-				contentLabResultArrived,
-				contentLabResultSpecified,
-				shortUuid);
+			sendMessageOnPathogenTestChanged(existingPathogenTest, newPathogenTest, caze, contact, disease, messageRecipients);
 		}
 	}
 
 	private void sendMessageOnPathogenTestChanged(
 		PathogenTestDto existingPathogenTest,
 		PathogenTest newPathogenTest,
+		Case caze,
+		Contact contact,
 		Disease disease,
-		List<User> messageRecipients,
-		String contentLabResultArrived,
-		String contentLabResultSpecified,
-		String shortUuid) {
+		List<User> messageRecipients) {
 
 		if (existingPathogenTest == null && newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
+			final String contentString =
+				caze != null ? MessagingService.CONTENT_LAB_RESULT_ARRIVED : MessagingService.CONTENT_LAB_RESULT_ARRIVED_CONTACT;
 			for (User recipient : messageRecipients) {
 				try {
 					messagingService.sendMessage(
 						recipient,
 						I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_ARRIVED),
 						String.format(
-							I18nProperties.getString(contentLabResultArrived),
+							I18nProperties.getString(contentString),
 							newPathogenTest.getTestResult().toString(),
 							disease,
-							shortUuid,
+							DataHelper.getShortUuid(caze != null ? caze.getUuid() : contact.getUuid()),
 							newPathogenTest.getTestType(),
 							newPathogenTest.getTestedDisease()),
 						MessageType.EMAIL,
@@ -424,15 +379,17 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		} else if (existingPathogenTest != null
 			&& existingPathogenTest.getTestResult() == PathogenTestResultType.PENDING
 			&& newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
+			final String contentString =
+				caze != null ? MessagingService.CONTENT_LAB_RESULT_SPECIFIED : MessagingService.CONTENT_LAB_RESULT_SPECIFIED_CONTACT;
 			for (User recipient : messageRecipients) {
 				try {
 					messagingService.sendMessage(
 						recipient,
 						I18nProperties.getString(MessagingService.SUBJECT_LAB_RESULT_SPECIFIED),
 						String.format(
-							I18nProperties.getString(contentLabResultSpecified),
+							I18nProperties.getString(contentString),
 							disease,
-							shortUuid,
+							DataHelper.getShortUuid(caze != null ? caze.getUuid() : contact.getUuid()),
 							newPathogenTest.getTestResult().toString(),
 							newPathogenTest.getTestType(),
 							newPathogenTest.getTestedDisease()),

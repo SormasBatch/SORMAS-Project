@@ -49,7 +49,9 @@ public class PointsOfEntryGrid extends FilteredGrid<PointOfEntryDto, PointOfEntr
 			PointOfEntryDto.ACTIVE);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editPointOfEntry(e.getUuid()));
+			addEditColumn(e -> {
+				ControllerProvider.getInfrastructureController().editPointOfEntry(e.getItem().getUuid());
+			});
 		}
 
 		for (Column<?, ?> column : getColumns()) {

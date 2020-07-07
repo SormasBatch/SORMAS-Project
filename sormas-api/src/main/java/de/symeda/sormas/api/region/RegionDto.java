@@ -17,12 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.region;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
-
 import java.util.Date;
+
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class RegionDto extends EntityDto {
 
@@ -33,15 +31,12 @@ public class RegionDto extends EntityDto {
 	public static final String EPID_CODE = "epidCode";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
-	public static final String AREA = "area";
 
 	private String name;
 	private String epidCode;
 	private Float growthRate;
 	private boolean archived;
 	private String externalID;
-	@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
-	private AreaReferenceDto area;
 
 	public RegionDto(
 		Date creationDate,
@@ -110,20 +105,12 @@ public class RegionDto extends EntityDto {
 		this.externalID = externalID;
 	}
 
-	@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
-	public AreaReferenceDto getArea() {
-		return area;
-	}
-
-	public void setArea(AreaReferenceDto area) {
-		this.area = area;
-	}
-
 	public RegionReferenceDto toReference() {
 		return new RegionReferenceDto(getUuid());
 	}
 
 	public static RegionDto build() {
+
 		RegionDto dto = new RegionDto();
 		dto.setUuid(DataHelper.createUuid());
 		return dto;

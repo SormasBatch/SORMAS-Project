@@ -69,6 +69,9 @@ public class TestDataConnector {
 			}
 		}
 
-		return [keyColumnIndex, valueColumnIndex]
+		return [
+			keyColumnIndex,
+			valueColumnIndex
+		]
 	}
 }

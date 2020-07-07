@@ -42,6 +42,7 @@ import com.vaadin.v7.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DoneListener;
 
 public final class VaadinUiUtil {
 
@@ -90,12 +91,7 @@ public final class VaadinUiUtil {
 
 	public static Window showPopupWindow(Component content) {
 
-		return showPopupWindow(content, null);
-	}
-
-	public static Window showPopupWindow(Component content, String caption) {
-
-		Window window = new Window(caption);
+		Window window = new Window(null);
 		window.setModal(true);
 		window.setSizeUndefined();
 		window.setResizable(false);
@@ -108,11 +104,17 @@ public final class VaadinUiUtil {
 	}
 
 	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption) {
+
 		final Window popupWindow = VaadinUiUtil.showPopupWindow(content);
 		popupWindow.setCaption(caption);
 		content.setMargin(true);
 
-		content.addDoneListener(popupWindow::close);
+		content.addDoneListener(new DoneListener() {
+
+			public void onDone() {
+				popupWindow.close();
+			}
+		});
 
 		return popupWindow;
 	}

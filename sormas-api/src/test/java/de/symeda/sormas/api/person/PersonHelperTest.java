@@ -33,58 +33,32 @@ public class PersonHelperTest {
 		String firstName = "Thomas Miller";
 		String secondName = "Tomas Miller";
 
-		assertTrue(PersonHelper.areFullNamesSimilar(firstName, secondName));
+		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
 
 		firstName = "Thomas Miller";
 		secondName = "Miller Thomas";
 
-		assertTrue(PersonHelper.areFullNamesSimilar(firstName, secondName));
+		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
 
 		firstName = "Thomas Jake Miller";
 		secondName = "Thomas Miller";
 
-		assertTrue(PersonHelper.areFullNamesSimilar(firstName, secondName));
+		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
 
 		firstName = "Thomas Jake Miller";
 		secondName = "Thomas Jacob Miller";
 
-		assertTrue(PersonHelper.areFullNamesSimilar(firstName, secondName));
+		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
 
 		firstName = "Dan Brown";
 		secondName = "Dan Browning";
 
-		assertTrue(PersonHelper.areFullNamesSimilar(firstName, secondName));
+		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
 
 		firstName = "Dan Van";
 		secondName = "Gan Van";
 
-		assertTrue(PersonHelper.areFullNamesSimilar(firstName, secondName));
-
-		firstName = "DAN BROWN";
-		secondName = "Dan brown";
-
-		assertTrue(PersonHelper.areFullNamesSimilar(firstName, secondName));
-
-		firstName = "DAN";
-		String lastName = "BROWN";
-		String otherFirstName = "brown";
-		String otherLastName = "dan";
-
-		assertTrue(PersonHelper.areNamesSimilar(firstName, lastName, otherFirstName, otherLastName));
-
-		firstName = "DÁN";
-		lastName = "BRÓWN";
-		otherFirstName = "bröwn";
-		otherLastName = "dæn";
-
-		assertTrue(PersonHelper.areNamesSimilar(firstName, lastName, otherFirstName, otherLastName));
-
-		firstName = "DÉÁN";
-		lastName = "BRÓÕWN";
-		otherFirstName = "broown";
-		otherLastName = "dean";
-
-		assertTrue(PersonHelper.areNamesSimilar(firstName, lastName, otherFirstName, otherLastName));
+		assertTrue(PersonHelper.areNamesSimilar(firstName, secondName));
 	}
 
 	@Test
@@ -92,17 +66,17 @@ public class PersonHelperTest {
 		String firstName = "Thomas Miller";
 		String secondName = "Tomislav Millerton";
 
-		assertFalse(PersonHelper.areFullNamesSimilar(firstName, secondName));
+		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
 
 		firstName = "Jonathan Lee Sterling";
 		secondName = "John Lee Langston";
 
-		assertFalse(PersonHelper.areFullNamesSimilar(firstName, secondName));
+		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
 
 		firstName = "Gan Zan";
 		secondName = "Don Van";
 
-		assertFalse(PersonHelper.areFullNamesSimilar(firstName, secondName));
+		assertFalse(PersonHelper.areNamesSimilar(firstName, secondName));
 	}
 
 	@Test

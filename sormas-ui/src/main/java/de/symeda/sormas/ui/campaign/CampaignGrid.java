@@ -18,7 +18,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
-import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
@@ -56,8 +55,11 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 
-		addItemClickListener(
-			new ShowDetailsListener<>(CampaignIndexDto.UUID, e -> ControllerProvider.getCampaignController().createOrEdit(e.getUuid())));
+		addItemClickListener(e -> {
+			if ((e.getColumn() != null && CampaignIndexDto.UUID.equals(e.getColumn().getId())) || e.getMouseEventDetails().isDoubleClick()) {
+				ControllerProvider.getCampaignController().createOrEdit(e.getItem().getUuid());
+			}
+		});
 	}
 
 	public void setLazyDataProvider() {

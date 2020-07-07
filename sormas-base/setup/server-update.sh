@@ -167,10 +167,6 @@ if [ ! -f $CUSTOM_DIR/loginsidebar.html ]; then
 	cp loginsidebar.html ${CUSTOM_DIR}
 fi
 
-if [ ! -f $CUSTOM_DIR/loginsidebar-header.html ]; then
-  cp loginsidebar-header.html ${CUSTOM_DIR}
-fi
-
 if [ ! -f $CUSTOM_DIR/logindetails.html ]; then
 	cp logindetails.html ${CUSTOM_DIR}
 fi

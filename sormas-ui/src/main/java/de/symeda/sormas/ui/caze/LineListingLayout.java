@@ -259,16 +259,15 @@ public class LineListingLayout extends VerticalLayout {
 
 			newCase.setReportingUser(UserProvider.getCurrent().getUserReference());
 
-			final PersonDto newPerson = PersonDto.build();
-			newPerson.setFirstName(caseLineDto.getFirstName());
-			newPerson.setLastName(caseLineDto.getLastName());
-			newPerson.setBirthdateYYYY(caseLineDto.getDateOfBirthYYYY());
-			newPerson.setBirthdateMM(caseLineDto.getDateOfBirthMM());
-			newPerson.setBirthdateDD(caseLineDto.getDateOfBirthDD());
-			newPerson.setSex(caseLineDto.getSex());
-
-			ControllerProvider.getCaseController().selectOrCreateCase(newCase, newPerson, uuid -> {
+			ControllerProvider.getCaseController().selectOrCreate(newCase, caseLineDto.getFirstName(), caseLineDto.getLastName(), uuid -> {
 				if (uuid == null) {
+					PersonDto newPerson = PersonDto.build();
+					newPerson.setFirstName(caseLineDto.getFirstName());
+					newPerson.setLastName(caseLineDto.getLastName());
+					newPerson.setBirthdateYYYY(caseLineDto.getDateOfBirthYYYY());
+					newPerson.setBirthdateMM(caseLineDto.getDateOfBirthMM());
+					newPerson.setBirthdateDD(caseLineDto.getDateOfBirthDD());
+					newPerson.setSex(caseLineDto.getSex());
 
 					FacadeProvider.getPersonFacade().savePerson(newPerson);
 

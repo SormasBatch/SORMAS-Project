@@ -37,7 +37,6 @@ import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -115,8 +114,6 @@ public class GridExportStreamResource extends StreamResource {
 											ageAndBirthDate.getBirthdateMM(),
 											ageAndBirthDate.getBirthdateYYYY(),
 											I18nProperties.getUserLanguage());
-									} else if (value instanceof Label) {
-										valueString = ((Label) value).getValue();
 									} else {
 										valueString = value.toString();
 									}

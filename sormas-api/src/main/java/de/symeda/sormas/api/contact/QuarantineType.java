@@ -7,8 +7,7 @@ public enum QuarantineType {
 	INSTITUTIONELL,
 	HOME,
 	NONE,
-	UNKNOWN,
-	OTHER;
+	UNKNOWN;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

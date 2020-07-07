@@ -1,6 +1,5 @@
 package de.symeda.sormas.rest;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -14,7 +13,6 @@ import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.person.PersonQuarantineEndDto;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 
 @Path("/visits-external")
@@ -42,12 +40,6 @@ public class ExternalVisitsResource extends EntityDtoResource {
 	@Path("/version")
 	public String getVersion() {
 		return EXTERNAL_VISITS_API_VERSION;
-	}
-
-	@GET
-	@Path("/quarantineEndDates/{since}")
-	public List<PersonQuarantineEndDto> getLatestQuarantineEndDates(@PathParam("since") long since) {
-		return FacadeProvider.getPersonFacade().getLatestQuarantineEndDates(new Date(since));
 	}
 
 	@Override

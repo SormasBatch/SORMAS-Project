@@ -20,7 +20,6 @@ import java.util.List;
 import android.view.View;
 
 import de.symeda.sormas.api.facility.FacilityDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SamplePurpose;
@@ -85,37 +84,9 @@ public class PathogenTestEditFragment extends BaseEditFragment<FragmentPathogenT
 	@Override
 	public void onAfterLayoutBinding(FragmentPathogenTestEditLayoutBinding contentBinding) {
 		// Initialize ControlSpinnerFields
-		contentBinding.pathogenTestTestType.initializeSpinner(testTypeList, new ValueChangeListener() {
-
-			@Override
-			public void onChange(ControlPropertyField field) {
-				PathogenTestType currentTestType = (PathogenTestType) field.getValue();
-				if ((PathogenTestType.PCR_RT_PCR == currentTestType
-					&& PathogenTestResultType.POSITIVE == contentBinding.pathogenTestTestResult.getValue())
-					|| PathogenTestType.CQ_VALUE_DETECTION == currentTestType) {
-					contentBinding.pathogenTestCqValue.setVisibility(View.VISIBLE);
-				} else {
-					contentBinding.pathogenTestCqValue.hideField(true);
-				}
-			}
-		});
-
+		contentBinding.pathogenTestTestType.initializeSpinner(testTypeList);
 		contentBinding.pathogenTestTestedDisease.initializeSpinner(diseaseList);
-		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList, new ValueChangeListener() {
-
-			@Override
-			public void onChange(ControlPropertyField field) {
-				PathogenTestResultType currentPathogenTestResult = (PathogenTestResultType) field.getValue();
-				if ((PathogenTestType.PCR_RT_PCR == contentBinding.pathogenTestTestType.getValue()
-					&& PathogenTestResultType.POSITIVE == currentPathogenTestResult)
-					|| PathogenTestType.CQ_VALUE_DETECTION == contentBinding.pathogenTestTestType.getValue()) {
-					contentBinding.pathogenTestCqValue.setVisibility(View.VISIBLE);
-				} else {
-					contentBinding.pathogenTestCqValue.hideField(true);
-				}
-			}
-		});
-
+		contentBinding.pathogenTestTestResult.initializeSpinner(testResultList);
 		contentBinding.pathogenTestLab.initializeSpinner(DataUtils.toItems(labList), new ValueChangeListener() {
 
 			@Override

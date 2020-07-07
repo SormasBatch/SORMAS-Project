@@ -17,11 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -29,53 +26,30 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
-import de.symeda.sormas.ui.epidata.ContactEpiDataView;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.AbstractSubNavigationView;
-import de.symeda.sormas.ui.utils.CssStyles;
 
 @SuppressWarnings("serial")
-public abstract class AbstractContactView extends AbstractDetailView<ContactReferenceDto> {
+public abstract class AbstractContactView extends AbstractSubNavigationView {
+
+	private ContactReferenceDto contactRef;
 
 	public static final String ROOT_VIEW_NAME = ContactsView.VIEW_NAME;
 
 	protected AbstractContactView(String viewName) {
 		super(viewName);
-
-		if (FacadeProvider.getConfigFacade().getPIAUrl() != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CREATE_PIA_ACCOUNT)) {
-			Button btnCreatePIAAccount = new Button(I18nProperties.getCaption(Captions.contactCreatePIAAccount));
-			CssStyles.style(btnCreatePIAAccount, ValoTheme.BUTTON_PRIMARY);
-			btnCreatePIAAccount.addClickListener(e -> {
-				ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
-				PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
-				ControllerProvider.getContactController().openPIAAccountCreationWindow(contactPerson);
-			});
-			getButtonsLayout().addComponent(btnCreatePIAAccount);
-		}
-	}
-
-	@Override
-	public void enter(ViewChangeEvent event) {
-
-		super.enter(event);
-		initOrRedirect(event);
 	}
 
 	@Override
 	public void refreshMenu(SubMenu menu, Label infoLabel, Label infoLabelSub, String params) {
-
-		if (!findReferenceByParams(params)) {
-			return;
+		if (params.endsWith("/")) {
+			params = params.substring(0, params.length() - 1);
 		}
 
-		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(getReference().getUuid());
+		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(params);
+		contactRef = FacadeProvider.getContactFacade().getReferenceByUuid(contact.getUuid());
 
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactContactsList));
@@ -85,41 +59,23 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		menu.addView(ContactDataView.VIEW_NAME, I18nProperties.getCaption(ContactDto.I18N_PREFIX), params);
 		menu.addView(ContactPersonView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON), params);
 		menu.addView(ContactVisitsView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.VISITS), params);
-		menu.addView(ContactEpiDataView.VIEW_NAME, I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.EPI_DATA), params);
 
-		infoLabel.setValue(getReference().getCaption());
+		infoLabel.setValue(contactRef.getCaption());
 		infoLabelSub.setValue(
 			contact.getDisease() != Disease.OTHER ? contact.getDisease().toShortString() : DataHelper.toStringNullable(contact.getDiseaseDetails()));
-	}
-
-	@Override
-	protected ContactReferenceDto getReferenceByUuid(String uuid) {
-
-		final ContactReferenceDto reference;
-		if (FacadeProvider.getContactFacade().exists(uuid)) {
-			reference = FacadeProvider.getContactFacade().getReferenceByUuid(uuid);
-		} else {
-			reference = null;
-		}
-		return reference;
-	}
-
-	@Override
-	protected String getRootViewName() {
-		return ROOT_VIEW_NAME;
 	}
 
 	@Override
 	protected void setSubComponent(Component newComponent) {
 		super.setSubComponent(newComponent);
 
-		if (FacadeProvider.getContactFacade().isDeleted(getReference().getUuid())) {
+		if (FacadeProvider.getContactFacade().isDeleted(contactRef.getUuid())) {
 			newComponent.setEnabled(false);
 		}
 	}
 
 	public ContactReferenceDto getContactRef() {
-		return getReference();
+		return contactRef;
 	}
 
 	public void setContactEditPermission(Component component) {

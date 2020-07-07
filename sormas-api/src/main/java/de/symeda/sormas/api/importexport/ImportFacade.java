@@ -39,8 +39,6 @@ public interface ImportFacade {
 
 	void generatePopulationDataImportTemplateFile() throws IOException;
 
-	void generateAreaImportTemplateFile() throws IOException;
-
 	void generateRegionImportTemplateFile() throws IOException;
 
 	void generateDistrictImportTemplateFile() throws IOException;
@@ -58,8 +56,6 @@ public interface ImportFacade {
 	String getPopulationDataImportTemplateFilePath();
 
 	String getCaseLineListingImportTemplateFilePath();
-
-	String getAreaImportTemplateFilePath();
 
 	String getRegionImportTemplateFilePath();
 

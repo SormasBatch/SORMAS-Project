@@ -17,16 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils.fieldvisibility;
 
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
 
 public class FieldVisibilityCheckers {
 
@@ -81,7 +78,7 @@ public class FieldVisibilityCheckers {
 		return true;
 	}
 
-	private boolean isFieldVisible(AccessibleObject field) {
+	private boolean isFieldVisible(Field field) {
 		for (FieldBasedChecker checker : fieldBasedCheckers) {
 			if (!checker.isVisible(field)) {
 				return false;
@@ -107,10 +104,6 @@ public class FieldVisibilityCheckers {
 		return withCheckers(new CountryFieldVisibilityChecker(countryLocale));
 	}
 
-	public static FieldVisibilityCheckers withFeatureTypes(List<FeatureType> featureTypes) {
-		return withCheckers(new FeatureTypeFieldVisibilityChecker(featureTypes));
-	}
-
 	public static FieldVisibilityCheckers withCheckers(Checker... checkers) {
 		FieldVisibilityCheckers ret = new FieldVisibilityCheckers();
 
@@ -132,6 +125,6 @@ public class FieldVisibilityCheckers {
 
 	public interface FieldBasedChecker extends Checker {
 
-		boolean isVisible(AccessibleObject field);
+		boolean isVisible(Field field);
 	}
 }

@@ -176,7 +176,6 @@ public class StartupShutdownService {
 		featureConfigurationService.createMissingFeatureConfigurations();
 
 		configFacade.validateAppUrls();
-		configFacade.validateExternalUrls();
 	}
 
 	private void createDefaultInfrastructureData() {
@@ -582,12 +581,6 @@ public class StartupShutdownService {
 			importFacade.generatePopulationDataImportTemplateFile();
 		} catch (IOException e) {
 			logger.error("Could not create population data import template .csv file.");
-		}
-
-		try {
-			importFacade.generateAreaImportTemplateFile();
-		} catch (IOException e) {
-			logger.error("Could not create area import template .csv file.");
 		}
 
 		try {

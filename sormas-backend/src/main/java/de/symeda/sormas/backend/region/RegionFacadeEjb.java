@@ -32,8 +32,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -71,8 +69,6 @@ public class RegionFacadeEjb implements RegionFacade {
 	private CommunityService communityService;
 	@EJB
 	private PopulationDataFacadeEjbLocal populationDataFacade;
-	@EJB
-	private AreaService areaService;
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveAsReference() {
@@ -117,7 +113,6 @@ public class RegionFacadeEjb implements RegionFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(Region.class);
 		Root<Region> region = cq.from(Region.class);
-		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
 
 		Predicate filter = regionService.buildCriteriaFilter(criteria, cb, region);
 
@@ -135,9 +130,6 @@ public class RegionFacadeEjb implements RegionFacade {
 				case Region.GROWTH_RATE:
 				case Region.EXTERNAL_ID:
 					expression = region.get(sortProperty.propertyName);
-					break;
-				case Region.AREA:
-					expression = area.get(Area.NAME);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -268,7 +260,6 @@ public class RegionFacadeEjb implements RegionFacade {
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
-		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 
 		return dto;
 	}
@@ -286,7 +277,6 @@ public class RegionFacadeEjb implements RegionFacade {
 		dto.setPopulation(populationDataFacade.getRegionPopulation(dto.getUuid()));
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setExternalID(entity.getExternalID());
-		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 
 		return dto;
 	}
@@ -323,7 +313,6 @@ public class RegionFacadeEjb implements RegionFacade {
 		target.setGrowthRate(source.getGrowthRate());
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
-		target.setArea(areaService.getByReferenceDto(source.getArea()));
 
 		return target;
 	}

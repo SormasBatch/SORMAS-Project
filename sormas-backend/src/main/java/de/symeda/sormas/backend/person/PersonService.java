@@ -153,7 +153,6 @@ public class PersonService extends AbstractAdoService<Person> {
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
 		Join<Person, Person> casePersonsSelect = casePersonsRoot.join(Case.PERSON);
-		casePersonsSelect.fetch(Person.ADDRESS);
 		casePersonsQuery.select(casePersonsSelect);
 		Predicate casePersonsFilter = caseService.createUserFilter(cb, casePersonsQuery, casePersonsRoot);
 		// date range
@@ -177,7 +176,6 @@ public class PersonService extends AbstractAdoService<Person> {
 		CriteriaQuery<Person> contactPersonsQuery = cb.createQuery(Person.class);
 		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
 		Join<Person, Person> contactPersonsSelect = contactPersonsRoot.join(Contact.PERSON);
-		contactPersonsSelect.fetch(Person.ADDRESS);
 		contactPersonsQuery.select(contactPersonsSelect);
 		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot);
 		// date range
@@ -196,7 +194,6 @@ public class PersonService extends AbstractAdoService<Person> {
 		CriteriaQuery<Person> eventPersonsQuery = cb.createQuery(Person.class);
 		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
 		Join<Person, Person> eventPersonsSelect = eventPersonsRoot.join(EventParticipant.PERSON);
-		eventPersonsSelect.fetch(Person.ADDRESS);
 		eventPersonsQuery.select(eventPersonsSelect);
 		Predicate eventPersonsFilter = eventParticipantService.createUserFilter(cb, eventPersonsQuery, eventPersonsRoot);
 		// date range

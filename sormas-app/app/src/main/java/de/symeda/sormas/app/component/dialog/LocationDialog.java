@@ -50,17 +50,13 @@ public class LocationDialog extends AbstractDialog {
 	// Constructor
 
 	public LocationDialog(final FragmentActivity activity, Location location, FieldAccessCheckers fieldAccessCheckers) {
-		this(activity, location, true, fieldAccessCheckers);
-	}
-
-	public LocationDialog(final FragmentActivity activity, Location location, boolean closeOnPositiveButtonClick, FieldAccessCheckers fieldAccessCheckers) {
 		super(
 			activity,
 			R.layout.dialog_root_layout,
 			R.layout.dialog_location_layout,
 			R.layout.dialog_root_two_button_panel_layout,
 			R.string.heading_location,
-			-1, closeOnPositiveButtonClick);
+			-1);
 
 		this.data = location;
 		this.fieldAccessCheckers = fieldAccessCheckers;
@@ -122,15 +118,6 @@ public class LocationDialog extends AbstractDialog {
 			});
 			confirmationDialog.show();
 		});
-	}
-
-	public void setRegionAndDistrictRequired(boolean required) {
-		contentBinding.locationRegion.setRequired(required);
-		contentBinding.locationDistrict.setRequired(required);
-	}
-
-	public DialogLocationLayoutBinding getContentBinding() {
-		return contentBinding;
 	}
 
 	@Override

@@ -21,11 +21,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum EventStatus {
 
-	SIGNAL,
-	EVENT,
-	SCREENING,
-	CLUSTER,
-	DROPPED;
+	POSSIBLE,
+	CONFIRMED,
+	NO_EVENT;
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);

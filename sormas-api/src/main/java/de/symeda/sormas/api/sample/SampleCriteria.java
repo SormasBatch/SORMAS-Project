@@ -26,7 +26,6 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
@@ -58,7 +57,6 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 	private SpecimenCondition specimenCondition;
 	private CaseReferenceDto caze;
 	private ContactReferenceDto contact;
-	private EventParticipantReferenceDto eventParticipant;
 	private Boolean deleted = Boolean.FALSE;
 	private String caseCodeIdLike;
 	private EntityRelevanceStatus relevanceStatus;
@@ -181,15 +179,6 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	public SampleCriteria caze(CaseReferenceDto caze) {
 		this.caze = caze;
-		return this;
-	}
-
-	public EventParticipantReferenceDto getEventParticipant() {
-		return eventParticipant;
-	}
-
-	public SampleCriteria eventParticipant(EventParticipantReferenceDto eventParticipant) {
-		this.eventParticipant = eventParticipant;
 		return this;
 	}
 

@@ -21,7 +21,6 @@ import java.util.Optional;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -34,7 +33,6 @@ public abstract class AbstractSubNavigationView extends AbstractView {
 	private String params;
 
 	private SubMenu subNavigationMenu;
-	private HorizontalLayout buttonsLayout;
 	private VerticalLayout infoLayout;
 	private Label infoLabel;
 	private Label infoLabelSub;
@@ -47,22 +45,10 @@ public abstract class AbstractSubNavigationView extends AbstractView {
 		addComponent(subNavigationMenu);
 		setExpandRatio(subNavigationMenu, 0);
 
-		createButtonsLayout().ifPresent(l -> {
-			buttonsLayout = l;
-			addHeaderComponent(l);
-		});
-
 		createInfoLayout().ifPresent(l -> {
 			infoLayout = l;
 			addHeaderComponent(l);
 		});
-	}
-
-	protected Optional<HorizontalLayout> createButtonsLayout() {
-		HorizontalLayout buttonsLayout = new HorizontalLayout();
-		buttonsLayout.setMargin(false);
-
-		return Optional.of(buttonsLayout);
 	}
 
 	protected Optional<VerticalLayout> createInfoLayout() {
@@ -110,9 +96,5 @@ public abstract class AbstractSubNavigationView extends AbstractView {
 
 	public void selectInMenu() {
 		subNavigationMenu.setActiveView(viewName);
-	}
-
-	public HorizontalLayout getButtonsLayout() {
-		return buttonsLayout;
 	}
 }

@@ -6,15 +6,11 @@
    <elementGuidId>d8ac90ef-f9bd-46ad-a1c7-4cc7126d1e4c</elementGuidId>
    <selectorCollection>
       <entry>
-         <key>BASIC</key>
-         <value>//*[@id = 'Previous' and (text() = 'Previous' or . = 'Previous')]</value>
-      </entry>
-      <entry>
          <key>XPATH</key>
-         <value>//div[@id='Previous']</value>
+         <value>//div[@id='sormasui-1655777373']/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[2]/div/div/div[9]/div/div/div/div/div</value>
       </entry>
    </selectorCollection>
-   <selectorMethod>XPATH</selectorMethod>
+   <selectorMethod>BASIC</selectorMethod>
    <useRalativeImagePath>false</useRalativeImagePath>
    <webElementProperties>
       <isSelected>false</isSelected>
@@ -31,7 +27,7 @@
       <value>0</value>
    </webElementProperties>
    <webElementProperties>
-      <isSelected>false</isSelected>
+      <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
       <name>role</name>
       <type>Main</type>
@@ -47,13 +43,6 @@
    <webElementProperties>
       <isSelected>true</isSelected>
       <matchCondition>equals</matchCondition>
-      <name>id</name>
-      <type>Main</type>
-      <value>Previous</value>
-   </webElementProperties>
-   <webElementProperties>
-      <isSelected>true</isSelected>
-      <matchCondition>equals</matchCondition>
       <name>text</name>
       <type>Main</type>
       <value>Previous</value>
@@ -63,17 +52,10 @@
       <matchCondition>equals</matchCondition>
       <name>xpath</name>
       <type>Main</type>
-      <value>id(&quot;Previous&quot;)</value>
+      <value>id(&quot;sormasui-1655777373&quot;)/div[@class=&quot;v-ui valo-menu-responsive v-scrollable&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-sormas-content&quot;]/div[@class=&quot;v-csslayout v-layout v-widget sormas-content v-csslayout-sormas-content v-has-width v-has-height&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget v-has-width v-has-height&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-crud-main-layout&quot;]/div[@class=&quot;v-verticallayout v-layout v-vertical v-widget crud-main-layout v-verticallayout-crud-main-layout v-has-width v-has-height v-margin-top v-margin-right v-margin-bottom v-margin-left&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-slot-vspace-3&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget vspace-3 v-horizontallayout-vspace-3 v-has-width&quot;]/div[@class=&quot;v-expand&quot;]/div[@class=&quot;v-slot v-align-right&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget&quot;]/div[@class=&quot;v-slot&quot;]/div[@class=&quot;v-horizontallayout v-layout v-horizontal v-widget&quot;]/div[@class=&quot;v-slot v-slot-primary v-slot-force-caption&quot;]/div[@class=&quot;v-button v-widget primary v-button-primary force-caption v-button-force-caption&quot;]</value>
    </webElementProperties>
    <webElementXpaths>
       <isSelected>true</isSelected>
-      <matchCondition>equals</matchCondition>
-      <name>xpath:attributes</name>
-      <type>Main</type>
-      <value>//div[@id='Previous']</value>
-   </webElementXpaths>
-   <webElementXpaths>
-      <isSelected>false</isSelected>
       <matchCondition>equals</matchCondition>
       <name>xpath:idRelative</name>
       <type>Main</type>
