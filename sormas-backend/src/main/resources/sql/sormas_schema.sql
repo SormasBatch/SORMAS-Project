@@ -4718,4 +4718,12 @@ INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add field typ
 ALTER TABLE events ADD nameTypeOfPlace varchar(512);
 ALTER TABLE events_history ADD nameTypeOfPlace varchar(512);
 INSERT INTO schema_version (version_number, comment) VALUES (221, 'Add field name type of place of an event');
+
+ALTER TABLE contact ADD completeness real;
+ALTER TABLE contact_history ADD completeness real;
+
+ALTER TABLE contact ADD duplicateof_id BIGINT;
+ALTER TABLE contact_history ADD duplicateof_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (222, 'Add two columns completeness and duplicateOf for contact');
 -- *** Insert new sql commands BEFORE this line ***

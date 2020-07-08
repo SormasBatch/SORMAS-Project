@@ -102,6 +102,8 @@ public interface Strings {
 	String confirmationPickCaseAndDeleteOther = "confirmationPickCaseAndDeleteOther";
 	String confirmationRemoveUserAsOfficer = "confirmationRemoveUserAsOfficer";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
+	String confirmationMergeContactAndDeleteOther = "confirmationMergeContactAndDeleteOther";
+	String confirmationPickContactAndDeleteOther = "confirmationPickContactAndDeleteOther";
 	String day = "day";
 	String done = "done";
 	String edit = "edit";

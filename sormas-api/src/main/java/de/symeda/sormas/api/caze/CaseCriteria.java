@@ -33,6 +33,8 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
 
 public class CaseCriteria extends BaseCriteria implements Cloneable {
 
@@ -85,6 +87,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private String sourceCaseInfoLike;
 	private Date quarantineTo;
 	public Boolean excludeSharedCases;
+	private ContactReferenceDto contact;
 
 	@Override
 	public CaseCriteria clone() {
@@ -402,5 +405,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setExcludeSharedCases(Boolean excludeSharedCases) {
 		this.excludeSharedCases = excludeSharedCases;
+	}
+
+	public ContactReferenceDto getContact() {
+		return contact;
+	}
+
+	public CaseCriteria contact(ContactReferenceDto contact) {
+		this.contact = contact;
+		return this;
 	}
 }

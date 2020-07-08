@@ -30,6 +30,8 @@ import de.symeda.sormas.api.region.DistrictReferenceDto;
 import de.symeda.sormas.api.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 
 @Remote
 public interface ContactFacade {
@@ -119,4 +121,12 @@ public interface ContactFacade {
 	boolean isContactEditAllowed(String contactUuid);
 
 	boolean exists(String uuid);
+
+	List<ContactIndexDto[]> getContactsForDuplicateMerging(ContactCriteria criteria, boolean showDuplicatesWithDifferentRegion);
+
+	void updateCompleteness(String caseUuid);
+
+	public void mergeContact(String leadUuid, String otherUuid);
+
+	public void deleteContactAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
 }
