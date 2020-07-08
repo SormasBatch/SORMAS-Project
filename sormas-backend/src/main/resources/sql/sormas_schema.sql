@@ -4715,15 +4715,55 @@ ALTER TABLE events ADD COLUMN typeofrisk character varying(255);
 ALTER TABLE events_history ADD COLUMN typeofrisk character varying(255);
 INSERT INTO schema_version (version_number, comment) VALUES (220, 'Add field type of risk of an event');
              
+-- 2020-07-06 Add type of risk of an event
+
 ALTER TABLE events ADD nameTypeOfPlace varchar(512);
 ALTER TABLE events_history ADD nameTypeOfPlace varchar(512);
 INSERT INTO schema_version (version_number, comment) VALUES (221, 'Add field name type of place of an event');
 
+-- 2020-07-07 Adds visit to cases
+
+ALTER TABLE cases ADD COLUMN followupstatus varchar(255);
+ALTER TABLE cases ADD COLUMN followupcomment varchar(4096);
+ALTER TABLE cases ADD COLUMN followupuntil timestamp;
+ALTER TABLE cases ADD COLUMN overwritefollowupuntil boolean;
+
+UPDATE cases SET overwritefollowupuntil = false;
+
+ALTER TABLE cases_history ADD COLUMN followupstatus varchar(255);
+ALTER TABLE cases_history ADD COLUMN followupcomment varchar(4096);
+ALTER TABLE cases_history ADD COLUMN followupuntil timestamp;
+ALTER TABLE cases_history ADD COLUMN overwritefollowupuntil boolean;
+
+CREATE TABLE cases_visits(
+	case_id bigint NOT NULL,
+	visit_id bigint NOT NULL,
+	sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE cases_visits OWNER TO sormas_user;
+ALTER TABLE ONLY cases_visits ADD CONSTRAINT unq_cases_visits_0 UNIQUE (case_id, visit_id);
+ALTER TABLE ONLY cases_visits ADD CONSTRAINT fk_cases_visits_case_id FOREIGN KEY (case_id) REFERENCES cases(id);
+ALTER TABLE ONLY cases_visits ADD CONSTRAINT fk_cases_visits_visit_id FOREIGN KEY (visit_id) REFERENCES visit(id);
+
+CREATE TABLE cases_visits_history (LIKE cases_visits);
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON cases_visits
+FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'cases_visits_history', true);
+ALTER TABLE cases_visits_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (222, 'Adds visit to cases');
+
+-- 2020-07-07 Add replying user of an action
+ALTER TABLE action ADD COLUMN replyinguser_id bigint;
+ALTER TABLE action_history ADD COLUMN replyinguser_id bigint;
+INSERT INTO schema_version (version_number, comment) VALUES (223, 'Add replying user of an action');
+
+-- 2020-07-08 Add two columns completeness and duplicateOf for contact
 ALTER TABLE contact ADD completeness real;
 ALTER TABLE contact_history ADD completeness real;
 
 ALTER TABLE contact ADD duplicateof_id BIGINT;
 ALTER TABLE contact_history ADD duplicateof_id BIGINT;
 
-INSERT INTO schema_version (version_number, comment) VALUES (222, 'Add two columns completeness and duplicateOf for contact');
+INSERT INTO schema_version (version_number, comment) VALUES (224, 'Add two columns completeness and duplicateOf for contact');
 -- *** Insert new sql commands BEFORE this line ***

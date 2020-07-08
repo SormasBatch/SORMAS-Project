@@ -56,7 +56,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	private static final String MORE_FILTERS_HTML_LAYOUT = filterLocs(CaseCriteria.PRESENT_CONDITION,
 			CaseDataDto.REGION, CaseDataDto.DISTRICT, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY,
 			CaseDataDto.POINT_OF_ENTRY, CaseDataDto.SURVEILLANCE_OFFICER, CaseCriteria.REPORTING_USER_ROLE,
-			CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO)
+			CaseCriteria.REPORTING_USER_LIKE, CaseDataDto.QUARANTINE_TO, CaseCriteria.FOLLOW_UP_UNTIL_TO)
 			+ filterLocsCss("vspace-3", CaseCriteria.MUST_HAVE_NO_GEO_COORDINATES,
 					CaseCriteria.MUST_BE_PORT_HEALTH_CASE_WITHOUT_FACILITY, CaseCriteria.MUST_HAVE_CASE_MANAGEMENT_DATA,
 					CaseCriteria.EXCLUDE_SHARED_CASES, CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER)
@@ -75,6 +75,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CaseDataDto.OUTCOME,
 			CaseDataDto.DISEASE,
 			CaseDataDto.CASE_CLASSIFICATION,
+			CaseDataDto.FOLLOW_UP_STATUS,
 			CaseCriteria.NAME_UUID_EPID_NUMBER_LIKE };
 	}
 
@@ -92,7 +93,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		addFields(
 			FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140),
 			FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140),
-			FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140));
+			FieldConfiguration.pixelSized(CaseDataDto.CASE_CLASSIFICATION, 140),
+			FieldConfiguration.pixelSized(CaseDataDto.FOLLOW_UP_STATUS, 140));
 
 		TextField searchField = addField(
 			FieldConfiguration
@@ -130,6 +132,14 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		if (user.getRegion() != null) {
 			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
 		}
+
+		Field<?> followUpUntilTo = addField(
+				moreFiltersContainer,
+				FieldConfiguration.withCaptionAndPixelSized(
+						CaseCriteria.FOLLOW_UP_UNTIL_TO,
+						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.FOLLOW_UP_UNTIL),
+						200));
+		followUpUntilTo.removeAllValidators();
 
 		addField(
 			moreFiltersContainer,

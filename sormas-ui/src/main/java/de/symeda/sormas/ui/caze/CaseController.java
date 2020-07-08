@@ -127,6 +127,7 @@ public class CaseController {
 		if (userProvider.hasUserRight(UserRight.CLINICAL_COURSE_VIEW)) {
 			navigator.addView(ClinicalCourseView.VIEW_NAME, ClinicalCourseView.class);
 		}
+		navigator.addView(CaseVisitsView.VIEW_NAME, CaseVisitsView.class);
 	}
 
 	public void create() {
@@ -491,6 +492,7 @@ public class CaseController {
 		CaseDataForm caseEditForm = new CaseDataForm(
 			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
 			caze.getDisease(),
+			caze.getSymptoms(),
 			viewMode,
 			isInJurisdiction);
 		caseEditForm.setValue(caze);

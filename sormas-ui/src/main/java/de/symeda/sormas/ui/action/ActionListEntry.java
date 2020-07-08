@@ -30,6 +30,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionPriority;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -87,12 +88,22 @@ public class ActionListEntry extends HorizontalLayout {
 		topLeftLayout.setMargin(false);
 		topLeftLayout.setSpacing(false);
 
-		Label dateLabel =
-			new Label(I18nProperties.getPrefixCaption(ActionDto.I18N_PREFIX, ActionDto.DATE) + ": " + DateFormatHelper.formatDate(action.getDate()));
-		topLeftLayout.addComponent(dateLabel);
-		Label createorLabel = new Label(
-			I18nProperties.getPrefixCaption(ActionDto.I18N_PREFIX, ActionDto.CREATOR_USER) + ": " + action.getCreatorUser().getCaption());
-		topLeftLayout.addComponent(createorLabel);
+		Label creatorLabel = new Label(
+			String.format(
+				I18nProperties.getCaption(Captions.actionCreatingLabel),
+				DateFormatHelper.formatDate(action.getDate()),
+				action.getCreatorUser().getCaption()));
+		topLeftLayout.addComponent(creatorLabel);
+
+		Label replyingUserLabel = null;
+		if (action.getReplyingUser() != null) {
+			replyingUserLabel = new Label(
+				String.format(
+					I18nProperties.getCaption(Captions.actionReplyingLabel),
+					DateFormatHelper.formatDate(action.getChangeDate()),
+					action.getReplyingUser().getCaption()));
+			topLeftLayout.addComponent(replyingUserLabel);
+		}
 
 		topLayout.addComponent(topLeftLayout);
 
@@ -103,11 +114,21 @@ public class ActionListEntry extends HorizontalLayout {
 		topRightLayout.setMargin(false);
 		topRightLayout.setSpacing(false);
 
+		HorizontalLayout statusContainer = new HorizontalLayout();
 		Label statusLabel = new Label(
 			I18nProperties.getPrefixCaption(ActionDto.I18N_PREFIX, ActionDto.ACTION_STATUS) + ": "
 				+ DataHelper.toStringNullable(action.getActionStatus()));
 		CssStyles.style(statusLabel, CssStyles.LABEL_BOLD, CssStyles.LABEL_UPPERCASE);
-		topRightLayout.addComponent(statusLabel);
+		statusContainer.addComponent(statusLabel);
+		Label statusChangeLabel = null;
+		if (action.getStatusChangeDate() != null) {
+			statusChangeLabel = new Label(
+				String.format(I18nProperties.getCaption(Captions.actionStatusChangeDate), DateFormatHelper.formatDate(action.getStatusChangeDate())));
+			statusChangeLabel.addStyleName(CssStyles.LABEL_ITALIC);
+			statusContainer.addComponent(statusChangeLabel);
+		}
+
+		topRightLayout.addComponent(statusContainer);
 
 		Label priorityLabel = new Label(
 			DataHelper.toStringNullable(I18nProperties.getPrefixCaption(ActionDto.I18N_PREFIX, ActionDto.PRIORITY) + ": " + action.getPriority()));
@@ -132,8 +153,14 @@ public class ActionListEntry extends HorizontalLayout {
 		}
 
 		if (statusStyle != null) {
-			dateLabel.addStyleName(statusStyle);
 			statusLabel.addStyleName(statusStyle);
+			if (statusChangeLabel != null) {
+				statusChangeLabel.addStyleName(statusStyle);
+			}
+			creatorLabel.addStyleName(statusStyle);
+			if (replyingUserLabel != null) {
+				replyingUserLabel.addStyleName(statusStyle);
+			}
 			priorityLabel.addStyleName(statusStyle);
 		}
 	}

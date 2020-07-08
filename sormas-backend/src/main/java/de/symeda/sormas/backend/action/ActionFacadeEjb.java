@@ -68,6 +68,8 @@ public class ActionFacadeEjb implements ActionFacade {
 			if (source.getCreationDate() != null) {
 				target.setCreationDate(new Timestamp(source.getCreationDate().getTime()));
 			}
+		} else {
+			target.setReplyingUser(userService.getCurrentUser());
 		}
 		DtoHelper.validateDto(source, target);
 
@@ -115,6 +117,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setCreatorUser(UserFacadeEjb.toReferenceDto(source.getCreatorUser()));
 		target.setDescription(source.getDescription());
 		target.setReply(source.getReply());
+		target.setReplyingUser(UserFacadeEjb.toReferenceDto(source.getReplyingUser()));
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
 		target.setStatusChangeDate(source.getStatusChangeDate());
