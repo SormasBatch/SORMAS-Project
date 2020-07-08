@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.caze;
 
 import static de.symeda.sormas.backend.util.DtoHelper.fillDto;
+import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -35,6 +36,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -51,10 +53,12 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +76,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -132,6 +137,8 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.visit.VisitResult;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
@@ -217,6 +224,9 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PseudonymizationService;
+import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitService;
+import de.symeda.sormas.backend.visit.VisitSummaryExportDetails;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb implements CaseFacade {
@@ -238,6 +248,8 @@ public class CaseFacadeEjb implements CaseFacade {
 	private FacilityService facilityService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private VisitService visitService;
 	@EJB
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
@@ -441,6 +453,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				joins.getFacility().get(Facility.NAME), joins.getFacility().get(Facility.UUID), caseRoot.get(Case.HEALTH_FACILITY_DETAILS),
 				joins.getPointOfEntry().get(PointOfEntry.NAME), joins.getPointOfEntry().get(PointOfEntry.UUID), caseRoot.get(Case.POINT_OF_ENTRY_DETAILS),
 				caseRoot.get(Case.CASE_CLASSIFICATION), caseRoot.get(Case.INVESTIGATION_STATUS), caseRoot.get(Case.OUTCOME),
+				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
 				caseRoot.get(Contact.QUARANTINE_ORDERED_VERBALLY),
@@ -491,6 +504,43 @@ public class CaseFacadeEjb implements CaseFacade {
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
 
 		if (!resultList.isEmpty()) {
+
+			List<Long> exportCaseIds = resultList.stream().map(e -> e.getId()).collect(Collectors.toList());
+
+			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
+			Root<Case> visitsCqRoot = visitsCq.from(Case.class);
+			Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
+			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
+
+			visitsCq.where(
+					ContactService.and(cb, caseRoot.get(AbstractDomainObject.ID).in(exportCaseIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+			visitsCq.multiselect(
+					visitsCqRoot.get(AbstractDomainObject.ID),
+					visitsJoin.get(Visit.VISIT_DATE_TIME),
+					visitsJoin.get(Visit.VISIT_STATUS),
+					visitSymptomsJoin);
+
+			List<VisitSummaryExportDetails> visitSummaries = em.createQuery(visitsCq).getResultList();
+
+			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
+			// doesn't seem to be possible and using a native query is not an option because of user filters
+			for (CaseExportDto exportCase : resultList) {
+				List<VisitSummaryExportDetails> visits =
+						visitSummaries.stream().filter(v -> v.getContactId() == exportCase.getId()).collect(Collectors.toList());
+
+				VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
+						.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
+						.max(Comparator.comparing(VisitSummaryExportDetails::getVisitDateTime))
+						.orElse(null);
+
+				exportCase.setNumberOfVisits(visits.size());
+				if (lastCooperativeVisit != null) {
+					exportCase.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
+					exportCase.setLastCooperativeVisitSymptoms(lastCooperativeVisit.getSymptoms().toHumanString(true, userLanguage));
+					exportCase
+							.setLastCooperativeVisitSymptomatic(lastCooperativeVisit.getSymptoms().getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO);
+				}
+			}
 
 			Map<Long, Symptoms> symptoms = null;
 			if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseDataDto.SYMPTOMS)) {
@@ -1219,10 +1269,38 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		caseService.ensurePersisted(caze);
 		if (handleChanges) {
+			updateCaseVisitAssociations(existingCaseDto, caze);
+			caseService.updateFollowUpUntilAndStatus(caze);
+
 			onCaseChanged(existingCaseDto, caze);
 		}
 
 		return convertToDto(caze);
+	}
+
+	private void updateCaseVisitAssociations(CaseDataDto existingCase, Case caze) {
+
+		if (existingCase != null
+				&& existingCase.getReportDate() == caze.getReportDate()
+				&& existingCase.getFollowUpUntil() == caze.getFollowUpUntil()
+				&& existingCase.getDisease() == caze.getDisease()) {
+			return;
+		}
+
+		if (existingCase != null) {
+			for (Visit visit : caze.getVisits()) {
+				visit.getContacts().remove(caze);
+			}
+		}
+
+		for (Visit visit : visitService.getAllRelevantVisits(
+				caze.getPerson(),
+				caze.getDisease(),
+				CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()),
+				CaseLogic.getEndDate(caze.getReportDate(), caze.getFollowUpUntil()))) {
+			caze.getVisits().add(visit); // Necessary for further logic during the case save process
+			visit.getCases().add(caze);
+		}
 	}
 
 	public void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef) {
@@ -1793,6 +1871,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
 
+		target.setFollowUpComment(source.getFollowUpComment());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
+
 		return target;
 	}
 
@@ -1930,6 +2013,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setReportingType(source.getReportingType());
 		target.setPostpartum(source.getPostpartum());
 		target.setTrimester(source.getTrimester());
+
+		target.setFollowUpComment(source.getFollowUpComment());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
 
 		return target;
 	}
@@ -2462,6 +2550,104 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public boolean exists(String uuid) {
 		return caseService.exists(uuid);
+	}
+
+	@Override public List<CaseFollowUpDto> getCaseFollowUpList(CaseCriteria caseCriteria, Date referenceDate, int interval, Integer first, Integer max, List<SortProperty> sortProperties) {
+
+		Date end = DateHelper.getEndOfDay(referenceDate);
+		Date start = DateHelper.getStartOfDay(DateHelper.subtractDays(end, interval));
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CaseFollowUpDto> cq = cb.createQuery(CaseFollowUpDto.class);
+		Root<Case> caze = cq.from(Case.class);
+
+		CaseJoins joins = new CaseJoins(caze);
+
+		final Stream<Selection<?>> select = Stream.of(
+			caze.get(Contact.UUID),
+			joins.getPerson().get(Person.UUID),
+			joins.getPerson().get(Person.FIRST_NAME),
+			joins.getPerson().get(Person.LAST_NAME),
+			caze.get(Case.REPORT_DATE),
+			caze.join(Case.SYMPTOMS).get(Symptoms.ONSET_DATE),
+			caze.get(Case.FOLLOW_UP_UNTIL),
+			caze.get(Case.DISEASE));
+		cq.multiselect(Stream.concat(select, listQueryBuilder.getJurisdictionSelections(joins)).collect(Collectors.toList()));
+
+		Predicate filter = caseService.createUserFilter(cb, cq, caze);
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<Order>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+					case CaseFollowUpDto.UUID:
+					case CaseFollowUpDto.REPORT_DATE:
+					case CaseFollowUpDto.FOLLOW_UP_UNTIL:
+						expression = caze.get(sortProperty.propertyName);
+						break;
+					case CaseFollowUpDto.PERSON:
+						expression = joins.getPerson().get(Person.FIRST_NAME);
+						order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+						expression = joins.getPerson().get(Person.LAST_NAME);
+						break;
+					default:
+						throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(caze.get(Contact.CHANGE_DATE)));
+		}
+
+		List<CaseFollowUpDto> resultList = em.createQuery(cq).setFirstResult(first).setMaxResults(max).getResultList();
+
+		if (!resultList.isEmpty()) {
+
+			List<String> caseUuids = resultList.stream().map(d -> d.getUuid()).collect(Collectors.toList());
+
+			CriteriaQuery<Object[]> visitsCq = cb.createQuery(Object[].class);
+			Root<Case> visitsCqRoot = visitsCq.from(Case.class);
+			Join<Case, Visit> visitsJoin = visitsCqRoot.join(Case.VISITS, JoinType.LEFT);
+			Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
+
+			visitsCq.where(
+					AbstractAdoService.and(
+							cb,
+							caze.get(AbstractDomainObject.UUID).in(caseUuids),
+							cb.isNotEmpty(visitsCqRoot.get(Case.VISITS)),
+							cb.between(visitsJoin.get(Visit.VISIT_DATE_TIME), start, end)));
+			visitsCq.multiselect(
+					visitsCqRoot.get(Case.UUID),
+					visitsJoin.get(Visit.VISIT_DATE_TIME),
+					visitsJoin.get(Visit.VISIT_STATUS),
+					visitSymptomsJoin.get(Symptoms.SYMPTOMATIC));
+
+			List<Object[]> visits = em.createQuery(visitsCq).getResultList();
+			Map<String, CaseFollowUpDto> resultMap =
+					resultList.stream().collect(Collectors.toMap(CaseFollowUpDto::getUuid, Function.identity()));
+			resultMap.values().stream().forEach(contactFollowUpDto -> {
+				contactFollowUpDto.initVisitSize(interval + 1);
+
+//				pseudonymizationService.pseudonymizeDto(
+//					PersonReferenceDto.class,
+//					contactFollowUpDto.getPerson(),
+//					contactJurisdictionChecker.isInJurisdiction(contactFollowUpDto.getJurisdiction()),
+//					null);
+			});
+			visits.stream().forEach(v -> {
+				int day = DateHelper.getDaysBetween(start, (Date) v[1]);
+				VisitResult result = getVisitResult((VisitStatus) v[2], (boolean) v[3]);
+				resultMap.get(v[0]).getVisitResults()[day - 1] = result;
+			});
+		}
+
+		return resultList;
 	}
 
 	@LocalBean

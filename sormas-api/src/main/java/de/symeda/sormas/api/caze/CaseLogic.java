@@ -20,6 +20,7 @@ package de.symeda.sormas.api.caze;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
 public final class CaseLogic {
+	public static final int ALLOWED_CASE_DATE_OFFSET = 30;
 
 	private CaseLogic() {
 		// Hide Utility Class Constructor
@@ -49,6 +51,10 @@ public final class CaseLogic {
 		} else {
 			return reportDate;
 		}
+	}
+
+	public static Date getEndDate(Date reportDate, Date followUpUntil) {
+		return followUpUntil != null ? followUpUntil : reportDate;
 	}
 
 	public static boolean isEpidNumberPrefix(String s) {
@@ -77,5 +83,19 @@ public final class CaseLogic {
 		caze.getHospitalization().setAdmissionDate(new Date());
 		caze.getHospitalization().setDischargeDate(null);
 		caze.getHospitalization().setIsolated(null);
+	}
+
+	public static int getNumberOfRequiredVisitsSoFar(Date reportDate, Date followUpUntil) {
+
+		if (followUpUntil == null) {
+			return 0;
+		}
+
+		Date now = new Date();
+		if (now.before(followUpUntil)) {
+			return DateHelper.getDaysBetween(DateHelper.addDays(reportDate, 1), now);
+		} else {
+			return DateHelper.getDaysBetween(DateHelper.addDays(reportDate, 1), followUpUntil);
+		}
 	}
 }
