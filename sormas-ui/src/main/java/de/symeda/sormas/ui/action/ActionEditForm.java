@@ -23,20 +23,26 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.RichTextArea;
 
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.action.ActionDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class ActionEditForm extends AbstractEditForm<ActionDto> {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final String REPLYING_LABEL_LOC = "replyingLabelLoc";
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
@@ -45,6 +51,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 					locs(ActionDto.EVENT)) +
 			fluidRowLocs(ActionDto.DATE, ActionDto.PRIORITY) +
 			fluidRowLocs(ActionDto.DESCRIPTION) +
+			loc(REPLYING_LABEL_LOC) +
 			fluidRowLocs(ActionDto.REPLY) +
 			fluidRowLocs(ActionDto.ACTION_STATUS);
 	//@formatter:on
@@ -55,6 +62,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 		addValueChangeListener(e -> {
 			updateByActionContext();
 			updateByCreating();
+			updateReplyInfo();
 		});
 
 		setWidth(680, Unit.PIXELS);
@@ -87,6 +95,16 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 
 		setRequired(true, ActionDto.ACTION_CONTEXT, ActionDto.DATE);
 		setReadOnly(true, ActionDto.ACTION_CONTEXT, ActionDto.EVENT);
+	}
+
+	private void updateReplyInfo() {
+		if (getValue().getReplyingUser() != null && getValue().getChangeDate() != null) {
+			Label replyLabel = new Label(String.format(
+					I18nProperties.getCaption(Captions.actionReplyingLabel),
+					DateFormatHelper.formatDate(getValue().getChangeDate()),
+					getValue().getReplyingUser().getCaption()));
+			getContent().addComponent(replyLabel, REPLYING_LABEL_LOC);
+		}
 	}
 
 	private void updateByCreating() {

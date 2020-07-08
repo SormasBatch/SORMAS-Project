@@ -45,6 +45,7 @@ public class Action extends AbstractDomainObject {
 	public static final String TABLE_NAME = "action";
 	public static final String DESCRIPTION = "description";
 	public static final String REPLY = "reply";
+	public static final String REPLYING_USER = "replyingUser";
 	public static final String CREATOR_USER = "creatorUser";
 	public static final String PRIORITY = "priority";
 	public static final String DATE = "date";
@@ -64,6 +65,7 @@ public class Action extends AbstractDomainObject {
 	private User creatorUser;
 	private String description;
 	private String reply;
+	private User replyingUser;
 
 	@Enumerated(EnumType.STRING)
 	public ActionContext getActionContext() {
@@ -144,5 +146,14 @@ public class Action extends AbstractDomainObject {
 
 	public void setReply(String reply) {
 		this.reply = reply;
+	}
+
+	@ManyToOne(cascade = {})
+	public User getReplyingUser() {
+		return replyingUser;
+	}
+
+	public void setReplyingUser(User replyingUser) {
+		this.replyingUser = replyingUser;
 	}
 }
