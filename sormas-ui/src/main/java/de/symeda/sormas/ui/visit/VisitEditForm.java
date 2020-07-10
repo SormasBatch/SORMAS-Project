@@ -149,14 +149,21 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 				@Override
 				public void validate(Object value) throws InvalidValueException {
 					Date visitDateTime = (Date) getFieldGroup().getField(VisitDto.VISIT_DATE_TIME).getValue();
-					if (visitDateTime.before(CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate()))
+					Date startDate = CaseLogic.getStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate());
+					if (visitDateTime.before(startDate)
 							&& DateHelper.getDaysBetween(visitDateTime, caze.getReportDate()) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
-						throw new InvalidValueException(
-								I18nProperties.getValidationError(Validations.visitBeforeContactReport, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+						if (caze.getSymptoms().getOnsetDate() != null) {
+							throw new InvalidValueException(
+									I18nProperties.getValidationError(Validations.visitBeforeSymptomsOnSet, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+						} else {
+							throw new InvalidValueException(
+									I18nProperties.getValidationError(Validations.visitBeforeCaseReport, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
+						}
 					}
-					if (caze.getFollowUpUntil() != null
-							&& visitDateTime.after(caze.getFollowUpUntil())
-							&& DateHelper.getDaysBetween(caze.getFollowUpUntil(), visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
+					Date endDate = CaseLogic.getEndDate(caze.getReportDate(), caze.getFollowUpUntil());
+					if (endDate != null
+							&& visitDateTime.after(endDate)
+							&& DateHelper.getDaysBetween(endDate, visitDateTime) > VisitDto.ALLOWED_CONTACT_DATE_OFFSET) {
 						throw new InvalidValueException(
 								I18nProperties.getValidationError(Validations.visitAfterFollowUp, VisitDto.ALLOWED_CONTACT_DATE_OFFSET));
 					}
