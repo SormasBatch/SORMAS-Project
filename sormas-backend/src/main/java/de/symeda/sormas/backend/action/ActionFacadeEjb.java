@@ -61,8 +61,10 @@ public class ActionFacadeEjb implements ActionFacade {
 			return null;
 		}
 
+		boolean creation = false;
 		Action target = actionService.getByUuid(source.getUuid());
 		if (target == null) {
+			creation = true;
 			target = new Action();
 			target.setUuid(source.getUuid());
 			if (source.getCreationDate() != null) {
@@ -78,7 +80,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		target.setDescription(source.getDescription());
 		target.setPriority(source.getPriority());
 		target.setDate(source.getDate());
-		if (target.getActionStatus() != source.getActionStatus()) {
+		if (target.getActionStatus() != source.getActionStatus() && !creation) {
 			target.setStatusChangeDate(new Date());
 		} else {
 			target.setStatusChangeDate(source.getStatusChangeDate());
