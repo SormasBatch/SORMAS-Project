@@ -34,27 +34,31 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class ActionEditForm extends AbstractEditForm<ActionDto> {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -6759724916847528789L;
 
+	private static final String CREATING_LABEL_LOC = "creatingLabelLoc";
 	private static final String REPLYING_LABEL_LOC = "replyingLabelLoc";
+	private static final String STATUS_CHANGE_LABEL_LOC = "statusChangeLabelLoc";
 
-	//@formatter:off
-	private static final String HTML_LAYOUT = 
-			fluidRow(
-					loc(ActionDto.ACTION_CONTEXT), 
-					locs(ActionDto.EVENT)) +
-			fluidRowLocs(ActionDto.DATE, ActionDto.PRIORITY) +
-			fluidRowLocs(ActionDto.DESCRIPTION) +
-			loc(REPLYING_LABEL_LOC) +
-			fluidRowLocs(ActionDto.REPLY) +
-			fluidRowLocs(ActionDto.ACTION_STATUS);
-	//@formatter:on
+//@formatter:off
+  private static final String HTML_LAYOUT =
+      fluidRow(
+          loc(ActionDto.ACTION_CONTEXT),
+          locs(ActionDto.EVENT)) +
+          fluidRowLocs(ActionDto.DATE, ActionDto.PRIORITY) +
+          loc(CREATING_LABEL_LOC) +
+          fluidRowLocs(ActionDto.DESCRIPTION) +
+          loc(REPLYING_LABEL_LOC) +
+          fluidRowLocs(ActionDto.REPLY) +
+          fluidRowLocs(4, ActionDto.ACTION_STATUS, 8, STATUS_CHANGE_LABEL_LOC);
+  //@formatter:on
 
 	public ActionEditForm(boolean create) {
 
@@ -63,6 +67,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 			updateByActionContext();
 			updateByCreating();
 			updateReplyInfo();
+			updateStatusChangeInfo();
 		});
 
 		setWidth(680, Unit.PIXELS);
@@ -99,12 +104,35 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 
 	private void updateReplyInfo() {
 		if (getValue().getReplyingUser() != null && getValue().getChangeDate() != null) {
-			Label replyLabel = new Label(String.format(
+			Label replyLabel = new Label(
+				String.format(
 					I18nProperties.getCaption(Captions.actionReplyingLabel),
 					DateFormatHelper.formatDate(getValue().getChangeDate()),
 					getValue().getReplyingUser().getCaption()));
+			replyLabel.addStyleNames(CssStyles.LABEL_ITALIC);
 			getContent().addComponent(replyLabel, REPLYING_LABEL_LOC);
 		}
+	}
+
+	private void updateStatusChangeInfo() {
+		if (getValue().getStatusChangeDate() != null) {
+			Label statusChangeLabel = new Label(
+				String.format(
+					I18nProperties.getCaption(Captions.actionStatusChangeDate),
+					DateFormatHelper.formatDate(getValue().getStatusChangeDate())));
+			statusChangeLabel.addStyleNames(CssStyles.LABEL_ITALIC);
+			getContent().addComponent(statusChangeLabel, STATUS_CHANGE_LABEL_LOC);
+		}
+	}
+
+	private void updateCreationInfo() {
+		Label creationLabel = new Label(
+			String.format(
+				I18nProperties.getCaption(Captions.actionCreatingLabel),
+				DateFormatHelper.formatDate(getValue().getCreationDate()),
+				getValue().getCreatorUser().getCaption()));
+		creationLabel.addStyleNames(CssStyles.LABEL_ITALIC);
+		getContent().addComponent(creationLabel, CREATING_LABEL_LOC);
 	}
 
 	private void updateByCreating() {
@@ -119,6 +147,8 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 			setVisible(!creating, ActionDto.REPLY);
 			if (creating) {
 				discard(ActionDto.REPLY);
+			} else {
+				updateCreationInfo();
 			}
 
 			setReadOnly(!creator, ActionDto.DESCRIPTION);
@@ -140,7 +170,7 @@ public class ActionEditForm extends AbstractEditForm<ActionDto> {
 			}
 		} else {
 			FieldHelper.setFirstVisibleClearOthers(null, eventField);
-			FieldHelper.setFirstRequired(null,  eventField);
+			FieldHelper.setFirstRequired(null, eventField);
 		}
 	}
 
