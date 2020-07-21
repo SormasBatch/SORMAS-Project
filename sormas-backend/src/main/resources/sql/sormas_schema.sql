@@ -4758,4 +4758,12 @@ ALTER TABLE action ADD COLUMN replyinguser_id bigint;
 ALTER TABLE action_history ADD COLUMN replyinguser_id bigint;
 INSERT INTO schema_version (version_number, comment) VALUES (223, 'Add replying user of an action');
 
+-- 2020-07-08 Add two columns completeness and duplicateOf for contact
+ALTER TABLE contact ADD completeness real;
+ALTER TABLE contact_history ADD completeness real;
+
+ALTER TABLE contact ADD duplicateof_id BIGINT;
+ALTER TABLE contact_history ADD duplicateof_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (224, 'Add two columns completeness and duplicateOf for contact');
 -- *** Insert new sql commands BEFORE this line ***
