@@ -1294,6 +1294,9 @@ public class ContactFacadeEjb implements ContactFacade {
 				FacadeProvider.getConfigFacade().getNameSimilarityThreshold());
 		Predicate diseaseFilter = cb.equal(root.get(Contact.DISEASE), root2.get(Contact.DISEASE));
 		Predicate regionFilter = cb.equal(region.get(Region.ID), region2.get(Region.ID));
+
+		Predicate cazeFilter = cb.equal(root.get(Contact.CAZE),root2.get(Contact.CAZE));
+
 		Predicate reportDateFilter = cb.lessThanOrEqualTo(
 				cb.abs(
 						cb.diff(
@@ -1335,6 +1338,13 @@ public class ContactFacadeEjb implements ContactFacade {
 		} else {
 			filter = nameSimilarityFilter;
 		}
+
+		if (filter != null) {
+			filter = cb.and(filter, cazeFilter);
+		} else {
+			filter = cazeFilter;
+		}
+
 		filter = cb.and(filter, diseaseFilter);
 
 		if (!showDuplicatesWithDifferentRegion) {
