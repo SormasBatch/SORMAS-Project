@@ -4759,3 +4759,6 @@ ALTER TABLE action_history ADD COLUMN replyinguser_id bigint;
 INSERT INTO schema_version (version_number, comment) VALUES (223, 'Add replying user of an action');
 
 -- *** Insert new sql commands BEFORE this line ***
+ALTER TABLE users ADD COLUMN gdpr boolean default true;
+ALTER TABLE users_history ADD COLUMN gdpr boolean default true;
+INSERT INTO schema_version (version_number, comment) VALUES (224, 'Add gdpr popup to user');

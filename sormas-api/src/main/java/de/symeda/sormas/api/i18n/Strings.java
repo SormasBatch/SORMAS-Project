@@ -152,6 +152,7 @@ public interface Strings {
 	String errorWasReported = "errorWasReported";
 	String forCase = "forCase";
 	String forContact = "forContact";
+	String gdpr = "gdpr";
 	String headingAccessDenied = "headingAccessDenied";
 	String headingAdditionalTests = "headingAdditionalTests";
 	String headingAllContacts = "headingAllContacts";
@@ -609,6 +610,8 @@ public interface Strings {
 	String messageUserRoleCombination = "messageUserRoleCombination";
 	String messageVisitsDeleted = "messageVisitsDeleted";
 	String messageWrongFileType = "messageWrongFileType";
+	String messageGdpr = "messageGdpr";
+	String messageCheckGdpr = "messageCheckGdpr";
 	String min = "min";
 	String mmhg = "mmhg";
 	String month = "month";
@@ -704,6 +707,7 @@ public interface Strings {
 	String total = "total";
 	String unknown = "unknown";
 	String until = "until";
+	String validate = "validate";
 	String week = "week";
 	String weekShort = "weekShort";
 	String year = "year";

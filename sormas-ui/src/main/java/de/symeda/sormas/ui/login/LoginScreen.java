@@ -23,6 +23,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Window;
+import de.symeda.sormas.api.user.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
