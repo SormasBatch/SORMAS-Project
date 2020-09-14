@@ -250,17 +250,7 @@ public class MainScreen extends HorizontalLayout {
                         navigator.getUI().removeWindow(subWindowGdpR);
                     },
                     ValoTheme.BUTTON_PRIMARY);
-            /*subContentGdpr.addComponent(new Button(I18nProperties.getString(Strings.validate), event -> {
-                boolean isCheck = checkBoxRgpd.getValue();
-                if (isCheck) {
-                    user.setGdpr(false);
-                    FacadeProvider.getUserFacade().saveUser(user);
-                    navigator.getUI().removeWindow(subWindowGdpR);
-                }
-                navigator.getUI().removeWindow(subWindowGdpR);
-            }));*/
 
-            //buttonGdpr.addStyleName(CssStyles);
             buttonLayout.addComponent(buttonGdpr);
             subContentGdpr.addComponent(checkBoxRgpd);
             subContentGdpr.addComponent(buttonLayout);
