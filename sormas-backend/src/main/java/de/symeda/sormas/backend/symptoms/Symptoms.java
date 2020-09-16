@@ -48,6 +48,7 @@ public class Symptoms extends AbstractDomainObject {
 
     public static final String ONSET_DATE = "onsetDate";
     public static final String SYMPTOMATIC = "symptomatic";
+    public static final String SYMPTOMATIC_SYMPTOM = "symptomatic";
     public static final String TEMPERATURE = "temperature";
     public static final String TEMPERATURE_SOURCE = "temperatureSource";
     public static final String BLOOD_PRESSURE_SYSTOLIC = "bloodPressureSystolic";
@@ -70,6 +71,7 @@ public class Symptoms extends AbstractDomainObject {
     private Integer midUpperArmCircumference;
     private Integer glasgowComaScale;
 
+    private SymptomState symptomaticUi;
     private SymptomState fever;
     private SymptomState vomiting;
     private SymptomState diarrhea;
@@ -228,6 +230,15 @@ public class Symptoms extends AbstractDomainObject {
     private String otherComplicationsText;
 
     // when adding new fields make sure to extend toHumanString
+
+    @Enumerated(EnumType.STRING)
+    public SymptomState getSymptomaticUi() {
+        return symptomaticUi;
+    }
+
+    public void setSymptomaticUi(SymptomState symptomaticUi) {
+        this.symptomaticUi = symptomaticUi;
+    }
 
     @Temporal(TemporalType.TIMESTAMP)
     public Date getOnsetDate() {
@@ -1872,7 +1883,7 @@ public class Symptoms extends AbstractDomainObject {
         appendYesSymptom(string, fastHeartRate, SymptomsDto.FAST_HEART_RATE);
         appendYesSymptom(string, oxygenSaturationLower94, SymptomsDto.OXYGEN_SATURATION_LOWER_94);
         appendNotNullValue(string, otherComplicationsText, SymptomsDto.OTHER_COMPLICATIONS_TEXT);
-
+        appendYesSymptom(string, symptomaticUi, SymptomsDto.SYMPTOMATIC_UI);
         // symptomsComments;
 
         return string.toString();

@@ -220,6 +220,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
+		target.setSymptomaticUi(source.getSymptomaticUi());
 
 		return symptoms;
 	}
@@ -404,6 +405,7 @@ public class SymptomsFacadeEjb implements SymptomsFacade {
 		target.setGeneralSignsOfDisease(source.getGeneralSignsOfDisease());
 		target.setFastHeartRate(source.getFastHeartRate());
 		target.setOxygenSaturationLower94(source.getOxygenSaturationLower94());
+		target.setSymptomaticUi(source.getSymptomaticUi());
 
 		return target;
 	}

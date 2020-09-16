@@ -200,6 +200,7 @@ public class SymptomsDto extends EntityDto {
 	public static final String SUNKEN_EYES_FONTANELLE = "sunkenEyesFontanelle";
 	public static final String SWOLLEN_GLANDS = "swollenGlands";
 	public static final String SYMPTOMATIC = "symptomatic";
+	public static final String SYMPTOMATIC_UI = "symptomaticUi";
 	public static final String SYMPTOMS_COMMENTS = "symptomsComments";
 	public static final String TEMPERATURE = "temperature";
 	public static final String TEMPERATURE_SOURCE = "temperatureSource";
@@ -1394,6 +1395,8 @@ public class SymptomsDto extends EntityDto {
 
 	private Boolean symptomatic;
 
+	private SymptomState symptomaticUi;
+
 	@Diseases({
 		AFP,
 		EVD,
@@ -2015,6 +2018,9 @@ public class SymptomsDto extends EntityDto {
 	public Boolean getSymptomatic() {
 		return symptomatic;
 	}
+
+	@Order(275)
+	public SymptomState getSymptomaticUi() { return symptomaticUi; }
 
 	@Order(21)
 	public String getSymptomsComments() {
@@ -3129,6 +3135,8 @@ public class SymptomsDto extends EntityDto {
 	public void setSymptomatic(Boolean symptomatic) {
 		this.symptomatic = symptomatic;
 	}
+
+	public void setSymptomaticUi(SymptomState symptomaticUi) { this.symptomaticUi = symptomaticUi; }
 
 	public void setSymptomsComments(String symptomsComments) {
 		this.symptomsComments = symptomsComments;
