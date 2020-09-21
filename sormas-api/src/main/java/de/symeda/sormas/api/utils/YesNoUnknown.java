@@ -29,11 +29,11 @@ public enum YesNoUnknown {
 		return I18nProperties.getEnumCaption(this);
 	}
 
-	public static YesNoUnknown valueOf(Boolean value) {
+	public static YesNoUnknown valueOf(YesNoUnknown value) {
 
-		if (value == null) {
+		if (value == YesNoUnknown.UNKNOWN) {
 			return null;
-		} else if (Boolean.TRUE.equals(value)) {
+		} else if (value == YesNoUnknown.YES) {
 			return YES;
 		} else {
 			return NO;
