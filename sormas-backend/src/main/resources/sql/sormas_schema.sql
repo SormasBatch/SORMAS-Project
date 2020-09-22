@@ -4758,9 +4758,9 @@ ALTER TABLE action ADD COLUMN replyinguser_id bigint;
 ALTER TABLE action_history ADD COLUMN replyinguser_id bigint;
 INSERT INTO schema_version (version_number, comment) VALUES (223, 'Add replying user of an action');
 
--- 2020-09-16 Add a variable symptomaticui
-ALTER TABLE symptoms ADD COLUMN symptomaticui varchar(255);
-ALTER TABLE symptoms_history ADD COLUMN symptomaticui varchar(255);
-INSERT INTO schema_version (version_number, comment) VALUES (224, 'Add symptomaticui variable to see symptomatic');
--- *** Insert new sql commands BEFORE this line ***
+-- 2020-09-16 Modify the type of symptomtic
+ALTER TABLE symptoms ALTER COLUMN symptomatic TYPE varchar(255);
+ALTER TABLE symptoms_history ALTER COLUMN symptomatic TYPE varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (224, 'Modify the type of symptomtic');
 
+-- *** Insert new sql commands BEFORE this line ***

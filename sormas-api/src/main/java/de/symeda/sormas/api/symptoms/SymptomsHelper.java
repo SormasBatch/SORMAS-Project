@@ -17,6 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.symptoms;
 
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import org.apache.commons.lang3.StringUtils;
+
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -26,13 +33,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.DataHelper;
 
 public final class SymptomsHelper {
 
@@ -183,7 +183,7 @@ public final class SymptomsHelper {
 			for (Method method : SymptomsDto.class.getDeclaredMethods()) {
 				if (method.getReturnType() == SymptomState.class) {
 					if (method.invoke(dto) == SymptomState.YES) {
-						dto.setSymptomatic(true);
+						dto.setSymptomatic(YesNoUnknown.YES);
 						return;
 					}
 				}
@@ -192,7 +192,14 @@ public final class SymptomsHelper {
 			throw new RuntimeException(e);
 		}
 
-		dto.setSymptomatic(false);
+		if (dto.getSymptomatic() == YesNoUnknown.UNKNOWN) {
+			dto.setSymptomatic(YesNoUnknown.UNKNOWN);
+		} else if (dto.getSymptomatic() == YesNoUnknown.NO) {
+			dto.setSymptomatic(YesNoUnknown.NO);
+		}
+		else {
+			dto.setSymptomatic(null);
+		}
 	}
 
 	/**
@@ -223,13 +230,13 @@ public final class SymptomsHelper {
 					if (result == SymptomState.YES) {
 						pd.getWriteMethod().invoke(targetSymptoms, result);
 					}
-				} else if (pd.getReadMethod().getReturnType() == Boolean.class) {
+				} else if (pd.getReadMethod().getReturnType() == YesNoUnknown.class) {
 					// Booleans are carried over when they are TRUE
 					if (pd.getName().equals(SymptomsDto.SYMPTOMATIC)) {
 						continue;
 					} else {
-						Boolean result = (Boolean) pd.getReadMethod().invoke(sourceSymptoms);
-						if (Boolean.TRUE.equals(result)) {
+						YesNoUnknown result = (YesNoUnknown) pd.getReadMethod().invoke(sourceSymptoms);
+						if (result == YesNoUnknown.YES) {
 							pd.getWriteMethod().invoke(targetSymptoms, result);
 						}
 					}

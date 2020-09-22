@@ -100,11 +100,15 @@ public class GridExportStreamResource extends StreamResource {
 										valueString = "";
 									} else if (value instanceof Date) {
 										valueString = DateFormatHelper.formatLocalDateTime((Date) value);
-									} else if (value instanceof Boolean) {
-										if ((Boolean) value == true) {
+									} else if (value instanceof YesNoUnknown) {
+										if (value == YesNoUnknown.YES) {
 											valueString = I18nProperties.getEnumCaption(YesNoUnknown.YES);
-										} else
+										} else if (value == YesNoUnknown.NO)
 											valueString = I18nProperties.getEnumCaption(YesNoUnknown.NO);
+										else {
+											valueString = I18nProperties.getEnumCaption(YesNoUnknown.UNKNOWN);
+										}
+
 									} else if (value instanceof AgeAndBirthDateDto) {
 										AgeAndBirthDateDto ageAndBirthDate = (AgeAndBirthDateDto) value;
 										valueString = PersonHelper.getAgeAndBirthdateString(

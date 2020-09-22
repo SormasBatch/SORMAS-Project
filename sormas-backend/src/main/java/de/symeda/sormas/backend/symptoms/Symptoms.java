@@ -48,7 +48,6 @@ public class Symptoms extends AbstractDomainObject {
 
     public static final String ONSET_DATE = "onsetDate";
     public static final String SYMPTOMATIC = "symptomatic";
-    public static final String SYMPTOMATIC_SYMPTOM = "symptomatic";
     public static final String TEMPERATURE = "temperature";
     public static final String TEMPERATURE_SOURCE = "temperatureSource";
     public static final String BLOOD_PRESSURE_SYSTOLIC = "bloodPressureSystolic";
@@ -57,7 +56,7 @@ public class Symptoms extends AbstractDomainObject {
 
     private Date onsetDate;
     private String onsetSymptom;
-    private Boolean symptomatic;
+    private YesNoUnknown symptomatic;
     private String patientIllLocation;
 
     private Float temperature;
@@ -71,7 +70,6 @@ public class Symptoms extends AbstractDomainObject {
     private Integer midUpperArmCircumference;
     private Integer glasgowComaScale;
 
-    private SymptomState symptomaticUi;
     private SymptomState fever;
     private SymptomState vomiting;
     private SymptomState diarrhea;
@@ -230,15 +228,6 @@ public class Symptoms extends AbstractDomainObject {
     private String otherComplicationsText;
 
     // when adding new fields make sure to extend toHumanString
-
-    @Enumerated(EnumType.STRING)
-    public SymptomState getSymptomaticUi() {
-        return symptomaticUi;
-    }
-
-    public void setSymptomaticUi(SymptomState symptomaticUi) {
-        this.symptomaticUi = symptomaticUi;
-    }
 
     @Temporal(TemporalType.TIMESTAMP)
     public Date getOnsetDate() {
@@ -529,7 +518,7 @@ public class Symptoms extends AbstractDomainObject {
         this.seizures = seizures;
     }
 
-    public void setSymptomatic(Boolean symptomatic) {
+    public void setSymptomatic(YesNoUnknown symptomatic) {
         this.symptomatic = symptomatic;
     }
 
@@ -651,7 +640,8 @@ public class Symptoms extends AbstractDomainObject {
         return seizures;
     }
 
-    public Boolean getSymptomatic() {
+    @Enumerated(EnumType.STRING)
+    public YesNoUnknown getSymptomatic() {
         return symptomatic;
     }
 
@@ -1822,7 +1812,7 @@ public class Symptoms extends AbstractDomainObject {
         appendTrue(string, lesionsArms, SymptomsDto.LESIONS_ARMS);
         appendTrue(string, lesionsGenitals, SymptomsDto.LESIONS_GENITALS);
         appendTrue(string, lesionsAllOverBody, SymptomsDto.LESIONS_ALL_OVER_BODY);
-        appendTrue(string, symptomatic, SymptomsDto.SYMPTOMATIC);
+        appendNotNullValue(string, symptomatic, SymptomsDto.SYMPTOMATIC);
         // TODO images should have more specific caption to be included here
 //		appendYesSymptom(string, lesionsResembleImg1, SymptomsDto.LESIONS_RESEMBLE_IMG1);
 //		appendYesSymptom(string, lesionsResembleImg2, SymptomsDto.LESIONS_RESEMBLE_IMG2);
@@ -1883,7 +1873,7 @@ public class Symptoms extends AbstractDomainObject {
         appendYesSymptom(string, fastHeartRate, SymptomsDto.FAST_HEART_RATE);
         appendYesSymptom(string, oxygenSaturationLower94, SymptomsDto.OXYGEN_SATURATION_LOWER_94);
         appendNotNullValue(string, otherComplicationsText, SymptomsDto.OTHER_COMPLICATIONS_TEXT);
-        appendYesSymptom(string, symptomaticUi, SymptomsDto.SYMPTOMATIC_UI);
+
         // symptomsComments;
 
         return string.toString();

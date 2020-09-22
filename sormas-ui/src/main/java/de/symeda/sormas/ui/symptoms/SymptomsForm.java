@@ -48,6 +48,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
@@ -104,7 +105,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
                             //XXX #1620 fluidColumnLoc?
                             fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC)),
                             fluidColumn(4, 0, locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC))) +
-                    fluidRowLocs(SYMPTOMATIC_UI, ONSET_DATE) +
+                    fluidRowLocs(SYMPTOMATIC, ONSET_DATE) +
                     fluidRow(
                             fluidColumn(6, 0,
                                     locsCss(VSPACE_3,
@@ -440,7 +441,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
                 SEPSIS,
                 SHOCK);
 
-        addField(SYMPTOMATIC_UI);
+        addField(SYMPTOMATIC);
 
         monkeypoxImageFieldIds = Arrays.asList(LESIONS_RESEMBLE_IMG1, LESIONS_RESEMBLE_IMG2, LESIONS_RESEMBLE_IMG3, LESIONS_RESEMBLE_IMG4);
         for (String propertyId : monkeypoxImageFieldIds) {
@@ -470,7 +471,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
         // Initialize lists
 
-        symptomaticFieldId = SYMPTOMATIC_UI;
+        symptomaticFieldId = SYMPTOMATIC;
 
         conditionalBleedingSymptomFieldIds = Arrays.asList(
                 GUMS_BLEEDING,
@@ -711,33 +712,33 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
         addListenerForOnsetSymptomaticField(onsetDateField);
 
         Button clearAllButton = ButtonHelper.createButton(Captions.actionClearAll, event -> {
-            //if (getFieldGroup().getField(symptomaticFieldId).getValue().equals(SymptomState.UNKNOWN)) {
-            //getFieldGroup().getField(symptomaticFieldId).setValue(null);
-                for (Object symptomId : unconditionalSymptomFieldIds) {
-                    getFieldGroup().getField(symptomId).setValue(null);
-                }
-                for (Object symptomId : conditionalBleedingSymptomFieldIds) {
-                    getFieldGroup().getField(symptomId).setValue(null);
-                }
-                for (Object symptomId : lesionsFieldIds) {
-                    getFieldGroup().getField(symptomId).setValue(null);
-                }
-                for (Object symptomId : lesionsLocationFieldIds) {
-                    getFieldGroup().getField(symptomId).setValue(null);
-                }
-                for (Object symptomId : monkeypoxImageFieldIds) {
-                    getFieldGroup().getField(symptomId).setValue(null);
-                }
-            //}
+
+            for (Object symptomId : unconditionalSymptomFieldIds) {
+                getFieldGroup().getField(symptomId).setValue(null);
+            }
+            for (Object symptomId : conditionalBleedingSymptomFieldIds) {
+                getFieldGroup().getField(symptomId).setValue(null);
+            }
+            for (Object symptomId : lesionsFieldIds) {
+                getFieldGroup().getField(symptomId).setValue(null);
+            }
+            for (Object symptomId : lesionsLocationFieldIds) {
+                getFieldGroup().getField(symptomId).setValue(null);
+            }
+            for (Object symptomId : monkeypoxImageFieldIds) {
+                getFieldGroup().getField(symptomId).setValue(null);
+            }
+            Object symptomaticId = symptomaticFieldId;
+            getFieldGroup().getField(symptomaticId).setValue(null);
         }, ValoTheme.BUTTON_LINK);
 
         Button setEmptyToNoButton = ButtonHelper.createButton(Captions.symptomsSetClearedToNo, event -> {
             for (Object symptomId : unconditionalSymptomFieldIds) {
                 Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
-                Field sourceFieldSymptomatic = getFieldGroup().getField(symptomaticFieldId);
+                Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(symptomaticFieldId);
                 if (symptom.isVisible() && symptom.getValue() == null) {
                     symptom.setValue(SymptomState.NO);
-                    sourceFieldSymptomatic.setValue(SymptomState.NO);
+                    sourceFieldSymptomatic.setValue(YesNoUnknown.NO);
                 }
             }
             for (Object symptomId : conditionalBleedingSymptomFieldIds) {
@@ -975,16 +976,18 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
         List<String> allPropertyIds =
                 Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
         allPropertyIds.add(LESIONS_THAT_ITCH);
-        Field sourceFieldSymptomatic = getFieldGroup().getField(symptomaticFieldId);
+
 
         for (Object sourcePropertyId : allPropertyIds) {
+            Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(symptomaticFieldId);
             Field sourceField = getFieldGroup().getField(sourcePropertyId);
             sourceField.addValueChangeListener(event -> {
 
                 if (sourceField.getValue() == SymptomState.YES) {
+                    sourceFieldSymptomatic.setValue(YesNoUnknown.YES);
                     onsetSymptom.addItem(sourceField.getCaption());
                     onsetDateField.setEnabled(true);
-                    sourceFieldSymptomatic.setValue(SymptomState.YES);
+
                 } else {
                     onsetSymptom.removeItem(sourceField.getCaption());
                     onsetDateField.setEnabled(isAnySymptomSetToYes(getFieldGroup(), allPropertyIds, Arrays.asList(SymptomState.YES)));
@@ -996,9 +999,10 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
         onsetDateField.setEnabled(false); // will be updated by listener if needed
     }
 
+    // event for the symptomatic field
     private void addListenerForOnsetSymptomaticField(DateField onsetDateField) {
 
-        Field<SymptomState> sourceFieldSymptomatic = (Field<SymptomState>) getFieldGroup().getField(symptomaticFieldId);
+        Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(symptomaticFieldId);
         List<String> allPropertyIds =
                 Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
         allPropertyIds.add(LESIONS_THAT_ITCH);
@@ -1006,16 +1010,21 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
         sourceFieldSymptomatic.addValueChangeListener(event -> {
             for (Object sourcePropertyId : allPropertyIds) {
                 Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(sourcePropertyId);
-                //symptom.setValue(SymptomState.NO);
-                symptom.setEnabled(false);
-                if (sourceFieldSymptomatic.getValue().equals(SymptomState.YES) || sourceFieldSymptomatic.getValue().equals(SymptomState.UNKNOWN)) {
-                    onsetDateField.setEnabled(true);
-                    symptom.setEnabled(true);
-                } else {
-                    symptom.setValue(SymptomState.NO);
+                if (sourceFieldSymptomatic.getValue() != null) {
+                    if (sourceFieldSymptomatic.getValue().equals(YesNoUnknown.NO)) {
+                        symptom.setValue(SymptomState.NO);
+                        symptom.setEnabled(false);
+                        onsetDateField.setEnabled(false);
+                    } else if (sourceFieldSymptomatic.getValue().equals(YesNoUnknown.UNKNOWN)) {
+                        onsetDateField.setEnabled(false);
+                        symptom.setEnabled(true);
+                        symptom.setValue(null);
+                    } else {
+                        onsetDateField.setEnabled(true);
+                        symptom.setEnabled(true);
+                    }
                 }
             }
-            onsetDateField.setEnabled(false);
         });
     }
 
