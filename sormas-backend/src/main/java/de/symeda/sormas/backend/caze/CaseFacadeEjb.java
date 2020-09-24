@@ -1876,6 +1876,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setFollowUpUntil(source.getFollowUpUntil());
 		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
 
+
 		return target;
 	}
 

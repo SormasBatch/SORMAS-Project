@@ -11,6 +11,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
@@ -60,7 +61,9 @@ public class PrescriptionForm extends AbstractEditForm<PrescriptionDto> {
 		addField(PrescriptionDto.DOSE, TextField.class);
 		ComboBox routeField = addField(PrescriptionDto.ROUTE, ComboBox.class);
 		addField(PrescriptionDto.ROUTE_DETAILS, TextField.class);
-		addField(PrescriptionDto.ADDITIONAL_NOTES, TextArea.class).setRows(3);
+		TextArea additionalNotess =	addField(PrescriptionDto.ADDITIONAL_NOTES, TextArea.class);
+		additionalNotess.setRows(3);
+		additionalNotess.setDescription(I18nProperties.getDescription(Descriptions.descGdpr));
 
 		setRequired(true, PrescriptionDto.PRESCRIPTION_TYPE, PrescriptionDto.PRESCRIPTION_DATE);
 		FieldHelper.setRequiredWhen(

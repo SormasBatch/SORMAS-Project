@@ -31,6 +31,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactLogic;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
@@ -103,7 +104,7 @@ public class VisitEditForm extends AbstractEditForm<VisitDto> {
 
 		addField(VisitDto.VISIT_DATE_TIME, DateTimeField.class);
 		OptionGroup visitStatus = addField(VisitDto.VISIT_STATUS, OptionGroup.class);
-		addField(VisitDto.VISIT_REMARKS, TextField.class);
+		addField(VisitDto.VISIT_REMARKS, TextField.class).setDescription(I18nProperties.getDescription(Descriptions.descGdpr));
 
 		symptomsForm = new SymptomsForm(null, disease, person, SymptomsContext.VISIT, null);
 		getFieldGroup().bind(symptomsForm, VisitDto.SYMPTOMS);

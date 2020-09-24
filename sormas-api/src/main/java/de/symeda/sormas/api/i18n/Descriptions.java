@@ -22,4 +22,5 @@ public interface Descriptions {
 	String descCaseFilterCasesWithCaseManagementData = "descCaseFilterCasesWithCaseManagementData";
 	String descCaseFilterExcludeSharedCasesString = "descCaseFilterExcludeSharedCases";
 	String descCaseFilterWithoutResponsibleOfficer = "descCaseFilterWithoutResponsibleOfficer";
+	String descGdpr = "descGdpr";
 }

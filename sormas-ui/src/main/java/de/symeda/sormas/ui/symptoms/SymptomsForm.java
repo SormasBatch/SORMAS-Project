@@ -52,11 +52,13 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 
+import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -317,7 +319,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			STOMACH_BLEEDING,
 			RAPID_BREATHING,
 			SWOLLEN_GLANDS,
-			SYMPTOMS_COMMENTS,
+			//SYMPTOMS_COMMENTS,
 			UNEXPLAINED_BLEEDING,
 			GUMS_BLEEDING,
 			INJECTION_SITE_BLEEDING,
@@ -419,6 +421,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			RESPIRATORY_DISEASE_VENTILATION,
 			FAST_HEART_RATE,
 			OXYGEN_SATURATION_LOWER_94);
+
+		addField(SYMPTOMS_COMMENTS, TextField.class).setDescription(I18nProperties.getDescription(Descriptions.descGdpr));
 
 		addField(LESIONS_ONSET_DATE, DateField.class);
 

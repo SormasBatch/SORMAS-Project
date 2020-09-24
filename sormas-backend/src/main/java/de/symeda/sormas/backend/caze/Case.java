@@ -158,6 +158,9 @@ public class Case extends CoreAdo {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
+	//todo
+	//test 24.09 field gdpr
+	//public static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 
 	private Person person;
 	private String description;
@@ -267,6 +270,8 @@ public class Case extends CoreAdo {
 	private List<Task> tasks;
 	private Set<Sample> samples;
 	private Set<Visit> visits = new HashSet<>();
+
+	//private String generalCommentLoc;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn(nullable = false)
@@ -1098,4 +1103,12 @@ public class Case extends CoreAdo {
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
 	}
+
+	/*public String getGeneralCommentLoc() {
+		return generalCommentLoc;
+	}
+
+	public void setGeneralCommentLoc(String generalCommentLoc) {
+		this.generalCommentLoc = generalCommentLoc;
+	}*/
 }

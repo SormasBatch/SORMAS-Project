@@ -26,6 +26,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 import java.util.Arrays;
 import java.util.Date;
 
+import de.symeda.sormas.api.i18n.Descriptions;
 import org.joda.time.LocalDate;
 
 import com.vaadin.ui.Button;
@@ -292,6 +293,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		TextArea additionalDetails = addField(ContactDto.ADDITIONAL_DETAILS, TextArea.class);
 		additionalDetails.setRows(3);
+		additionalDetails.setDescription(I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 
 		setReadOnly(true, ContactDto.UUID, ContactDto.REPORTING_USER, ContactDto.CONTACT_STATUS, ContactDto.FOLLOW_UP_STATUS);

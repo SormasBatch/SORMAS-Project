@@ -139,6 +139,9 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String VISITS = "visits";
+	//todo
+	//test 24.09 field gdpr
+	//public static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -331,6 +334,8 @@ public class CaseDataDto extends PseudonymizableDto {
 	private String followUpComment;
 	private Date followUpUntil;
 	private boolean overwriteFollowUpUntil;
+
+	//private String generalCommentLoc;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		CaseDataDto caze = new CaseDataDto();
@@ -1022,4 +1027,12 @@ public class CaseDataDto extends PseudonymizableDto {
 	public void setOverwriteFollowUpUntil(boolean overwriteFollowUpUntil) {
 		this.overwriteFollowUpUntil = overwriteFollowUpUntil;
 	}
+
+	/*public String getGeneralCommentLoc() {
+		return generalCommentLoc;
+	}
+
+	public void setGeneralCommentLoc(String generalCommentLoc) {
+		this.generalCommentLoc = generalCommentLoc;
+	}*/
 }

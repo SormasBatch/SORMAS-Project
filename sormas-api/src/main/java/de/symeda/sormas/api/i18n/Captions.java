@@ -173,6 +173,9 @@ public interface Captions {
 	String CaseData_followUpComment = "CaseData.followUpComment";
 	String CaseData_followUpStatus = "CaseData.followUpStatus";
 	String CaseData_followUpUntil = "CaseData.followUpUntil";
+	//todo
+	//test 24.09
+	//String CaseData_generalCommentLoc = "CaseData.generalCommentLoc";
 	String CaseData_healthConditions = "CaseData.healthConditions";
 	String CaseData_healthFacility = "CaseData.healthFacility";
 	String CaseData_healthFacilityDetails = "CaseData.healthFacilityDetails";
@@ -769,6 +772,7 @@ public interface Captions {
 	String formatNumberOfVisitsLongFormat = "formatNumberOfVisitsLongFormat";
 	String formatSimpleNumberFormat = "formatSimpleNumberFormat";
 	String from = "from";
+	//String gdprReminder = "gdprReminder";
 	String HealthConditions = "HealthConditions";
 	String HealthConditions_asplenia = "HealthConditions.asplenia";
 	String HealthConditions_asthma = "HealthConditions.asthma";
