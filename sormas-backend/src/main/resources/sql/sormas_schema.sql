@@ -5323,4 +5323,13 @@ ALTER TABLE person_history ADD COLUMN externalid varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (254, 'Add new field externalId as per feature #2670');
 
+-- 2020-09-25 Contact Duplicates #2409
+ALTER TABLE contact ADD completeness real;
+ALTER TABLE contact_history ADD completeness real;
+
+ALTER TABLE contact ADD duplicateof_id BIGINT;
+ALTER TABLE contact_history ADD duplicateof_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (256, 'Add two columns completeness and duplicateOf for contact');
+
 -- *** Insert new sql commands BEFORE this line ***

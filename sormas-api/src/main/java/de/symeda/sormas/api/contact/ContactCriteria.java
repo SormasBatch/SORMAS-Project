@@ -33,8 +33,10 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 
-public class ContactCriteria extends BaseCriteria implements Serializable {
+public class ContactCriteria extends BaseCriteria implements Serializable, Cloneable {
 
 	public static final String NAME_UUID_CASE_LIKE = "nameUuidCaseLike";
 	public static final String REGION = "region";
@@ -54,6 +56,9 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
+	public static final String CREATION_DATE_FROM = "creationDateFrom";
+	public static final String CREATION_DATE_TO = "creationDateTo";
+	public static final String REPORTING_USER_LIKE = "reportingUserLike";
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
@@ -99,6 +104,10 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
 	private Integer birthdateDD;
+	// used to construct the new filter in merge contact
+	private Date creationDateFrom;
+	private Date creationDateTo;
+	private String reportingUserLike;
 
 	public UserRole getReportingUserRole() {
 		return reportingUserRole;
@@ -452,5 +461,49 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setBirthdateDD(Integer birthdateDD) {
 		this.birthdateDD = birthdateDD;
+	}
+
+	public Date getCreationDateFrom() {
+		return creationDateFrom;
+	}
+
+	public void setCreationDateFrom(Date creationDateFrom) {
+		this.creationDateFrom = creationDateFrom;
+	}
+
+	public ContactCriteria creationDateFrom(Date creationDateFrom) {
+		setCreationDateFrom(creationDateFrom);
+		return this;
+	}
+
+	public Date getCreationDateTo() {
+		return creationDateTo;
+	}
+
+	public void setCreationDateTo(Date creationDateTo) {
+		this.creationDateTo = creationDateTo;
+	}
+
+	public ContactCriteria creationDateTo(Date creationDateTo) {
+		setCreationDateTo(creationDateTo);
+		return this;
+	}
+
+	@Override
+	public ContactCriteria clone() {
+		try {
+			return (ContactCriteria) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void setReportingUserLike(String reportingUserLike) {
+		this.reportingUserLike = reportingUserLike;
+	}
+
+	@IgnoreForUrl
+	public String getReportingUserLike() {
+		return reportingUserLike;
 	}
 }
