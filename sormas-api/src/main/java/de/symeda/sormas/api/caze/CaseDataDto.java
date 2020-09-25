@@ -139,9 +139,6 @@ public class CaseDataDto extends PseudonymizableDto {
 	public static final String FOLLOW_UP_COMMENT = "followUpComment";
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String VISITS = "visits";
-	//todo
-	//test 24.09 field gdpr
-	//public static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
 
 	// Fields are declared in the order they should appear in the import template
 

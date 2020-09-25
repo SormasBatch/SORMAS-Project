@@ -158,9 +158,7 @@ public class Case extends CoreAdo {
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
-	//todo
-	//test 24.09 field gdpr
-	//public static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
+
 
 	private Person person;
 	private String description;
