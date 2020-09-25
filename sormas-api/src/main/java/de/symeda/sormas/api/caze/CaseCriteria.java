@@ -36,6 +36,8 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
 
 public class CaseCriteria extends BaseCriteria implements Cloneable {
 
@@ -113,6 +115,7 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
 	private Boolean includeCasesFromOtherJurisdictions = Boolean.FALSE;
+	private ContactReferenceDto contact;
 
 	@Override
 	public CaseCriteria clone() {
@@ -569,5 +572,14 @@ public class CaseCriteria extends BaseCriteria implements Cloneable {
 
 	public void setIncludeCasesFromOtherJurisdictions(Boolean includeCasesFromOtherJurisdictions) {
 		this.includeCasesFromOtherJurisdictions = includeCasesFromOtherJurisdictions;
+	}
+
+	public ContactReferenceDto getContact() {
+		return contact;
+	}
+
+	public CaseCriteria contact(ContactReferenceDto contact) {
+		this.contact = contact;
+		return this;
 	}
 }

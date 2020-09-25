@@ -5538,4 +5538,13 @@ ALTER TABLE events ALTER COLUMN eventdesc DROP NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (273, 'Drop not null constraint from event description #3223');
 
+-- 2020-09-25 Contact Duplicates #2409
+ALTER TABLE contact ADD completeness real;
+ALTER TABLE contact_history ADD completeness real;
+
+ALTER TABLE contact ADD duplicateof_id BIGINT;
+ALTER TABLE contact_history ADD duplicateof_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (274, 'Add two columns completeness and duplicateOf for contact');
+
 -- *** Insert new sql commands BEFORE this line ***
