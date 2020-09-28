@@ -88,56 +88,8 @@ public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>
 						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,
 						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
-						   Long id, Date creationDate, Float completeness, int visitCount) {
-	//@formatter:on
-
-		this(
-			uuid,
-			personFirstName,
-			personLastName,
-			cazeUuid,
-			disease,
-			diseaseDetails,
-			caseFirstName,
-			caseLastName,
-			regionUuid,
-			districtUuid,
-			communityUuid,
-			lastContactDate,
-			contactCategory,
-			contactProximity,
-			contactClassification,
-			contactStatus,
-			followUpStatus,
-			followUpUntil,
-			contactOfficerUuid,
-			reportingUserUuid,
-			reportDateTime,
-			caseClassification,
-			caseReportingUserUid,
-			caseRegionUuid,
-			caseDistrictUud,
-			caseCommunityUuid,
-			caseHealthFacilityUuid,
-			casePointOfEntryUuid,
-			id,
-			creationDate,
-			completeness);
-
-		this.visitCount = visitCount;
-	}
-
-	//@formatter:off
-	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
-						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
-						   String districtUuid, String communityUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
-						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
-						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
-						   CaseClassification caseClassification,
-						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   Long id,Date creationDate, Float completeness) {
 		//@formatter:on
-
 		this.id = id;
 		this.uuid = uuid;
 		this.firstName = personFirstName;
@@ -146,12 +98,12 @@ public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>
 		if (cazeUuid != null) {
 			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
 			this.caseJurisdiction = new CaseJurisdictionDto(
-				caseReportingUserUid,
-				caseRegionUuid,
-				caseDistrictUud,
-				caseCommunityUuid,
-				caseHealthFacilityUuid,
-				casePointOfEntryUuid);
+					caseReportingUserUid,
+					caseRegionUuid,
+					caseDistrictUud,
+					caseCommunityUuid,
+					caseHealthFacilityUuid,
+					casePointOfEntryUuid);
 		}
 
 		this.disease = disease;
@@ -170,6 +122,30 @@ public class ContactIndexDto implements WithJurisdiction<ContactJurisdictionDto>
 		this.completeness = completeness;
 
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
+	}
+
+
+	//@formatter:off
+	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
+						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
+						   String districtUuid, String communityUuid, Date lastContactDate, ContactCategory contactCategory, ContactProximity contactProximity,
+						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
+						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
+						   CaseClassification caseClassification,
+						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   Long id,Date creationDate, Float completeness,int visitCount) {
+
+		this(uuid, personFirstName, personLastName, cazeUuid,
+				disease, diseaseDetails, caseFirstName, caseLastName, regionUuid,
+				districtUuid, communityUuid, lastContactDate, contactCategory, contactProximity,
+				contactClassification, contactStatus, followUpStatus,
+				followUpUntil, contactOfficerUuid, reportingUserUuid, reportDateTime,
+				caseClassification,
+				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid,
+				id,creationDate, completeness);
+
+		this.visitCount = visitCount;
+
 	}
 
 	public String getUuid() {
