@@ -67,6 +67,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
@@ -105,6 +106,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 							//XXX #1620 fluidColumnLoc?
 							fluidColumn(8, 0, loc(SYMPTOMS_HINT_LOC)),
 							fluidColumn(4, 0, locCss(CssStyles.ALIGN_RIGHT, BUTTONS_LOC))) +
+					fluidRowLocs(SYMPTOMATIC, ONSET_DATE) +
 					fluidRow(
 							fluidColumn(6, 0,
 									locsCss(VSPACE_3,
@@ -165,7 +167,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 									locsCss(VSPACE_3, PATIENT_ILL_LOCATION, SYMPTOMS_COMMENTS)
 							)
 					) +
-					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM, ONSET_DATE) +
+					fluidRowLocsCss(VSPACE_3, ONSET_SYMPTOM) +
 					loc(COMPLICATIONS_HEADING) +
 					fluidRow(
 							fluidColumn(6, 0,
@@ -189,6 +191,7 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 	private List<String> lesionsFieldIds;
 	private List<String> lesionsLocationFieldIds;
 	private List<String> monkeypoxImageFieldIds;
+	private String symptomaticFieldId;
 
 	public SymptomsForm(CaseDataDto caze, Disease disease, PersonDto person, SymptomsContext symptomsContext, ViewMode viewMode) {
 
@@ -422,6 +425,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		addField(LESIONS_ONSET_DATE, DateField.class);
 
+		addField(SYMPTOMATIC);
+
 		// complications
 		addFields(
 			ALTERED_CONSCIOUSNESS,
@@ -463,6 +468,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 
 		// Initialize lists
+
+		symptomaticFieldId = SYMPTOMATIC;
 
 		conditionalBleedingSymptomFieldIds = Arrays.asList(
 			GUMS_BLEEDING,
@@ -700,6 +707,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		addListenerForOnsetFields(onsetSymptom, onsetDateField);
 
+		addListenerForOnsetSymptomaticField(onsetDateField);
+
 		Button clearAllButton = ButtonHelper.createButton(Captions.actionClearAll, event -> {
 			for (Object symptomId : unconditionalSymptomFieldIds) {
 				getFieldGroup().getField(symptomId).setValue(null);
@@ -716,13 +725,17 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			for (Object symptomId : monkeypoxImageFieldIds) {
 				getFieldGroup().getField(symptomId).setValue(null);
 			}
+			Object symptomaticId = symptomaticFieldId;
+			getFieldGroup().getField(symptomaticId).setValue(null);
 		}, ValoTheme.BUTTON_LINK);
 
 		Button setEmptyToNoButton = ButtonHelper.createButton(Captions.symptomsSetClearedToNo, event -> {
 			for (Object symptomId : unconditionalSymptomFieldIds) {
 				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(symptomId);
+				Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(symptomaticFieldId);
 				if (symptom.isVisible() && symptom.getValue() == null) {
 					symptom.setValue(SymptomState.NO);
+					sourceFieldSymptomatic.setValue(YesNoUnknown.NO);
 				}
 			}
 			for (Object symptomId : conditionalBleedingSymptomFieldIds) {
@@ -950,9 +963,11 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		allPropertyIds.add(LESIONS_THAT_ITCH);
 
 		for (Object sourcePropertyId : allPropertyIds) {
+			Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(symptomaticFieldId);
 			Field sourceField = getFieldGroup().getField(sourcePropertyId);
 			sourceField.addValueChangeListener(event -> {
 				if (sourceField.getValue() == SymptomState.YES) {
+					sourceFieldSymptomatic.setValue(YesNoUnknown.YES);
 					onsetSymptom.addItem(sourceField.getCaption());
 					onsetDateField.setEnabled(true);
 				} else {
@@ -964,6 +979,37 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 		}
 		onsetSymptom.setEnabled(false); // will be updated by listener if needed
 		onsetDateField.setEnabled(false); // will be updated by listener if needed
+	}
+
+	// event for the symptomatic field
+	private void addListenerForOnsetSymptomaticField(DateField onsetDateField) {
+		Field<YesNoUnknown> sourceFieldSymptomatic = (Field<YesNoUnknown>) getFieldGroup().getField(symptomaticFieldId);
+		List<String> allPropertyIds =
+				Stream.concat(unconditionalSymptomFieldIds.stream(), conditionalBleedingSymptomFieldIds.stream()).collect(Collectors.toList());
+		allPropertyIds.add(LESIONS_THAT_ITCH);
+
+		sourceFieldSymptomatic.addValueChangeListener(event -> {
+			for (Object sourcePropertyId : allPropertyIds) {
+				Field<SymptomState> symptom = (Field<SymptomState>) getFieldGroup().getField(sourcePropertyId);
+				if (sourceFieldSymptomatic.getValue() != null) {
+					if (sourceFieldSymptomatic.getValue().equals(YesNoUnknown.NO)) {
+						symptom.setValue(SymptomState.NO);
+						symptom.setEnabled(false);
+						onsetDateField.setEnabled(false);
+					} else if (sourceFieldSymptomatic.getValue().equals(YesNoUnknown.UNKNOWN)) {
+						onsetDateField.setEnabled(false);
+						symptom.setEnabled(true);
+						symptom.setValue(null);
+					} else {
+						onsetDateField.setEnabled(true);
+						symptom.setEnabled(true);
+					}
+				} else {
+					symptom.setEnabled(true);
+					onsetDateField.setEnabled(true);
+				}
+			}
+		});
 	}
 
 	private void setUpMonkeypoxVisibilities() {

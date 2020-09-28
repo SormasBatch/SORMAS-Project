@@ -1392,7 +1392,7 @@ public class SymptomsDto extends EntityDto {
 	@HideForCountries
 	private SymptomState swollenGlands;
 
-	private Boolean symptomatic;
+	private YesNoUnknown symptomatic;
 
 	@Diseases({
 		AFP,
@@ -2012,7 +2012,7 @@ public class SymptomsDto extends EntityDto {
 
 	@Order(20)
 	@ImportIgnore
-	public Boolean getSymptomatic() {
+	public YesNoUnknown getSymptomatic() {
 		return symptomatic;
 	}
 
@@ -3126,7 +3126,7 @@ public class SymptomsDto extends EntityDto {
 		this.swollenGlands = swollenGlands;
 	}
 
-	public void setSymptomatic(Boolean symptomatic) {
+	public void setSymptomatic(YesNoUnknown symptomatic) {
 		this.symptomatic = symptomatic;
 	}
 

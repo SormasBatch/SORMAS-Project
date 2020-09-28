@@ -4747,4 +4747,8 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (222, 'Add Epidemiological data to contacts');
 
+ALTER TABLE symptoms ALTER COLUMN symptomatic TYPE varchar(255);
+ALTER TABLE symptoms_history ALTER COLUMN symptomatic TYPE varchar(255);
+INSERT INTO schema_version (version_number, comment) VALUES (224, 'Modify the type of symptomtic');
+
 -- *** Insert new sql commands BEFORE this line ***
