@@ -1645,7 +1645,6 @@ public class ContactFacadeEjb implements ContactFacade {
 			Root<Contact> indexRoot = indexContactsCq.from(Contact.class);
 			selectIndexDtoFields(indexContactsCq, indexRoot);
 			indexContactsCq.where(indexRoot.get(Contact.ID).in(foundIds.stream().flatMap(Arrays::stream).collect(Collectors.toSet())));
-			TypedQuery q = em.createQuery(indexContactsCq);
 			Map<Long, ContactIndexDto> indexContacts = em.createQuery(indexContactsCq).getResultStream().collect(Collectors.toMap(c -> c.getId(), Function.identity()));
 
 			for (Object[] idPair : foundIds) {
@@ -1679,7 +1678,6 @@ public class ContactFacadeEjb implements ContactFacade {
 	private void selectIndexDtoFields(CriteriaQuery<ContactIndexDto> cq, Root<Contact> root) {
 		List<Selection<?>> selections = listCriteriaBuilder.getContactIndexSelectionsAll(root, new ContactJoins(root));
 		cq.multiselect(selections);
-
 	}
 
 	public void updateCompleteness(String contactUuid) {
