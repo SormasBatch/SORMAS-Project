@@ -158,7 +158,7 @@ public class ContactExportDto implements Serializable {
 							long epiDataId, YesNoUnknown traveled, YesNoUnknown burialAttended, YesNoUnknown directContactConfirmedCase, YesNoUnknown directContactProbableCase,
 							YesNoUnknown contactWithRodent, YesNoUnknown returningTraveler, long eventCount,
 							String reportingUserUuid, String regionUuid, String districtUuid, String communityUuid,
-							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
+							String caseReportingUserUuid, String caseRegionUui, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid
 	) {
 	//@formatter:on
 
@@ -228,7 +228,7 @@ public class ContactExportDto implements Serializable {
 			: new CaseJurisdictionDto(
 				caseReportingUserUuid,
 				caseRegionUui,
-				caseDistrictUud,
+				caseDistrictUuid,
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);

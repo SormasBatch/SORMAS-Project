@@ -91,7 +91,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements WithJuri
 						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,
-						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   Long id,Date creationDate, Float completeness) {
 		//@formatter:on
 
@@ -120,7 +120,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements WithJuri
 			caseClassification,
 			caseReportingUserUid,
 			caseRegionUuid,
-			caseDistrictUud,
+			caseDistrictUuid,
 			caseCommunityUuid,
 			caseHealthFacilityUuid,
 			casePointOfEntryUuid,
@@ -140,7 +140,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements WithJuri
 						   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 						   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 						   CaseClassification caseClassification,
-						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
+						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
 						   Long id,Date creationDate, Float completeness, Integer visitCount) {
 		//@formatter:on
@@ -155,7 +155,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements WithJuri
 			this.caseJurisdiction = new CaseJurisdictionDto(
 				caseReportingUserUid,
 				caseRegionUuid,
-				caseDistrictUud,
+				caseDistrictUuid,
 				caseCommunityUuid,
 				caseHealthFacilityUuid,
 				casePointOfEntryUuid);
