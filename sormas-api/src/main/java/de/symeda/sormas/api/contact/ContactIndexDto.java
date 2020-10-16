@@ -84,7 +84,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements WithJuri
 	private Date creationDate;
 	private Float completeness;
 
-
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
 						   Disease disease, String diseaseDetails, String caseFirstName, String caseLastName, String regionUuid,
@@ -96,18 +95,43 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements WithJuri
 						   Long id,Date creationDate, Float completeness) {
 		//@formatter:on
 
-		this(uuid, personFirstName, personLastName, cazeUuid,
-				disease, diseaseDetails, caseFirstName, caseLastName, regionUuid,
-				districtUuid,null, lastContactDate, contactCategory, contactProximity,
-				contactClassification, contactStatus, followUpStatus,
-				followUpUntil, contactOfficerUuid, reportingUserUuid, reportDateTime,
-				caseClassification,
-				caseReportingUserUid, caseRegionUuid, caseDistrictUud, caseCommunityUuid, caseHealthFacilityUuid, casePointOfEntryUuid,
-				id,creationDate, completeness,null);
+		this(
+			uuid,
+			personFirstName,
+			personLastName,
+			cazeUuid,
+			disease,
+			diseaseDetails,
+			caseFirstName,
+			caseLastName,
+			regionUuid,
+			districtUuid,
+			null,
+			lastContactDate,
+			contactCategory,
+			contactProximity,
+			contactClassification,
+			contactStatus,
+			followUpStatus,
+			followUpUntil,
+			contactOfficerUuid,
+			reportingUserUuid,
+			reportDateTime,
+			caseClassification,
+			caseReportingUserUid,
+			caseRegionUuid,
+			caseDistrictUud,
+			caseCommunityUuid,
+			caseHealthFacilityUuid,
+			casePointOfEntryUuid,
+			id,
+			creationDate,
+			completeness,
+			null);
 
 		//this.visitCount = visitCount;
 	}
-		//@formatter:on
+	//@formatter:on
 
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
@@ -129,12 +153,12 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements WithJuri
 		if (cazeUuid != null) {
 			this.caze = new CaseReferenceDto(cazeUuid, caseFirstName, caseLastName);
 			this.caseJurisdiction = new CaseJurisdictionDto(
-					caseReportingUserUid,
-					caseRegionUuid,
-					caseDistrictUud,
-					caseCommunityUuid,
-					caseHealthFacilityUuid,
-					casePointOfEntryUuid);
+				caseReportingUserUid,
+				caseRegionUuid,
+				caseDistrictUud,
+				caseCommunityUuid,
+				caseHealthFacilityUuid,
+				casePointOfEntryUuid);
 		}
 
 		this.disease = disease;
@@ -156,7 +180,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements WithJuri
 
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
-
 
 	public String getUuid() {
 		return uuid;
