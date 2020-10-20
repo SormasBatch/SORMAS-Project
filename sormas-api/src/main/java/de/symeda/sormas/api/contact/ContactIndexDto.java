@@ -27,9 +27,8 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
-import de.symeda.sormas.api.utils.jurisdiction.WithJurisdiction;
 
-public class ContactIndexDto extends PseudonymizableIndexDto implements WithJurisdiction<ContactJurisdictionDto>, Serializable, Cloneable {
+public class ContactIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7511900591141885152L;
 
