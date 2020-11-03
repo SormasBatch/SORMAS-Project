@@ -74,14 +74,13 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private Date reportDateTime;
 	private ContactCategory contactCategory;
 	private CaseClassification caseClassification;
+	private Long id;
+	private Date creationDate;
+	private Float completeness;
 	private int visitCount;
 
 	private ContactJurisdictionDto jurisdiction;
 	private CaseJurisdictionDto caseJurisdiction;
-
-	private Long id;
-	private Date creationDate;
-	private Float completeness;
 
 	//@formatter:off
 	public ContactIndexDto(String uuid, String personFirstName, String personLastName, String cazeUuid,
@@ -113,6 +112,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 			contactStatus,
 			followUpStatus,
 			followUpUntil,
+			null,
 			contactOfficerUuid,
 			reportingUserUuid,
 			reportDateTime,
@@ -123,10 +123,11 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 			caseCommunityUuid,
 			caseHealthFacilityUuid,
 			casePointOfEntryUuid,
+			null,
 			id,
 			creationDate,
 			completeness,
-			null);
+			0);
 
 		//this.visitCount = visitCount;
 	}
@@ -141,7 +142,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   CaseClassification caseClassification,
 						   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-						   Long id,Date creationDate, Float completeness, Integer visitCount) {
+						   Long id, Date creationDate, Float completeness, int visitCount) {
 		//@formatter:on
 
 		this.id = id;
@@ -173,9 +174,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.contactOfficerUuid = contactOfficerUuid;
 		this.reportDateTime = reportDateTime;
 		this.caseClassification = caseClassification;
-		//this.visitCount = visitCount;
 		this.creationDate = creationDate;
 		this.completeness = completeness;
+		this.visitCount = visitCount;
 
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}

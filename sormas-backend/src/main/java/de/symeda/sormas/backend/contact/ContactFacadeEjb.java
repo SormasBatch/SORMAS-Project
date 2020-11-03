@@ -58,8 +58,8 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.Selection;
+import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -131,6 +131,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
@@ -172,6 +173,7 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -214,6 +216,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
+	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	@EJB
 	private ContactJurisdictionChecker contactJurisdictionChecker;
 	@EJB
 	private CaseJurisdictionChecker caseJurisdictionChecker;
@@ -221,6 +225,8 @@ public class ContactFacadeEjb implements ContactFacade {
 	private EpiDataFacadeEjbLocal epiDataFacade;
 	@EJB
 	private ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal clinicalCourseFacade;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
@@ -1531,13 +1537,14 @@ public class ContactFacadeEjb implements ContactFacade {
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> root = cq.from(Contact.class);
 		Root<Contact> root2 = cq.from(Contact.class);
+		ContactJoins joins = new ContactJoins(root);
 		Join<Contact, Person> person = root.join(Contact.PERSON, JoinType.LEFT);
 		Join<Contact, Person> person2 = root2.join(Contact.PERSON, JoinType.LEFT);
 		Join<Contact, Region> region = root.join(Contact.REGION, JoinType.LEFT);
 		Join<Contact, Region> region2 = root2.join(Contact.REGION, JoinType.LEFT);
 
 		Predicate userFilter = contactService.createUserFilter(cb, cq, root2);
-		Predicate criteriaFilter = criteria != null ? contactService.buildCriteriaFilter(criteria, cb, root2) : null;
+		Predicate criteriaFilter = criteria != null ? contactService.buildCriteriaFilter(criteria, cb, root2, joins) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));
 		Expression<String> nameSimilarityExpr2 = cb.concat(person2.get(Person.FIRST_NAME), " ");

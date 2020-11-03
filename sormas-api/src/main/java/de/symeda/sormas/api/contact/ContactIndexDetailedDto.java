@@ -56,11 +56,11 @@ public class ContactIndexDetailedDto extends ContactIndexDto {
 								   ContactClassification contactClassification, ContactStatus contactStatus, FollowUpStatus followUpStatus,
 								   Date followUpUntil, SymptomJournalStatus symptomJournalStatus, String contactOfficerUuid, String reportingUserUuid, Date reportDateTime,
 								   CaseClassification caseClassification,
-								   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUud, String caseCommunityUuid,
-								   String caseHealthFacilityUuid, String casePointOfEntryUuid, Date changeDate,
+								   String caseReportingUserUid, String caseRegionUuid, String caseDistrictUuid, String caseCommunityUuid,
+								   String caseHealthFacilityUuid, String casePointOfEntryUuid, Date changeDate, Long id, Date creationDate, Float completeness,
 								   Sex sex, Integer approximateAge, ApproximateAgeType approximateAgeType,
 								   String districtName, String city, String street, String houseNumber, String postalCode, String phone,
-								   String reportingUserFirstName, String reportingUserLastName, Long id, Date creationDate, Float completeness, int visitCount, long eventCount
+								   String reportingUserFirstName, String reportingUserLastName, int visitCount, long eventCount
 	) {
 	//@formatter:on
 
