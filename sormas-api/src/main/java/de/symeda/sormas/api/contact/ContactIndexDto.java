@@ -28,7 +28,7 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
-public class ContactIndexDto extends PseudonymizableIndexDto implements Serializable {
+public class ContactIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 7511900591141885152L;
 
@@ -51,6 +51,10 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String CONTACT_CATEGORY = "contactCategory";
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String EXTERNAL_ID = "externalID";
+	public static final String COMPLETENESS = "completeness";
+	public static final String CREATION_DATE = "creationDate";
+	public static final String ID = "id";
+	public static final String VISIT_COUNT = "visitCount";
 
 	private String uuid;
 	@PersonalData
@@ -77,6 +81,9 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	private String districtName;
 	private String caseRegionName;
 	private String caseDistrictName;
+	private Long id;
+	private Date creationDate;
+	private Float completeness;
 
 	private ContactJurisdictionDto jurisdiction;
 	private CaseJurisdictionDto caseJurisdiction;
@@ -90,10 +97,12 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 						   CaseClassification caseClassification, String caseReportingUserUid, String caseRegionUuid, String caseRegionName, String caseDistrictUuid, 
 						   String caseDistrictName, String caseCommunityUuid, String caseHealthFacilityUuid, String casePointOfEntryUuid,
 						   Date changeDate, // XXX: unused, only here for TypedQuery mapping
-						   String externalID,
+						   String externalID, 
+						   Long id,Date creationDate, Float completeness,
 						   int visitCount) {
-	//@formatter:on
 
+		//@formatter:on
+		this.id = id;
 		this.uuid = uuid;
 		this.firstName = personFirstName;
 		this.lastName = personLastName;
@@ -128,6 +137,8 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.districtName = districtName;
 		this.caseRegionName = caseRegionName;
 		this.caseDistrictName = caseDistrictName;
+		this.creationDate = creationDate;
+		this.completeness = completeness;
 
 		this.jurisdiction = new ContactJurisdictionDto(reportingUserUuid, regionUuid, districtUuid, communityUuid, caseJurisdiction);
 	}
@@ -330,5 +341,34 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 
 	public CaseJurisdictionDto getCaseJurisdiction() {
 		return caseJurisdiction;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Float getCompleteness() {
+		return completeness;
+	}
+
+	public void setCompleteness(Float completeness) {
+		this.completeness = completeness;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }
