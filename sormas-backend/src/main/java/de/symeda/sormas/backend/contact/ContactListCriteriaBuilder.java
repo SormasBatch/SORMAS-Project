@@ -78,7 +78,7 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID));
 	}
 
-	public List<Selection<?>> getContactIndexMergeSelections(Root<Contact> contact, ContactJoins joins) {
+	public List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
 
 		return Arrays.asList(
 			contact.get(Contact.UUID),
@@ -114,18 +114,20 @@ public class ContactListCriteriaBuilder {
 			joins.getCaseCommunity().get(Community.UUID),
 			joins.getCaseHealthFacility().get(Facility.UUID),
 			joins.getCaseasePointOfEntry().get(PointOfEntry.UUID),
+			contact.get(Contact.CHANGE_DATE),
+			contact.get(Contact.EXTERNAL_ID),
 			contact.get(AbstractDomainObject.ID),
 			contact.get(AbstractDomainObject.CREATION_DATE),
 			contact.get(Contact.COMPLETENESS));
 	}
 
-	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
-
-		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexMergeSelections(contact, joins));
-		indexSelection.addAll(Arrays.asList(contact.get(Contact.CHANGE_DATE), contact.get(Contact.EXTERNAL_ID)));
-
-		return indexSelection;
-	}
+//	private List<Selection<?>> getContactIndexSelections(Root<Contact> contact, ContactJoins joins) {
+//
+//		final List<Selection<?>> indexSelection = new ArrayList<>(getContactIndexMergeSelections(contact, joins));
+//		indexSelection.addAll(Arrays.asList(contact.get(Contact.CHANGE_DATE), contact.get(Contact.EXTERNAL_ID)));
+//
+//		return indexSelection;
+//	}
 
 	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins) {
 
@@ -278,4 +280,5 @@ public class ContactListCriteriaBuilder {
 
 		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins);
 	}
+
 }
